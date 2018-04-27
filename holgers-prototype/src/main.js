@@ -1,6 +1,6 @@
 THREE.OrbitControls = require('three-orbit-controls')(THREE);
 
-import createBird from "./bird.js";
+import Bird from "./bird.js";
 
 let timeStart;
 let camera;
@@ -36,7 +36,7 @@ const initAnimation = function(domNodeId, canvasId) {
 
 	scene = new THREE.Scene();
 
-	const bird = createBird();
+	const bird = new Bird();
   window.bird = bird;
 	scene.add(bird);
 	
