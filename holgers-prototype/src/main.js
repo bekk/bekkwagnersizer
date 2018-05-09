@@ -8,6 +8,7 @@ let camera;
 let renderer;
 let scene;
 let orbitControls;
+let i = 0;
 
 const uniforms = {
 	time: {value: 0.0},
@@ -46,17 +47,45 @@ const initAnimation = function(domNodeId, canvasId) {
 	window.bird = bird;
 	scene.add(bird);
 
-	const nofTextures = 3*3*3;
-	let i = 0;
+	// 256 stykker på 1024^2 ser ut til å være en øvre grense for rendringen nå
+	// eller overkant av 1000 stykker på 512^2
+	const nofTextures = 16;
+	const textureWidth = 512;
+	const textureHeight = 512;
 
-	const textureCollection = new RealtimeTextureCollection(nofTextures);
+	const textureCollection = new RealtimeTextureCollection(nofTextures, textureWidth, textureHeight);
 	window.textureCollection = textureCollection;
 	scene.add(textureCollection);
 	textureCollection.position.set(0, 0, 0);
 
-	setInterval(() => textureCollection.updateImage(null, (i++ % nofTextures)), 2000);
-	
-	//scene.add(new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial()));
+	function fetchImageFromServer(filename, callback, errorCallback) {
+		const loader = new THREE.TextureLoader();
+		const url = `http://localhost:3000/${filename}`;
+
+		return loader.load(
+			url,
+
+			function onLoad(image) {
+				callback(image);
+			},
+
+			function onProgress() {
+
+			},
+
+			function onError(err) {
+				console.error('Could not load texture from server', url);
+				if (errorCallback) errorCallback(err);
+			}
+		);
+	}
+
+	const filenames = ['snowman.png', 'bird.png', 'pikachu.png', 'hulk.png', 'troll.png'];
+
+	setInterval(() => {
+		const texture = fetchImageFromServer(filenames[i % filenames.length], (image) => {});
+		textureCollection.updateImage(texture, i++ % nofTextures);
+	}, 2000);
 
 	var lightSun = new THREE.DirectionalLight(0xffffff, 1.0);
 	lightSun.position.set(-0.5, 4, 1).normalize();

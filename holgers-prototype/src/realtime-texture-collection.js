@@ -1,19 +1,20 @@
 import { createPlaneGeometry, createTexture, updateTexture, gridPosition3D, normalizedCoordinates, } from "./util.js";
 
+
 class RealtimeTextureCollection extends THREE.Object3D {
-  constructor(nofTextures) {
+  constructor(nofTextures, width, height) {
     super();
 
-    // 64*64=4096 fugler, hver på 1024*1024 piksler
-    // For mye! Max texture size på min GPU er 16384^2, max 16 texturer per object
-    // Det blir 4096 texturer på 1024^2 piksler
-    this.width = 1024;//*64;
-    this.height = 1024;//*64;
+    this.width = width;
+    this.height = height;
 
     this.nofTextures = nofTextures;
 
+    const texture = new THREE.TextureLoader().load("http://localhost:3000/troll.png");
+    texture.magFilter = THREE.LinearFilter;
+    texture.anisotropy = Math.pow(2, 3);
+
     for (let i = 0; i < this.nofTextures; i++) {
-      const texture = createTexture(this.width, this.height, new THREE.Color(0xffffff), 0.05*255);
 
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -25,7 +26,8 @@ class RealtimeTextureCollection extends THREE.Object3D {
 
       const gridPos = gridPosition3D(i, nofTextures);
       const normPos = normalizedCoordinates(gridPos)
-      const pos = normPos.clone().multiplyScalar(2);
+      const pos = normPos.clone().multiplyScalar(Math.ceil(Math.pow(nofTextures, 1/3) / 2));
+      pos.multiplyScalar(-1); // For å få de første texturene til å være nærmere kamera
       plane.position.copy(pos);
       
       this.add(plane);
@@ -33,24 +35,32 @@ class RealtimeTextureCollection extends THREE.Object3D {
   }
 
   updateImage(image, index) {
-    console.log("Updating texture");
-
-    const randomPos = new THREE.Vector2(Math.random()*this.width, Math.random()*this.height);
-    const size = this.width/2;
-    const randomColor = new THREE.Color(Math.random(), Math.random(), Math.random());
-    randomColor.a = 1;
+    console.log("Updating texture " + !!image);
 
     const plane = this.children[index];
-    
-    updateTexture(plane.texture, (x, y) => {
-      if (x > randomPos.x - size/2 && x < randomPos.x + size/2 &&
-        y > randomPos.y - size/2 && y < randomPos.y + size/2) {
-        randomColor.r = Math.random()/2;
-        return randomColor;
-      } else {
-        return null;
-      }
-    })
+
+    if (image) {
+        plane.material.map = image;
+        plane.material.map.anisotropy = Math.pow(2, 3);
+        plane.material.needsUpdate = true;
+    }
+
+    if (!image) { // Tulletekstur
+      const randomPos = new THREE.Vector2(Math.random()*this.width, Math.random()*this.height);
+      const size = this.width * 2/3;
+      const randomColor = new THREE.Color(Math.random(), Math.random(), Math.random());
+      randomColor.a = 1;
+      
+      updateTexture(plane.texture, (x, y) => {
+        if (x > randomPos.x - size/2 && x < randomPos.x + size/2 &&
+          y > randomPos.y - size/2 && y < randomPos.y + size/2) {
+          randomColor.r = Math.random()/2;
+          return randomColor;
+        } else {
+          return null;
+        }
+      })
+    }
   }
 }
 
