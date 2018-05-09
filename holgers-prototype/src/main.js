@@ -1,6 +1,7 @@
 THREE.OrbitControls = require('three-orbit-controls')(THREE);
 
 import Bird from "./bird.js";
+import RealtimeTextureCollection from "./realtime-texture-collection.js";
 
 let timeStart;
 let camera;
@@ -22,14 +23,19 @@ const initAnimation = function(domNodeId, canvasId) {
 	renderer.domElement.setAttribute('id', canvasId);
 	renderer.setSize(window.innerWidth, window.innerHeight, true);
 
+	console.log(
+		renderer.getContext().getParameter(renderer.getContext().MAX_VERTEX_TEXTURE_IMAGE_UNITS),
+		renderer.getContext().getParameter(renderer.getContext().MAX_TEXTURE_SIZE),
+	);
+
 	const ratio = renderer.getContext().drawingBufferWidth / renderer.getContext().drawingBufferHeight;
 	
 	camera = new THREE.PerspectiveCamera(45, ratio, 0.1, 10000);
-	camera.position.set(1.4, 1.5, 0.7)
+	camera.position.set(0.15, 0.25, 0.7).multiplyScalar(12);
 	camera.updateProjectionMatrix();
 
 	orbitControls = new THREE.OrbitControls(camera);
-	orbitControls.target = new THREE.Vector3(0, 1, 0);
+	orbitControls.target = new THREE.Vector3(0, 0, 0);
 	orbitControls.update();
 
 	document.getElementById(domNodeId).appendChild(renderer.domElement);
@@ -37,8 +43,18 @@ const initAnimation = function(domNodeId, canvasId) {
 	scene = new THREE.Scene();
 
 	const bird = new Bird();
-  window.bird = bird;
+	window.bird = bird;
 	scene.add(bird);
+
+	const nofTextures = 3*3*3;
+	let i = 0;
+
+	const textureCollection = new RealtimeTextureCollection(nofTextures);
+	window.textureCollection = textureCollection;
+	scene.add(textureCollection);
+	textureCollection.position.set(0, 0, 0);
+
+	setInterval(() => textureCollection.updateImage(null, (i++ % nofTextures)), 2000);
 	
 	//scene.add(new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial()));
 
@@ -49,7 +65,6 @@ const initAnimation = function(domNodeId, canvasId) {
 	var lightAmbient = new THREE.DirectionalLight(0xffffff, 0.25);
 	lightAmbient.position.copy(lightAmbient.position).negate();
 	scene.add(lightAmbient);
-
 
 	addResizeListener(camera, renderer);
 }
