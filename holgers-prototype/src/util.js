@@ -80,10 +80,32 @@ function normalizedCoordinates(vector) {
   return vector.clone().multiplyScalar(2).subScalar(1);
 }
 
+function fetchTextureFromServer(url, callback, errorCallback) {
+  const loader = new THREE.TextureLoader();
+
+  return loader.load(
+    url,
+
+    function onLoad(image) {
+      if (callback) callback(image);
+    },
+
+    function onProgress() {
+
+    },
+
+    function onError(err) {
+      console.error('Could not load texture from server', url);
+      if (errorCallback) errorCallback(err);
+    }
+  );
+}
+
 export {
   createPlaneGeometry,
   createTexture,
   updateTexture,
   gridPosition3D,
   normalizedCoordinates,
+  fetchTextureFromServer,
 }

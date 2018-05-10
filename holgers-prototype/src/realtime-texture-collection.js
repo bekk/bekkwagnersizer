@@ -45,7 +45,7 @@ class RealtimeTextureCollection extends THREE.Object3D {
         plane.material.needsUpdate = true;
     }
 
-    if (!image) { // Tulletekstur
+    if (!image) { // Tekstur for debug
       const randomPos = new THREE.Vector2(Math.random()*this.width, Math.random()*this.height);
       const size = this.width * 2/3;
       const randomColor = new THREE.Color(Math.random(), Math.random(), Math.random());

@@ -2,6 +2,7 @@ THREE.OrbitControls = require('three-orbit-controls')(THREE);
 
 import Bird from "./bird.js";
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
+import { fetchTextureFromServer } from './util.js';
 
 let timeStart;
 let camera;
@@ -54,36 +55,12 @@ const initAnimation = function(domNodeId, canvasId) {
 	const textureHeight = 512;
 
 	const textureCollection = new RealtimeTextureCollection(nofTextures, textureWidth, textureHeight);
-	window.textureCollection = textureCollection;
 	scene.add(textureCollection);
-	textureCollection.position.set(0, 0, 0);
-
-	function fetchImageFromServer(filename, callback, errorCallback) {
-		const loader = new THREE.TextureLoader();
-		const url = `http://localhost:3000/${filename}`;
-
-		return loader.load(
-			url,
-
-			function onLoad(image) {
-				callback(image);
-			},
-
-			function onProgress() {
-
-			},
-
-			function onError(err) {
-				console.error('Could not load texture from server', url);
-				if (errorCallback) errorCallback(err);
-			}
-		);
-	}
 
 	const filenames = ['snowman.png', 'bird.png', 'pikachu.png', 'hulk.png', 'troll.png'];
 
 	setInterval(() => {
-		const texture = fetchImageFromServer(filenames[i % filenames.length], (image) => {});
+		const texture = fetchTextureFromServer(`http://localhost:3000/${filenames[i % filenames.length]}`);
 		textureCollection.updateImage(texture, i++ % nofTextures);
 	}, 2000);
 
