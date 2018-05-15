@@ -12,6 +12,7 @@ class RealtimeTextureCollection extends THREE.Object3D {
 
     const texture = new THREE.TextureLoader().load("http://localhost:3000/troll.png");
     texture.magFilter = THREE.LinearFilter;
+    texture.minFilter = THREE.LinearFilter;
     texture.anisotropy = Math.pow(2, 3);
 
     for (let i = 0; i < this.nofTextures; i++) {
@@ -42,6 +43,7 @@ class RealtimeTextureCollection extends THREE.Object3D {
     if (image) {
         plane.material.map = image;
         plane.material.map.anisotropy = Math.pow(2, 3);
+        plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
         plane.material.needsUpdate = true;
     }
 

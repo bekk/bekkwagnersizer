@@ -1,8 +1,12 @@
 THREE.OrbitControls = require('three-orbit-controls')(THREE);
 
+import ioClient from 'socket.io-client';
+
 import Bird from "./bird.js";
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 import { fetchTextureFromServer } from './util.js';
+
+const socket = ioClient("http://localhost:3000");
 
 let timeStart;
 let camera;
@@ -10,10 +14,24 @@ let renderer;
 let scene;
 let orbitControls;
 let i = 0;
+let textureCollection;
+
+// 256 stykker på 1024^2 ser ut til å være en øvre grense for rendringen nå
+// eller overkant av 1000 stykker på 512^2
+const nofTextures = 16;
+const textureWidth = 512;
+const textureHeight = 512;
 
 const uniforms = {
 	time: {value: 0.0},
 };
+
+socket.on('new image', (fileName)  => {
+	console.log(`Downloading new image: ${fileName}`);
+
+	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`);
+	textureCollection.updateImage(texture, i++ % nofTextures);
+})
 
 const initAnimation = function(domNodeId, canvasId) {
 	timeStart = new Date().getTime();
@@ -44,25 +62,8 @@ const initAnimation = function(domNodeId, canvasId) {
 
 	scene = new THREE.Scene();
 
-	const bird = new Bird();
-	window.bird = bird;
-	scene.add(bird);
-
-	// 256 stykker på 1024^2 ser ut til å være en øvre grense for rendringen nå
-	// eller overkant av 1000 stykker på 512^2
-	const nofTextures = 16;
-	const textureWidth = 512;
-	const textureHeight = 512;
-
-	const textureCollection = new RealtimeTextureCollection(nofTextures, textureWidth, textureHeight);
+	textureCollection = new RealtimeTextureCollection(nofTextures, textureWidth, textureHeight);
 	scene.add(textureCollection);
-
-	const filenames = ['snowman.png', 'bird.png', 'pikachu.png', 'hulk.png', 'troll.png'];
-
-	setInterval(() => {
-		const texture = fetchTextureFromServer(`http://localhost:3000/${filenames[i % filenames.length]}`);
-		textureCollection.updateImage(texture, i++ % nofTextures);
-	}, 2000);
 
 	var lightSun = new THREE.DirectionalLight(0xffffff, 1.0);
 	lightSun.position.set(-0.5, 4, 1).normalize();
@@ -89,8 +90,6 @@ const animate = function() {
 	uniforms.time.value = (new Date().getTime() - timeStart) / 1000;
 
 	orbitControls.update();
-	
-	window.bird.flapWings(uniforms.time.value);
 	
 	renderer.render(scene, camera);
 }
