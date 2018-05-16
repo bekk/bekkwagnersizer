@@ -31,7 +31,12 @@ app.use(express.static(__dirname + '/uploads'))
 
 app.post('/image', upload.single('image'), (req, res) => {
   io.emit('new image', req.file.originalname)
-  res.sendStatus(200)
+  res.sendStatus(200);
+})
+
+app.get('/images', (req, res) => {
+  const images = fs.readdirSync('/uploads');
+  res.status(200).json({ images });
 })
 
 io.on('connection', socket => {
