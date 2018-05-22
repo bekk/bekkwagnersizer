@@ -80,6 +80,11 @@ function normalizedCoordinates(vector) {
   return vector.clone().multiplyScalar(2).subScalar(1);
 }
 
+function normalize(float, max) {
+  if (!max) max = 1;
+  return float * 2 - 1;
+}
+
 function fetchTextureFromServer(url, callback, errorCallback) {
   const loader = new THREE.TextureLoader();
 
@@ -108,4 +113,5 @@ export {
   gridPosition3D,
   normalizedCoordinates,
   fetchTextureFromServer,
+  normalize,
 }

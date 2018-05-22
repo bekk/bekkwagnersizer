@@ -13,14 +13,15 @@ let camera;
 let renderer;
 let scene;
 let orbitControls;
-let i = 0;
 let textureCollection;
 
 // 256 stykker på 1024^2 ser ut til å være en øvre grense for rendringen nå
 // eller overkant av 1000 stykker på 512^2
-const nofTextures = 16;
+const nofTextures = 100;
 const textureWidth = 512;
 const textureHeight = 512;
+
+let i = Math.floor(nofTextures * 2/3);
 
 const uniforms = {
 	time: {value: 0.0},
@@ -36,7 +37,7 @@ socket.on('new image', (fileName)  => {
 const initAnimation = function(domNodeId, canvasId) {
 	timeStart = new Date().getTime();
 
-	renderer = new THREE.WebGLRenderer({antialias: true});
+	renderer = new THREE.WebGLRenderer({antialias: false});
 	renderer.gammaInput = true;
 	renderer.gammaOutput = true;
 	renderer.setClearColor(0xB0B0B0);
@@ -51,7 +52,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	const ratio = renderer.getContext().drawingBufferWidth / renderer.getContext().drawingBufferHeight;
 	
 	camera = new THREE.PerspectiveCamera(45, ratio, 0.1, 10000);
-	camera.position.set(0.15, 0.25, 0.7).multiplyScalar(12);
+	camera.position.set(0, 0, 1).multiplyScalar(4);
 	camera.updateProjectionMatrix();
 
 	orbitControls = new THREE.OrbitControls(camera);
@@ -90,6 +91,8 @@ const animate = function() {
 	uniforms.time.value = (new Date().getTime() - timeStart) / 1000;
 
 	orbitControls.update();
+
+	textureCollection.updatePositions();
 	
 	renderer.render(scene, camera);
 }
