@@ -106,6 +106,19 @@ function fetchTextureFromServer(url, callback, errorCallback) {
   );
 }
 
+export const Random = {
+    float: function(from, to) {
+        return Math.random()*(to-from)+from;
+    },
+
+    int: function(from, to) {
+       return Math.floor(this.float(from, to+1));
+    },
+    bool: function(probability) {
+        return Math.random() < probability;
+    }
+}
+
 export {
   createPlaneGeometry,
   createTexture,

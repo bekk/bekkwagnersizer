@@ -4,6 +4,7 @@ import { createPlaneGeometry,
   gridPosition3D, 
   normalizedCoordinates, 
   normalize,
+  Random,
 } from "./util.js";
 
 
@@ -16,7 +17,7 @@ class RealtimeTextureCollection extends THREE.Object3D {
 
     this.nofTextures = nofTextures;
 
-    const texture = new THREE.TextureLoader().load("http://localhost:3000/People_karakterer_mai_Artboard 3.png");
+    const texture = new THREE.TextureLoader().load("http://localhost:3000/People_karakterer_mai-03.png");
     //const texture = new THREE.TextureLoader().load("http://localhost:3000/tysseng-.png");
     texture.magFilter = THREE.LinearFilter;
     //texture.minFilter = THREE.LinearMipMapLinearFilter;
@@ -26,22 +27,36 @@ class RealtimeTextureCollection extends THREE.Object3D {
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
         map: texture,
+        side: THREE.DoubleSide,
       });
 
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), material);
       plane.texture = texture;
 
-      const gridPos = gridPosition3D(i, nofTextures);
-      const normPos = normalizedCoordinates(gridPos)
-      const pos = normPos.clone().multiplyScalar(Math.ceil(Math.pow(nofTextures, 1/3) / 2));
-      pos.multiplyScalar(-1); // For å få de første texturene til å være nærmere kamera
-      plane.position.copy(pos);
-      plane.pathPosition = Math.floor(i / 10)/10;
-      const magic = Math.floor(i / 10) % 2 == 0;
-      plane.pathDeviance = (i % 10 + (magic ? 0.5 : 0))/10;
+      const nofXDir = 10;
+      const nofYDir = 10;
+
+      plane.pathPosition = Math.floor(i / nofYDir)/nofYDir + Random.float(0, 0.05);
+      const magic = Math.floor(i / nofYDir) % 2 == 0;
+      plane.pathDeviance = (i % nofXDir + (magic ? 0.5 : 0))/nofXDir ;
       
       this.add(plane);
     }
+  }
+
+  getIndexInBack() {
+    const distanceIndeces = [];
+    
+    for (let i in this.children) {
+      const child = this.children[i];
+      distanceIndeces.push({index: i, distance: child.position.z});
+    }
+
+    distanceIndeces.sort(function(a, b) {
+      return a.distance - b.distance;
+    });
+    
+    return distanceIndeces[Random.int(0, 9)].index;
   }
 
   updateImage(image, index) {
@@ -74,12 +89,16 @@ class RealtimeTextureCollection extends THREE.Object3D {
     }
   }
 
+  // TODO: Få opp folka bak raskere, pass på å ikke legg et nytt bilde ute på siden
+
   getPath(position, deviance) {
-    const spread = 1.5;
-    const scaledPosition = (position*0.75 + 0.25)
+    const spreadX = 2;
+    const spreadY = 1.35;
+    const skew = 0.25;
+    const scaledPosition = (position*(1-skew) + skew)
     return new THREE.Vector3(
-      normalize(deviance) * spread,
-      normalize(Math.sin(scaledPosition * Math.PI)) * spread/2,
+      normalize(deviance) * spreadX,
+      normalize(Math.sin(scaledPosition * Math.PI)) * spreadY/2,
       position + deviance*0.01,
     );
   }

@@ -4,7 +4,7 @@ import ioClient from 'socket.io-client';
 
 import Bird from "./bird.js";
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
-import { fetchTextureFromServer } from './util.js';
+import { fetchTextureFromServer, Random } from './util.js';
 
 const socket = ioClient("http://localhost:3000");
 
@@ -34,6 +34,12 @@ socket.on('new image', (fileName)  => {
 	textureCollection.updateImage(texture, i++ % nofTextures);
 })
 
+window.setInterval(() => {
+	const fileName = 'People_karakterer_mai-' + Random.int(0, 1) + Random.int(1, 9);
+	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}.png`);
+	textureCollection.updateImage(texture, textureCollection.getIndexInBack());
+}, 1000);
+
 const initAnimation = function(domNodeId, canvasId) {
 	timeStart = new Date().getTime();
 
@@ -51,12 +57,13 @@ const initAnimation = function(domNodeId, canvasId) {
 
 	const ratio = renderer.getContext().drawingBufferWidth / renderer.getContext().drawingBufferHeight;
 	
+	const cameraHeight = 0.4 ;
 	camera = new THREE.PerspectiveCamera(45, ratio, 0.1, 10000);
-	camera.position.set(0, 0, 1).multiplyScalar(4);
+	camera.position.set(0, cameraHeight, 2.55);
 	camera.updateProjectionMatrix();
 
 	orbitControls = new THREE.OrbitControls(camera);
-	orbitControls.target = new THREE.Vector3(0, 0, 0);
+	orbitControls.target = new THREE.Vector3(0, cameraHeight, 0);
 	orbitControls.update();
 
 	document.getElementById(domNodeId).appendChild(renderer.domElement);
@@ -66,13 +73,16 @@ const initAnimation = function(domNodeId, canvasId) {
 	textureCollection = new RealtimeTextureCollection(nofTextures, textureWidth, textureHeight);
 	scene.add(textureCollection);
 
+	const purplePlane = new THREE.Mesh(
+		new THREE.PlaneGeometry(5,2),
+		new THREE.MeshBasicMaterial({color: new THREE.Color().setHSL(327/360, 0.89, 0.28)})
+	);
+	purplePlane.position.set(0, -0.5, 0.2);
+	scene.add(purplePlane);
+
 	var lightSun = new THREE.DirectionalLight(0xffffff, 1.0);
 	lightSun.position.set(-0.5, 4, 1).normalize();
 	scene.add(lightSun);
-
-	var lightAmbient = new THREE.DirectionalLight(0xffffff, 0.25);
-	lightAmbient.position.copy(lightAmbient.position).negate();
-	scene.add(lightAmbient);
 
 	addResizeListener(camera, renderer);
 }
