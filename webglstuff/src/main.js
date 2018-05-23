@@ -46,7 +46,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	renderer = new THREE.WebGLRenderer({antialias: false});
 	renderer.gammaInput = true;
 	renderer.gammaOutput = true;
-	renderer.setClearColor(0xB0B0B0);
+	renderer.setClearColor(0x97eeff);
 	renderer.domElement.setAttribute('id', canvasId);
 	renderer.setSize(window.innerWidth, window.innerHeight, true);
 
@@ -57,7 +57,7 @@ const initAnimation = function(domNodeId, canvasId) {
 
 	const ratio = renderer.getContext().drawingBufferWidth / renderer.getContext().drawingBufferHeight;
 	
-	const cameraHeight = 0.4 ;
+	const cameraHeight = 0.4;
 	camera = new THREE.PerspectiveCamera(45, ratio, 0.1, 10000);
 	camera.position.set(0, cameraHeight, 2.55);
 	camera.updateProjectionMatrix();
