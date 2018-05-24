@@ -90,7 +90,7 @@ export default class People {
 class PeopleObject3D extends THREE.Object3D {
   constructor(textureCollection) {
     super();
-    
+
     this.nofTextures = textureCollection.nofTextures;
 
     const texture = textureCollection.getDefault();
@@ -103,16 +103,30 @@ class PeopleObject3D extends THREE.Object3D {
       });
 
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), material);
-      plane.texture = texture;
+      
+      const group = new THREE.Object3D();
+      group.add(plane);
 
       const nofXDir = 10;
       const nofYDir = 10;
 
-      plane.pathPosition = Math.floor(i / nofYDir)/nofYDir + Random.float(0, 0.05);
+      group.pathPosition = Math.floor(i / nofYDir)/nofYDir + Random.float(0, 0.05);
       const magic = Math.floor(i / nofYDir) % 2 == 0;
-      plane.pathDeviance = (i % nofXDir + (magic ? 0.5 : 0))/nofXDir ;
-      
-      this.add(plane);
+      group.pathDeviance = (i % nofXDir + (magic ? 0.5 : 0))/nofXDir ;
+
+    const materialFace = new THREE.MeshBasicMaterial({
+        transparent: true,
+        map: texture,
+        side: THREE.DoubleSide,
+      });
+
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialFace);
+      face.position.y += 0.25
+      face.position.z += 0.01;;
+      group.material = materialFace;
+      group.add(face)
+
+      this.add(group);
     }
   }
 
