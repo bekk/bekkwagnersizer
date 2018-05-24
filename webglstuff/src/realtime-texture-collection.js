@@ -12,7 +12,7 @@ class RealtimeTextureCollection {
     this.width = width;
     this.height = height;
 
-    this.nofTextures = nofTextures;
+    this._nofTextures = nofTextures;
 
     const texture = new THREE.TextureLoader().load("http://localhost:3000/People_karakterer_mai-03.png");
     //const texture = new THREE.TextureLoader().load("http://localhost:3000/tysseng-.png");
@@ -23,6 +23,10 @@ class RealtimeTextureCollection {
     //this.textures.push(texture);
 
     this.defaultTexture = texture;
+  }
+
+  get nofTextures() {
+      return this._nofTextures;
   }
 
   getDefault() {

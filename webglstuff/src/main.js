@@ -37,6 +37,7 @@ const addImage = function(fileName) {
 	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}.png`);
     //realtimeTextureCollection.updateImage(texture);
 	animations.people.updateImage(texture);
+	animations.manhattan.updateImage(texture);
 }
 
 const initAnimation = function(domNodeId, canvasId) {
@@ -66,7 +67,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.people = new People(renderer, realtimeTextureCollection);
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.people)
+	changeAnimation(animations.manhattan)
 
 	document.getElementById("manhattan").onclick = function() { 
 		changeAnimation(animations.manhattan);
