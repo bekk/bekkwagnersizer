@@ -2,9 +2,12 @@ import { ratio, Random, gridPosition2D } from './util.js';
 
 import fragmentShaderCode from './fragmentshader.glsl';
 import fragmentShaderCodeFrame from './fragmentshaderframe.glsl';
+import fragmentShaderCodeImage from './fragmentshaderimage.glsl';
 import vertexShaderCode from './vertexshader.glsl';
 
-const uniforms = {time: {value: 0}};
+const uniforms = {
+    time: {value: 0},
+};
 
 export default class Manhattan {
 
@@ -19,7 +22,7 @@ export default class Manhattan {
         this.skyscrapers = [];
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
-        this.orbitControls.target = new THREE.Vector3(0, cameraHeight, 0);
+        this.orbitControls.target = new THREE.Vector3(0, cameraHeight, -20);
         this.orbitControls.update();
 
         var lightManhattan = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -51,7 +54,7 @@ export default class Manhattan {
 
         const plane = this.manhattanObject3D.imagePlanes[index];
 
-        plane.material.map = image;
+        plane.uforms.map.value = image;
         //plane.material.map.anisotropy = Math.pow(2, 3);
         //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
         plane.material.needsUpdate = true;
@@ -77,14 +80,28 @@ function makeFloor(textureCollection, imagePlanes) {
 
     const texture = textureCollection.getDefault();
 
+    // TODO: DRY
     for (let i = 0; i < 5; i++) {
-      let imageMaterial = new THREE.MeshBasicMaterial({
+      /*let imageMaterial = new THREE.MeshBasicMaterial({
         transparent: true,
         map: texture,
         side: THREE.DoubleSide,
-      });
+      });*/
+
+        const imageUniforms = {
+            time: uniforms.time,
+            map: {type: "t", value: texture},
+        }
+
+        const imageMaterial = new THREE.ShaderMaterial({
+            uniforms: imageUniforms,
+            vertexShader: vertexShaderCode,
+            fragmentShader: fragmentShaderCodeImage,
+            transparent: true,
+        });
 
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), imageMaterial);
+      plane.uforms = imageUniforms;
       plane.texture = texture;
 
       const spread = 10;
@@ -103,13 +120,59 @@ function makeFloor(textureCollection, imagePlanes) {
     }
 
     for (let i = 0; i < 5; i++) {
-      let imageMaterial = new THREE.MeshBasicMaterial({
+      /*let imageMaterial = new THREE.MeshBasicMaterial({
         transparent: true,
         map: texture,
         side: THREE.DoubleSide,
-      });
+      });*/
 
-      const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), imageMaterial);
+              const imageUniforms = {
+            time: uniforms.time,
+            map: {type: "t", value: texture},
+        }
+
+        const imageMaterial = new THREE.ShaderMaterial({
+            uniforms: imageUniforms,
+            vertexShader: vertexShaderCode,
+            fragmentShader: fragmentShaderCodeImage,
+            transparent: true,
+            side: THREE.DoubleSide
+        });
+
+        const geometry = new THREE.PlaneGeometry(1,1);
+        geometry.vertices[0].set(0, 0.5, -0.5);
+        geometry.vertices[1].set(0, 0.5, 0.5);
+        geometry.vertices[2].set(0, -0.5, 0.5);
+        geometry.vertices[3].set(0, -0.5, -0.5);
+        geometry.faces[0].a = 1;
+        geometry.faces[0].b = 2;
+        geometry.faces[0].c = 0;
+        geometry.faces[1].a = 2;
+        geometry.faces[1].b = 3;
+        geometry.faces[1].c = 0;
+        geometry.verticesNeedUpdate = true;
+        geometry.uvsNeedUpdate = true;
+        geometry.computeFlatVertexNormals();
+        geometry.computeVertexNormals();
+
+    geometry.computeVertexNormals()
+    geometry.computeFaceNormals();
+    geometry.computeMorphNormals();
+    geometry.computeBoundingSphere();
+    geometry.computeBoundingBox();
+    
+    geometry.verticesNeedUpdate = true;
+    geometry.elementsNeedUpdate = true;
+    geometry.uvsNeedUpdate = true;
+    geometry.normalsNeedUpdate = true;
+    geometry.tangentsNeedUpdate = true;
+    geometry.colorsNeedUpdate = true;
+    geometry.lineDistancesNeedUpdate = true;
+    geometry.buffersNeedUpdate = true;
+    geometry.groupsNeedUpdate = true;
+
+      const plane = new THREE.Mesh(geometry, imageMaterial);
+      plane.uforms = imageUniforms;
       plane.texture = texture;
 
       const spread = 10;
@@ -165,11 +228,6 @@ class ManhattanObject3D extends THREE.Object3D {
   }
 
   updatePositions() {
-    const pathSpeed = 0.1;
-
-    for (let plane of this.children) {
-      if (plane.position.z > 10) plane.position.z = -10;
-      plane.position.z += pathSpeed;
-    }
+    
   }
 }
