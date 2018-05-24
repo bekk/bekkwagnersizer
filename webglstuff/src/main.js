@@ -4,8 +4,8 @@ import ioClient from 'socket.io-client';
 
 import Bird from "./bird.js";
 import { fetchTextureFromServer, Random, ratio } from './util.js';
-import Manhattan from './manhattan-scene.js';
-import People from './people-scene.js';
+import Manhattan from './manhattan.js';
+import People from './people.js';
 
 const socket = ioClient("http://localhost:3000");
 
