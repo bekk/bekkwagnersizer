@@ -3,12 +3,7 @@ import RealtimeTextureCollection from "./realtime-texture-collection.js";
 
 export default class People {
 
-    constructor(renderer) {
-        // 256 stykker på 1024^2 ser ut til å være en øvre grense for rendringen nå
-        // eller overkant av 1000 stykker på 512^2
-        const nofTextures = 100;
-        const textureWidth = 512;
-        const textureHeight = 512;
+    constructor(renderer, textureCollection) {
 
         const cameraHeight = 0.4;
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.1, 10000);
@@ -21,7 +16,7 @@ export default class People {
 
         this._scene = new THREE.Scene();
 
-        this.textureCollection = new RealtimeTextureCollection(nofTextures, textureWidth, textureHeight);
+        this.textureCollection = textureCollection;
         this._scene.add(this.textureCollection);
 
         const purplePlane = new THREE.Mesh(
@@ -52,9 +47,5 @@ export default class People {
         this.textureCollection.updatePositions();
 
         this.orbitControls.update();
-    }
-
-    addTexture(texture) {
-        this.textureCollection.updateImage(texture, this.textureCollection.getIndexInBack());
     }
 }

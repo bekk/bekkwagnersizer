@@ -2,7 +2,7 @@ import { ratio } from './util.js';
 
 export default class Manhattan {
 
-    constructor(renderer) {
+    constructor(renderer, textureCollection) {
 
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.1, 10000);
@@ -10,6 +10,8 @@ export default class Manhattan {
         //addResizeListener(this._camera, renderer);
 
         this.skyscrapers = [];
+
+        //this._scene.add(textureCollection);
 
         for (let i = 0; i < 10; i++) {
             const manhattanMesh = new THREE.Mesh(

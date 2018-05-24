@@ -98,7 +98,7 @@ class RealtimeTextureCollection extends THREE.Object3D {
   getPath(position, deviance) {
     const spreadX = 2;
     const spreadY = 1.35;
-    const skew = 0.25;
+    const skew = 0.30;
     const scaledPosition = (position*(1-skew) + skew)
     return new THREE.Vector3(
       normalize(deviance) * spreadX,
