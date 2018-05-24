@@ -14,12 +14,6 @@ import RealtimeTextureCollection from "./realtime-texture-collection.js";
 export default class People {
 
     constructor(renderer, textureCollection) {
-
-            // TODO: DRY
-            const nofTextures = 100;
-    const textureWidth = 512;
-    const textureHeight = 512;
-
         const cameraHeight = 0.4;
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.1, 10000);
         this._camera.position.set(0, cameraHeight, 2.55);
@@ -31,7 +25,7 @@ export default class People {
 
         this._scene = new THREE.Scene();
 
-        this.peopleObject3D = new PeopleObject3D(textureCollection, nofTextures);
+        this.peopleObject3D = new PeopleObject3D(textureCollection);
         this._scene.add(this.peopleObject3D);
 
         const purplePlane = new THREE.Mesh(
@@ -94,13 +88,10 @@ export default class People {
 }
 
 class PeopleObject3D extends THREE.Object3D {
-  constructor(textureCollection, nofTextures, width, height) {
+  constructor(textureCollection) {
     super();
-
-    this.width = width;
-    this.height = height;
-
-    this.nofTextures = nofTextures;
+    
+    this.nofTextures = textureCollection.nofTextures;
 
     const texture = textureCollection.getDefault();
 

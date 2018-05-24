@@ -9,14 +9,10 @@ export default class Manhattan {
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.1, 10000);
         this._camera.position.set(0, cameraHeight, 2.55);
         this._camera.updateProjectionMatrix();
-        
-        //addResizeListener(this._camera, renderer);
 
         this.skyscrapers = [];
 
-        //this._scene.add(textureCollection);
-
-                this.orbitControls = new THREE.OrbitControls(this._camera);
+        this.orbitControls = new THREE.OrbitControls(this._camera);
         this.orbitControls.target = new THREE.Vector3(0, cameraHeight, 0);
         this.orbitControls.update();
 
