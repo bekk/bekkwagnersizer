@@ -20,7 +20,7 @@ class RealtimeTextureCollection extends THREE.Object3D {
     const texture = new THREE.TextureLoader().load("http://localhost:3000/People_karakterer_mai-03.png");
     //const texture = new THREE.TextureLoader().load("http://localhost:3000/tysseng-.png");
     texture.magFilter = THREE.LinearFilter;
-    //texture.minFilter = THREE.LinearMipMapLinearFilter;
+    //{texture.minFilter = THREE.LinearMipMapLinearFilter;
     //texture.anisotropy = Math.pow(2, 3);
 
     for (let i = 0; i < this.nofTextures; i++) {
@@ -90,6 +90,10 @@ class RealtimeTextureCollection extends THREE.Object3D {
   }
 
   // TODO: Få opp folka bak raskere, pass på å ikke legg et nytt bilde ute på siden
+  // TODO: Lag en snakkeboble på de nye personene
+  // Lag Kings Cross statisk
+  // TODO: Klipp ut bare nakken og oppover
+  // -> malnummer-palettnummer-uuid.png
 
   getPath(position, deviance) {
     const spreadX = 2;

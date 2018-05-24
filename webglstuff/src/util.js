@@ -106,6 +106,11 @@ function fetchTextureFromServer(url, callback, errorCallback) {
   );
 }
 
+export const ratio = (renderer) => 
+  renderer.getContext().drawingBufferWidth / 
+  renderer.getContext().drawingBufferHeight;
+
+
 export const Random = {
     float: function(from, to) {
         return Math.random()*(to-from)+from;
@@ -117,6 +122,15 @@ export const Random = {
     bool: function(probability) {
         return Math.random() < probability;
     }
+}
+
+export const addResizeListener = function(camera, renderer) {
+  window.addEventListener('resize', function() {
+    var height = window.innerHeight;
+    renderer.setSize(window.innerWidth, height);
+    camera.aspect = window.innerWidth / height;
+    camera.updateProjectionMatrix();
+  });
 }
 
 export {
