@@ -1,9 +1,24 @@
-import { ratio, addResizeListener } from './util.js';
+import { createPlaneGeometry, 
+  createTexture, 
+  updateTexture, 
+  gridPosition3D, 
+  normalizedCoordinates, 
+  normalize,
+  Random,
+  ratio, 
+  addResizeListener 
+} from "./util.js";
+
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 
 export default class People {
 
     constructor(renderer, textureCollection) {
+
+            // TODO: DRY
+            const nofTextures = 100;
+    const textureWidth = 512;
+    const textureHeight = 512;
 
         const cameraHeight = 0.4;
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.1, 10000);
@@ -16,8 +31,8 @@ export default class People {
 
         this._scene = new THREE.Scene();
 
-        this.textureCollection = textureCollection;
-        this._scene.add(this.textureCollection);
+        this.peopleObject3D = new PeopleObject3D(textureCollection, nofTextures);
+        this._scene.add(this.peopleObject3D);
 
         const purplePlane = new THREE.Mesh(
             new THREE.PlaneGeometry(5,2),
@@ -44,8 +59,97 @@ export default class People {
     }
 
     animate() {
-        this.textureCollection.updatePositions();
+        this.peopleObject3D.updatePositions();
 
         this.orbitControls.update();
     }
+
+    getIndexInBack() {
+        const distanceIndeces = [];
+
+        for (let i in this.peopleObject3D.children) {
+          const child = this.peopleObject3D.children[i];
+          distanceIndeces.push({index: i, distance: child.position.z});
+        }
+
+        distanceIndeces.sort(function(a, b) {
+          return a.distance - b.distance;
+        });
+
+        return distanceIndeces[Random.int(0, 9)].index;
+    }
+
+    updateImage(image) {
+        console.log("Updating texture " + !!image);
+
+        const index = this.getIndexInBack()
+
+        const plane = this.peopleObject3D.children[index];
+
+        plane.material.map = image;
+        //plane.material.map.anisotropy = Math.pow(2, 3);
+        //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
+        plane.material.needsUpdate = true;
+    }
+}
+
+class PeopleObject3D extends THREE.Object3D {
+  constructor(textureCollection, nofTextures, width, height) {
+    super();
+
+    this.width = width;
+    this.height = height;
+
+    this.nofTextures = nofTextures;
+
+    const texture = textureCollection.getDefault();
+
+    for (let i = 0; i < this.nofTextures; i++) {
+      const material = new THREE.MeshBasicMaterial({
+        transparent: true,
+        map: texture,
+        side: THREE.DoubleSide,
+      });
+
+      const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), material);
+      plane.texture = texture;
+
+      const nofXDir = 10;
+      const nofYDir = 10;
+
+      plane.pathPosition = Math.floor(i / nofYDir)/nofYDir + Random.float(0, 0.05);
+      const magic = Math.floor(i / nofYDir) % 2 == 0;
+      plane.pathDeviance = (i % nofXDir + (magic ? 0.5 : 0))/nofXDir ;
+      
+      this.add(plane);
+    }
+  }
+
+  // TODO: Få opp folka bak raskere, pass på å ikke legg et nytt bilde ute på siden
+  // TODO: Lag en snakkeboble på de nye personene
+  // Lag Kings Cross statisk
+  // TODO: Klipp ut bare nakken og oppover
+  // -> malnummer-palettnummer-uuid.png
+
+  getPath(position, deviance) {
+    const spreadX = 2;
+    const spreadY = 1.35;
+    const skew = 0.30;
+    const scaledPosition = (position*(1-skew) + skew)
+    return new THREE.Vector3(
+      normalize(deviance) * spreadX,
+      normalize(Math.sin(scaledPosition * Math.PI)) * spreadY/2,
+      position + deviance*0.01,
+    );
+  }
+
+  updatePositions() {
+    const pathSpeed = 0.0005;
+
+    for (let plane of this.children) {
+      plane.pathPosition += pathSpeed;
+      if (plane.pathPosition >= 1) plane.pathPosition = 0;
+      plane.position.copy(this.getPath(plane.pathPosition, plane.pathDeviance));
+    }
+  }
 }

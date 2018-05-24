@@ -35,7 +35,8 @@ window.setInterval(() => {
 
 const addImage = function(fileName) {
 	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}.png`);
-    realtimeTextureCollection.updateImage(texture, realtimeTextureCollection.getIndexInBack());
+    //realtimeTextureCollection.updateImage(texture);
+	animations.people.updateImage(texture);
 }
 
 const initAnimation = function(domNodeId, canvasId) {
