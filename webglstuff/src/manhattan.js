@@ -15,26 +15,25 @@ export default class Manhattan {
         const cameraHeight = 0;
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.1, 10000);
-        this._camera.position.set(0, cameraHeight, 2.55);
+        this._camera.position.set(-3, cameraHeight, 2.55);
         this._camera.updateProjectionMatrix();
 
         this.skyscrapers = [];
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
-        this.orbitControls.target = new THREE.Vector3(0, cameraHeight, -20);
+        this.orbitControls.target = new THREE.Vector3(0, cameraHeight - 5, -20);
         this.orbitControls.update();
 
         var lightManhattan = new THREE.DirectionalLight(0xffffff, 1.0);
         lightManhattan.position.set(-0.5, 1, 1).normalize();
         this._scene.add(lightManhattan);
 
-        this.manhattanObject3D = new ManhattanObject3D(textureCollection);
-        this.manhattanObject3D.position.set(10, -10, -25)
-        this._scene.add(this.manhattanObject3D);
-
-        this.manhattanObject3D_2 = new ManhattanObject3D(textureCollection);
-        this.manhattanObject3D_2.position.set(10, -10, -75)
-        this._scene.add(this.manhattanObject3D_2);
+        for (let i = 0; i < 4; i++) {
+            const skyscraper = new ManhattanObject3D(textureCollection);
+            skyscraper.position.set(10, -10, -25 - i*35)
+            this._scene.add(skyscraper);
+            this.skyscrapers.push(skyscraper);
+        }
     }
 
     get scene() {
@@ -53,19 +52,15 @@ export default class Manhattan {
     updateImage(image) {
         console.log("Updating texture " + !!image);
 
-        const index = Random.int(0, this.manhattanObject3D.imagePlanes.length - 1)
-        
-        const plane = this.manhattanObject3D.imagePlanes[index];
-        plane.uforms.map.value = image;
-        //plane.material.map.anisotropy = Math.pow(2, 3);
-        //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
-        plane.material.needsUpdate = true;
+        const index = Random.int(0, this.skyscrapers[0].imagePlanes.length - 1);
 
-        const plane2 = this.manhattanObject3D_2.imagePlanes[index];
-        plane2.uforms.map.value = image;
-        //plane.material.map.anisotropy = Math.pow(2, 3);
-        //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
-        plane2.material.needsUpdate = true;
+        for (let skyscraper of this.skyscrapers) {
+            const plane = skyscraper.imagePlanes[index];
+            plane.uforms.map.value = image;
+            //plane.material.map.anisotropy = Math.pow(2, 3);
+            //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
+            plane.material.needsUpdate = true;
+        }
 
     }
 }
