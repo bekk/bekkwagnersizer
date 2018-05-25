@@ -136,6 +136,30 @@ export const addResizeListener = function(camera, renderer) {
   });
 }
 
+export const planeGeometry = function(direction, width, height) {
+  if (!width) width = 1;
+  if (!height) height = 1;
+
+  let geometry = new THREE.PlaneGeometry(width, height);
+
+  if (direction == 'XZ') {
+    geometry.vertices[0].set(0, 0.5, -0.5);
+    geometry.vertices[1].set(0, 0.5, 0.5);
+    geometry.vertices[2].set(0, -0.5, 0.5);
+    geometry.vertices[3].set(0, -0.5, -0.5);
+    geometry.faces[0].a = 1;
+    geometry.faces[0].b = 2;
+    geometry.faces[0].c = 0;
+    geometry.faces[1].a = 2;
+    geometry.faces[1].b = 3;
+    geometry.faces[1].c = 0;
+  } else {
+    throw "direction not implemented"
+  }
+
+  return geometry;
+}
+
 export {
   createPlaneGeometry,
   createTexture,

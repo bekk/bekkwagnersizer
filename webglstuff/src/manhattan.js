@@ -1,4 +1,4 @@
-import { ratio, Random, gridPosition2D } from './util.js';
+import { ratio, Random, gridPosition2D, planeGeometry } from './util.js';
 
 import fragmentShaderCode from './fragmentshader.glsl';
 import fragmentShaderCodeFrame from './fragmentshaderframe.glsl';
@@ -12,7 +12,6 @@ const uniforms = {
 export default class Manhattan {
 
     constructor(renderer, textureCollection) {
-
         const cameraHeight = 0;
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.1, 10000);
@@ -113,23 +112,23 @@ function makeFloor(textureCollection, deviance, imagePlanes) {
             transparent: true,
         });
 
-      const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), imageMaterial);
-      plane.uforms = imageUniforms;
-      plane.texture = texture;
+        const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), imageMaterial);
+        plane.uforms = imageUniforms;
+        plane.texture = texture;
 
-      const spread = 10;
+        const spread = 10;
 
-      plane.position.y = 0;
-      plane.position.x = (i - 5/2) / 5 * spread + 1;
-      plane.position.z = 5.1;
-      
-      floor.add(plane);
-      if (imagePlanes) imagePlanes.push(plane);
+        plane.position.y = 0;
+        plane.position.x = (i - 5/2) / 5 * spread + 1;
+        plane.position.z = 5.1;
 
-      const frame = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.1), shaderMaterialFrame);
-      frame.position.copy(plane.position);
-      frame.position.z -= 0.1;
-      floor.add(frame);
+        floor.add(plane);
+        if (imagePlanes) imagePlanes.push(plane);
+
+        const frame = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.1), shaderMaterialFrame);
+        frame.position.copy(plane.position);
+        frame.position.z -= 0.1;
+        floor.add(frame);
     }
 
     for (let i = 0; i < 5; i++) {
@@ -148,17 +147,7 @@ function makeFloor(textureCollection, deviance, imagePlanes) {
             side: THREE.DoubleSide
         });
 
-        const geometry = new THREE.PlaneGeometry(1,1);
-        geometry.vertices[0].set(0, 0.5, -0.5);
-        geometry.vertices[1].set(0, 0.5, 0.5);
-        geometry.vertices[2].set(0, -0.5, 0.5);
-        geometry.vertices[3].set(0, -0.5, -0.5);
-        geometry.faces[0].a = 1;
-        geometry.faces[0].b = 2;
-        geometry.faces[0].c = 0;
-        geometry.faces[1].a = 2;
-        geometry.faces[1].b = 3;
-        geometry.faces[1].c = 0;
+        const geometry = planeGeometry('XZ');
 
         const plane = new THREE.Mesh(geometry, imageMaterial);
         plane.uforms = imageUniforms;
