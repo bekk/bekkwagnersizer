@@ -133,11 +133,6 @@ function makeFloor(textureCollection, deviance, imagePlanes) {
     }
 
     for (let i = 0; i < 5; i++) {
-      /*let imageMaterial = new THREE.MeshBasicMaterial({
-        transparent: true,
-        map: texture,
-        side: THREE.DoubleSide,
-      });*/
 
         const imageUniforms = {
             time: uniforms.time,
@@ -164,46 +159,26 @@ function makeFloor(textureCollection, deviance, imagePlanes) {
         geometry.faces[1].a = 2;
         geometry.faces[1].b = 3;
         geometry.faces[1].c = 0;
-        geometry.verticesNeedUpdate = true;
-        geometry.uvsNeedUpdate = true;
-        geometry.computeFlatVertexNormals();
-        geometry.computeVertexNormals();
 
-    geometry.computeVertexNormals()
-    geometry.computeFaceNormals();
-    geometry.computeMorphNormals();
-    geometry.computeBoundingSphere();
-    geometry.computeBoundingBox();
-    
-    geometry.verticesNeedUpdate = true;
-    geometry.elementsNeedUpdate = true;
-    geometry.uvsNeedUpdate = true;
-    geometry.normalsNeedUpdate = true;
-    geometry.tangentsNeedUpdate = true;
-    geometry.colorsNeedUpdate = true;
-    geometry.lineDistancesNeedUpdate = true;
-    geometry.buffersNeedUpdate = true;
-    geometry.groupsNeedUpdate = true;
+        const plane = new THREE.Mesh(geometry, imageMaterial);
+        plane.uforms = imageUniforms;
+        plane.texture = texture;
 
-      const plane = new THREE.Mesh(geometry, imageMaterial);
-      plane.uforms = imageUniforms;
-      plane.texture = texture;
+        const spread = 10;
 
-      const spread = 10;
+        plane.position.y = 0;
+        plane.position.z = (i - 5/2) / 5 * spread + 1;
+        plane.position.x = -5.1;
 
-      plane.position.y = 0;
-      plane.position.z = (i - 5/2) / 5 * spread + 1;
-      plane.position.x = -5.1;
-      
-      floor.add(plane);
-      if (imagePlanes) imagePlanes.push(plane);
+        floor.add(plane);
+        if (imagePlanes) imagePlanes.push(plane);
 
 
 
-      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 1), shaderMaterialFrame);
-      frame.position.copy(plane.position);
-      frame.position.x -= -0.1;
-      floor.add(frame);
+        const frame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 1), shaderMaterialFrame);
+        frame.position.copy(plane.position);
+        frame.position.x -= -0.1;
+        floor.add(frame);
     }
 
     const walls = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 10), shaderMaterial);
