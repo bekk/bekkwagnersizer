@@ -32,7 +32,7 @@ export default class Manhattan {
         let flippy = 1;
         for (let i = 0; i < levels*2; i++) {
             const level = Math.floor(i/2);
-            const position = new THREE.Vector3(20 * flippy * THREE.Math.lerp(1, 0.2, level/levels), -10, -25 - level*15);
+            const position = new THREE.Vector3(15 * flippy * THREE.Math.lerp(1, 0.2, level/levels), -10, -25 - level*15);
             const nearCamera = Math.abs(position.z) < 75;
             const angleToCamera = Math.abs(position.z) < 50;  
             const skyscraper = new ManhattanObject3D(textureCollection, flippy, nearCamera, angleToCamera);
@@ -200,7 +200,7 @@ class ManhattanObject3D extends THREE.Object3D {
 
     for (let j = 0; j < 25; j++) {
         const floor = makeFloor(textureCollection, deviance);
-        floor.position.y = 21 + j * 2;
+        floor.position.y = 20.25 + j * 2;
         this.add(floor);
     }
 
@@ -212,7 +212,7 @@ class ManhattanObject3D extends THREE.Object3D {
 
     for (let j = 0; j < 70; j++) {
         const floor = makeFloor(textureCollection, deviance);
-        floor.position.y = -3 + -j * 2;
+        floor.position.y = -2.25 + -j * 2;
         this.add(floor);
     }
   }
