@@ -29,7 +29,9 @@ socket.on('new image', (fileName)  => {
 })
 
 window.setInterval(() => {
-	const fileName = 'People_karakterer_mai-' + Random.int(0, 1) + Random.int(1, 9);
+	//const fileName = 'People_karakterer_mai-' + Random.int(0, 1) + Random.int(1, 9);
+	const sex = Random.pick(["male", "female"]);
+	const fileName = 'head-'+sex+'-0' + Random.int(1, 2);
 	addImage(fileName);
 }, 1000);
 

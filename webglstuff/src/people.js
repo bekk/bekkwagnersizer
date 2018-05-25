@@ -93,12 +93,13 @@ class PeopleObject3D extends THREE.Object3D {
 
     this.nofTextures = textureCollection.nofTextures;
 
-    const texture = textureCollection.getDefault();
-
     for (let i = 0; i < this.nofTextures; i++) {
+
+        const textureBody = Random.pick(textureCollection.bodies.male.concat(textureCollection.bodies.female));
+
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: texture,
+        map: textureBody,
         side: THREE.DoubleSide,
       });
 
@@ -114,16 +115,19 @@ class PeopleObject3D extends THREE.Object3D {
       const magic = Math.floor(i / nofYDir) % 2 == 0;
       group.pathDeviance = (i % nofXDir + (magic ? 0.5 : 0))/nofXDir ;
 
-    const materialFace = new THREE.MeshBasicMaterial({
+
+      const textureHead = textureCollection.getDefault();
+
+      const materialHead = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: texture,
+        map: textureHead,
         side: THREE.DoubleSide,
       });
 
-      const face = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialFace);
-      face.position.y += 0.25
-      face.position.z += 0.01;;
-      group.material = materialFace;
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialHead);
+      face.position.y += 0.18
+      face.position.z += 0.03;
+      group.material = materialHead;
       group.add(face)
 
       this.add(group);

@@ -121,6 +121,9 @@ export const Random = {
     },
     bool: function(probability) {
         return Math.random() < probability;
+    },
+    pick: function(array) {
+        return array[this.int(0, array.length - 1)];
     }
 }
 

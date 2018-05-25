@@ -14,7 +14,7 @@ class RealtimeTextureCollection {
 
     this._nofTextures = nofTextures;
 
-    const texture = new THREE.TextureLoader().load("http://localhost:3000/People_karakterer_mai-03.png");
+    const texture = new THREE.TextureLoader().load("http://localhost:3000/head-male-01.png");
     //const texture = new THREE.TextureLoader().load("http://localhost:3000/tysseng-.png");
     texture.magFilter = THREE.LinearFilter;
     //{texture.minFilter = THREE.LinearMipMapLinearFilter;
@@ -22,11 +22,21 @@ class RealtimeTextureCollection {
     
     //this.textures.push(texture);
 
+    const loader = new THREE.TextureLoader();
+
+    this._bodies = {male: [], female: []};
+    this._bodies.male.push(loader.load("http://localhost:3000/body-male-01.png"));
+    this._bodies.male.push(loader.load("http://localhost:3000/body-male-02.png"));
+    this._bodies.female.push(loader.load("http://localhost:3000/body-female-01.png"));
     this.defaultTexture = texture;
   }
 
   get nofTextures() {
       return this._nofTextures;
+  }
+
+  get bodies() {
+    return this._bodies;
   }
 
   getDefault() {
