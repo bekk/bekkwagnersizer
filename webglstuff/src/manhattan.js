@@ -96,42 +96,7 @@ function makeFloor(textureCollection, deviance, imagePlanes) {
         transparent: false,
     }); 
 
-
-    // TODO: DRY
-    for (let i = 0; i < 5; i++) {
-        const imageUniforms = {
-            time: uniforms.time,
-            map: {type: "t", value: texture},
-            deviance: {value: deviance},
-        }
-
-        const imageMaterial = new THREE.ShaderMaterial({
-            uniforms: imageUniforms,
-            vertexShader: vertexShaderCode,
-            fragmentShader: fragmentShaderCodeImage,
-            transparent: true,
-        });
-
-        const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), imageMaterial);
-        plane.uforms = imageUniforms;
-        plane.texture = texture;
-
-        const spread = 10;
-
-        plane.position.y = 0;
-        plane.position.x = (i - 5/2) / 5 * spread + 1;
-        plane.position.z = 5.1;
-
-        floor.add(plane);
-        if (imagePlanes) imagePlanes.push(plane);
-
-        const frame = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.1), shaderMaterialFrame);
-        frame.position.copy(plane.position);
-        frame.position.z -= 0.1;
-        floor.add(frame);
-    }
-
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5*2; i++) {
 
         const imageUniforms = {
             time: uniforms.time,
@@ -147,7 +112,13 @@ function makeFloor(textureCollection, deviance, imagePlanes) {
             side: THREE.DoubleSide
         });
 
-        const geometry = planeGeometry('XZ');
+        let geometry;
+
+        if (i < 5) {
+          geometry = new THREE.PlaneGeometry(1,1);
+        } else {
+           geometry  = planeGeometry('XZ', 1, 1);
+        }
 
         const plane = new THREE.Mesh(geometry, imageMaterial);
         plane.uforms = imageUniforms;
@@ -155,23 +126,33 @@ function makeFloor(textureCollection, deviance, imagePlanes) {
 
         const spread = 10;
 
-        plane.position.y = 0;
-        plane.position.z = (i - 5/2) / 5 * spread + 1;
-        plane.position.x = -5.1;
-
         floor.add(plane);
         if (imagePlanes) imagePlanes.push(plane);
 
+        let frame; 
 
+        if (i < 5) {
+            frame = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.1), shaderMaterialFrame)
+            plane.position.y = 0;
+            plane.position.x = (i%5 - 5/2) / 5 * spread + 1;
+            plane.position.z = 5.1;
+        
+            frame.position.copy(plane.position);
+            frame.position.z -= 0.1;
+        } else {
+            frame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 1), shaderMaterialFrame);
+            plane.position.y = 0;
+            plane.position.z = (i%5 - 5/2) / 5 * spread + 1;
+            plane.position.x = -5.1;
+        
+            frame.position.copy(plane.position);
+            frame.position.x -= -0.1;
+        }
 
-        const frame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 1), shaderMaterialFrame);
-        frame.position.copy(plane.position);
-        frame.position.x -= -0.1;
         floor.add(frame);
     }
 
     const walls = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 10), shaderMaterial);
-    walls.position.y = 0;
 
     floor.add(walls);
 
