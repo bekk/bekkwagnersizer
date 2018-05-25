@@ -32,6 +32,10 @@ export default class Manhattan {
         this.manhattanObject3D = new ManhattanObject3D(textureCollection);
         this.manhattanObject3D.position.set(10, -10, -25)
         this._scene.add(this.manhattanObject3D);
+
+        this.manhattanObject3D_2 = new ManhattanObject3D(textureCollection);
+        this.manhattanObject3D_2.position.set(10, -10, -75)
+        this._scene.add(this.manhattanObject3D_2);
     }
 
     get scene() {
@@ -51,46 +55,55 @@ export default class Manhattan {
         console.log("Updating texture " + !!image);
 
         const index = Random.int(0, this.manhattanObject3D.imagePlanes.length - 1)
-
+        
         const plane = this.manhattanObject3D.imagePlanes[index];
-
         plane.uforms.map.value = image;
         //plane.material.map.anisotropy = Math.pow(2, 3);
         //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
         plane.material.needsUpdate = true;
+
+        const plane2 = this.manhattanObject3D_2.imagePlanes[index];
+        plane2.uforms.map.value = image;
+        //plane.material.map.anisotropy = Math.pow(2, 3);
+        //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
+        plane2.material.needsUpdate = true;
+
     }
 }
 
-const shaderMaterial = new THREE.ShaderMaterial({
-    uniforms: uniforms,
-    vertexShader: vertexShaderCode,
-    fragmentShader: fragmentShaderCode,
-    transparent: false,
-});
-
-const shaderMaterialFrame = new THREE.ShaderMaterial({
-    uniforms: uniforms,
-    vertexShader: vertexShaderCode,
-    fragmentShader: fragmentShaderCodeFrame,
-    transparent: false,
-});
-
-function makeFloor(textureCollection, imagePlanes) {
+function makeFloor(textureCollection, deviance, imagePlanes) {
     const floor = new THREE.Object3D();
 
     const texture = textureCollection.getDefault();
 
+    const uniformsFrame = {
+        time: uniforms.time,
+        deviance: {value: deviance},
+    }
+
+
+    // TODO: Reuse!
+    const shaderMaterial = new THREE.ShaderMaterial({
+        uniforms: uniformsFrame,
+        vertexShader: vertexShaderCode,
+        fragmentShader: fragmentShaderCode,
+        transparent: false,
+    });
+
+    const shaderMaterialFrame = new THREE.ShaderMaterial({
+        uniforms: uniformsFrame,
+        vertexShader: vertexShaderCode,
+        fragmentShader: fragmentShaderCodeFrame,
+        transparent: false,
+    }); 
+
+
     // TODO: DRY
     for (let i = 0; i < 5; i++) {
-      /*let imageMaterial = new THREE.MeshBasicMaterial({
-        transparent: true,
-        map: texture,
-        side: THREE.DoubleSide,
-      });*/
-
         const imageUniforms = {
             time: uniforms.time,
             map: {type: "t", value: texture},
+            deviance: {value: deviance},
         }
 
         const imageMaterial = new THREE.ShaderMaterial({
@@ -126,9 +139,10 @@ function makeFloor(textureCollection, imagePlanes) {
         side: THREE.DoubleSide,
       });*/
 
-              const imageUniforms = {
+        const imageUniforms = {
             time: uniforms.time,
             map: {type: "t", value: texture},
+            deviance: {value: deviance},
         }
 
         const imageMaterial = new THREE.ShaderMaterial({
@@ -184,6 +198,8 @@ function makeFloor(textureCollection, imagePlanes) {
       floor.add(plane);
       if (imagePlanes) imagePlanes.push(plane);
 
+
+
       const frame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 1), shaderMaterialFrame);
       frame.position.copy(plane.position);
       frame.position.x -= -0.1;
@@ -204,20 +220,22 @@ class ManhattanObject3D extends THREE.Object3D {
 
     this._imagePlanes = [];
 
+    const deviance = Random.float(0, 1);
+
     for (let j = 0; j < 30; j++) {
-        const floor = makeFloor(textureCollection);
+        const floor = makeFloor(textureCollection, deviance);
         floor.position.y = -3 + -j * 2;
         this.add(floor);
     }
 
     for (let j = 0; j < 10; j++) {
-        const floor = makeFloor(textureCollection, this._imagePlanes);
+        const floor = makeFloor(textureCollection, deviance, this._imagePlanes);
         floor.position.y = j * 2;
         this.add(floor);
     }
 
     for (let j = 0; j < 30; j++) {
-        const floor = makeFloor(textureCollection);
+        const floor = makeFloor(textureCollection, deviance);
         floor.position.y = 21 + j * 2;
         this.add(floor);
     }

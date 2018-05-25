@@ -81,7 +81,7 @@ export default class People {
         const plane = this.peopleObject3D.children[index];
 
         plane.material.map = image;
-        //plane.material.map.anisotropy = Math.pow(2, 3);
+        plane.material.map.anisotropy = Math.pow(2, 3);
         //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
         plane.material.needsUpdate = true;
     }

@@ -18,7 +18,7 @@ class RealtimeTextureCollection {
     //const texture = new THREE.TextureLoader().load("http://localhost:3000/tysseng-.png");
     texture.magFilter = THREE.LinearFilter;
     //{texture.minFilter = THREE.LinearMipMapLinearFilter;
-    //texture.anisotropy = Math.pow(2, 3);
+    texture.anisotropy = Math.pow(2, 3);
     
     //this.textures.push(texture);
 
