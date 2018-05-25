@@ -1,4 +1,4 @@
-import { ratio, Random, gridPosition2D, planeGeometry } from './util.js';
+import { ratio, Random, gridPosition2D, planeBufferGeometry } from './util.js';
 
 import fragmentShaderCode from './fragmentshader.glsl';
 import fragmentShaderCodeFrame from './fragmentshaderframe.glsl';
@@ -31,9 +31,12 @@ export default class Manhattan {
 
         let flippy = 1;
         for (let i = 0; i < levels*2; i++) {
-            const skyscraper = new ManhattanObject3D(textureCollection, flippy);
             const level = Math.floor(i/2);
-            skyscraper.position.set(20 * flippy * THREE.Math.lerp(1, 0.25, level/levels), -10, -25 - level*15)
+            const position = new THREE.Vector3(20 * flippy * THREE.Math.lerp(1, 0.2, level/levels), -10, -25 - level*15);
+            const nearCamera = Math.abs(position.z) < 75;
+            const angleToCamera = Math.abs(position.z) < 50;  
+            const skyscraper = new ManhattanObject3D(textureCollection, flippy, nearCamera, angleToCamera);
+            skyscraper.position.copy(position);
             this._scene.add(skyscraper);
             this.skyscrapers.push(skyscraper);
             flippy *= -1;
@@ -50,7 +53,7 @@ export default class Manhattan {
 
     animate() {
         this.orbitControls.update();
-        uniforms.time.value += 1/60;
+        uniforms.time.value += 1/20; // TODO: Measure time properly
     }
 
     updateImage(image) {
@@ -59,6 +62,7 @@ export default class Manhattan {
         const index = Random.int(0, this.skyscrapers[0].imagePlanes.length - 1);
 
         for (let skyscraper of this.skyscrapers) {
+            if (!skyscraper.imagePlanes[index]) continue;
             const plane = skyscraper.imagePlanes[index];
             plane.uforms.map.value = image;
             //plane.material.map.anisotropy = Math.pow(2, 3);
@@ -70,7 +74,7 @@ export default class Manhattan {
 }
 
 class ManhattanObject3D extends THREE.Object3D {
-  constructor(textureCollection, flippy) {
+  constructor(textureCollection, flippy, nearCamera, angleToCamera) {
     super();
 
     this._imagePlanes = [];
@@ -96,10 +100,12 @@ class ManhattanObject3D extends THREE.Object3D {
         transparent: false,
     }); 
 
-    const frameGeometry1 = new THREE.BoxGeometry(1, 1, 0.1);
-    const frameGeometry2 = new THREE.BoxGeometry(0.1, 1, 1);
-    const planeGeometry1 = new THREE.PlaneGeometry(1,1);
-    const planeGeometry2 = planeGeometry('XZ', 1, 1);
+    const frameGeometry1 = nearCamera ? 
+        new THREE.BoxBufferGeometry(1, 1, 0.1):
+        new THREE.PlaneBufferGeometry(1,1);
+    const frameGeometry2 = new THREE.BoxBufferGeometry(0.1, 1, 1);
+    const planeGeometry1 = new THREE.PlaneBufferGeometry(1,1);
+    const planeGeometry2 = planeBufferGeometry('XZ', 1, 1);
 
     const defaultTexture = textureCollection.getDefault();
 
@@ -117,7 +123,7 @@ class ManhattanObject3D extends THREE.Object3D {
         side: THREE.DoubleSide
     });
 
-    const wallGeometry = new THREE.BoxGeometry(10, 2, 10);
+    const wallGeometry = new THREE.BoxBufferGeometry(10, 2, 10);
 
     function makeFloor(textureCollection, deviance, imagePlanes) {
         const floor = new THREE.Object3D();
@@ -157,8 +163,10 @@ class ManhattanObject3D extends THREE.Object3D {
 
             const spread = 10;
 
-            floor.add(plane);
-            if (imagePlanes) imagePlanes.push(plane);
+            const includePlane = angleToCamera || (nearCamera && i < 5);
+
+            if (includePlane) floor.add(plane);
+            if (includePlane && imagePlanes) imagePlanes.push(plane);
 
             let frame; 
 
@@ -166,7 +174,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame = new THREE.Mesh(frameGeometry1, shaderMaterialFrame)
                 plane.position.y = 0;
                 plane.position.x = (i%5 - 5/2) / 5 * spread + 1;
-                plane.position.z = 5.1;
+                plane.position.z = 5.11;
             
                 frame.position.copy(plane.position);
                 frame.position.z -= 0.1;
@@ -174,7 +182,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame = new THREE.Mesh(frameGeometry2, shaderMaterialFrame);
                 plane.position.y = 0;
                 plane.position.z = (i%5 - 5/2) / 5 * spread + 1
-                plane.position.x = -5.1 * flippy;
+                plane.position.x = -5.11 * flippy;
             
                 frame.position.copy(plane.position);
                 frame.position.x -= -0.1 * flippy;
@@ -190,9 +198,9 @@ class ManhattanObject3D extends THREE.Object3D {
         return floor;
     }
 
-    for (let j = 0; j < 40; j++) {
+    for (let j = 0; j < 25; j++) {
         const floor = makeFloor(textureCollection, deviance);
-        floor.position.y = -3 + -j * 2;
+        floor.position.y = 21 + j * 2;
         this.add(floor);
     }
 
@@ -202,9 +210,9 @@ class ManhattanObject3D extends THREE.Object3D {
         this.add(floor);
     }
 
-    for (let j = 0; j < 20; j++) {
+    for (let j = 0; j < 70; j++) {
         const floor = makeFloor(textureCollection, deviance);
-        floor.position.y = 21 + j * 2;
+        floor.position.y = -3 + -j * 2;
         this.add(floor);
     }
   }

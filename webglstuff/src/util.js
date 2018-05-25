@@ -136,7 +136,8 @@ export const addResizeListener = function(camera, renderer) {
   });
 }
 
-export const planeGeometry = function(direction, width, height) {
+// TODO: Make it return BufferGeometry (must move attributes.position instead of vertices)
+export const planeBufferGeometry = function(direction, width, height) {
   if (!width) width = 1;
   if (!height) height = 1;
 
