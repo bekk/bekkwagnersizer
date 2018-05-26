@@ -101,11 +101,11 @@ class ManhattanObject3D extends THREE.Object3D {
     }); 
 
     const frameGeometry1 = nearCamera ? 
-        new THREE.BoxBufferGeometry(1, 1, 0.1):
-        new THREE.PlaneBufferGeometry(1,1);
-    const frameGeometry2 = new THREE.BoxBufferGeometry(0.1, 1, 1);
-    const planeGeometry1 = new THREE.PlaneBufferGeometry(1,1);
-    const planeGeometry2 = planeBufferGeometry('XZ', 1, 1);
+        new THREE.BoxBufferGeometry(1.5, 1.5, 0.1):
+        new THREE.PlaneBufferGeometry(1.5, 1.5);
+    const frameGeometry2 = new THREE.BoxBufferGeometry(0.1, 1.5, 1.5);
+    const planeGeometry1 = new THREE.PlaneBufferGeometry(1.5, 1.5);
+    const planeGeometry2 = planeBufferGeometry('XZ', 1.5, 1.5);
 
     const defaultTexture = textureCollection.getDefault();
 
@@ -123,12 +123,14 @@ class ManhattanObject3D extends THREE.Object3D {
         side: THREE.DoubleSide
     });
 
-    const wallGeometry = new THREE.BoxBufferGeometry(10, 2, 10);
+    const wallGeometry = new THREE.BoxBufferGeometry(10, 3, 10);
 
     function makeFloor(textureCollection, deviance, imagePlanes) {
         const floor = new THREE.Object3D();
 
-        for (let i = 0; i < 5*2; i++) {
+        const nofWindows = 4;
+
+        for (let i = 0; i < nofWindows*2; i++) {
 
             const imageUniforms = {
                 time: uniforms.time,
@@ -151,7 +153,7 @@ class ManhattanObject3D extends THREE.Object3D {
 
             let geometry;
 
-            if (i < 5) {
+            if (i < nofWindows) {
               geometry = planeGeometry1;
             } else {
                geometry  = planeGeometry2;
@@ -163,26 +165,26 @@ class ManhattanObject3D extends THREE.Object3D {
 
             const spread = 10;
 
-            const includePlane = angleToCamera || (nearCamera && i < 5);
+            const includePlane = angleToCamera || (nearCamera && i < nofWindows);
 
             if (includePlane) floor.add(plane);
             if (includePlane && imagePlanes) imagePlanes.push(plane);
 
             let frame; 
 
-            if (i < 5) {
+            if (i < nofWindows) {
                 frame = new THREE.Mesh(frameGeometry1, shaderMaterialFrame)
                 plane.position.y = 0;
-                plane.position.x = (i%5 - 5/2) / 5 * spread + 1;
-                plane.position.z = 5.11;
+                plane.position.x = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1;
+                plane.position.z = (5 + 0.11);
             
                 frame.position.copy(plane.position);
                 frame.position.z -= 0.1;
             } else {
                 frame = new THREE.Mesh(frameGeometry2, shaderMaterialFrame);
                 plane.position.y = 0;
-                plane.position.z = (i%5 - 5/2) / 5 * spread + 1
-                plane.position.x = -5.11 * flippy;
+                plane.position.z = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1
+                plane.position.x = (-5 - 0.11) * flippy;
             
                 frame.position.copy(plane.position);
                 frame.position.x -= -0.1 * flippy;
@@ -195,24 +197,42 @@ class ManhattanObject3D extends THREE.Object3D {
 
         floor.add(walls);
 
+        const line1 = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.1, 3), shaderMaterialFrame);
+        line1.position.set(-5, 0, -5);
+        floor.add(line1);
+
+        const line2 = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.1, 3), shaderMaterialFrame);
+        line2.position.set(5, 0, -5);
+        floor.add(line2);
+
+        const line3 = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.1, 3), shaderMaterialFrame);
+        line3.position.set(5, 0, 5);
+        floor.add(line3);
+
+        const line4 = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.1, 3), shaderMaterialFrame);
+        line4.position.set(-5, 0, 5);
+        floor.add(line4);
+
         return floor;
     }
 
-    for (let j = 0; j < 25; j++) {
+    const distribution = [20, 10, 50]
+
+    for (let j = 0; j < distribution[0]; j++) {
         const floor = makeFloor(textureCollection, deviance);
-        floor.position.y = 20.25 + j * 2;
+        floor.position.y = distribution[1]*3+1.5 + j * 3;
         this.add(floor);
     }
 
-    for (let j = 0; j < 10; j++) {
+    for (let j = 0; j < distribution[1]; j++) {
         const floor = makeFloor(textureCollection, deviance, this._imagePlanes);
-        floor.position.y = j * 2;
+        floor.position.y = j * 3;
         this.add(floor);
     }
 
-    for (let j = 0; j < 70; j++) {
+    for (let j = 0; j < distribution[2]; j++) {
         const floor = makeFloor(textureCollection, deviance);
-        floor.position.y = -2.25 + -j * 2;
+        floor.position.y = -4.25 + -j * 3;
         this.add(floor);
     }
   }
