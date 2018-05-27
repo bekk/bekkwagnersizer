@@ -138,16 +138,16 @@ export const addResizeListener = function(camera, renderer) {
 
 // TODO: Make it return BufferGeometry (must move attributes.position instead of vertices)
 export const planeBufferGeometry = function(direction, width, height) {
-  if (!width) width = 1;
-  if (!height) height = 1;
+  if (width == undefined) width = 1;
+  if (height == undefined) height = 1;
 
   let geometry = new THREE.PlaneGeometry(width, height);
 
   if (direction == 'XZ') {
-    geometry.vertices[0].set(0, 0.5, -0.5);
-    geometry.vertices[1].set(0, 0.5, 0.5);
-    geometry.vertices[2].set(0, -0.5, 0.5);
-    geometry.vertices[3].set(0, -0.5, -0.5);
+    geometry.vertices[0].set(0, width/2, -width/2);
+    geometry.vertices[1].set(0, width/2, width/2);
+    geometry.vertices[2].set(0, -height/2, height/2);
+    geometry.vertices[3].set(0, -height/2, -height/2);
     geometry.faces[0].a = 1;
     geometry.faces[0].b = 2;
     geometry.faces[0].c = 0;
