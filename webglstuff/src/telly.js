@@ -16,28 +16,29 @@ import RealtimeTextureCollection from "./realtime-texture-collection.js";
 export default class Telly {
 
     constructor(renderer, textureCollection) {
-        this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.1, 10000);
-        this._camera.position.set(0, 0, 2);
+        this._camera = new THREE.PerspectiveCamera(5, ratio(renderer), 0.1, 10000);
+        this._camera.position.set(0.25, 0.25, 20);
         this._camera.updateProjectionMatrix();
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
-        this.orbitControls.target = new THREE.Vector3(0, 0, 0);
+        this.orbitControls.target = this._camera.position.clone().sub(new THREE.Vector3(0, 0, this._camera.position.z));
         this.orbitControls.update();
 
         this._scene = new THREE.Scene();
 
-        this.foo = new TV(textureCollection, 1);
-        this._scene.add(this.foo);
+        this.TVs = [];
 
-        this.bar = new TV(textureCollection, 3);
-        this.bar.position.x += 0.3;
-        this.bar.position.z += 0.1;
-        this._scene.add(this.bar);
-
-        this.foobar = new TV(textureCollection, 5);
-        this.foobar.position.x += 0.3*2;
-        this.foobar.position.z += 0.1*2;
-        this._scene.add(this.foobar);
+        for (let x = 0; x < 4; x++) {
+          for (let y = 0; y < 3; y++) {
+            const i = this.TVs.length;
+            const tv = new TV(textureCollection, i * 2 + 1);
+            tv.position.x += 0.3*x;
+            tv.position.y += 0.3*y;
+            tv.position.z += 0.1*i;
+            this._scene.add(tv);
+            this.TVs.push(tv)
+          }
+        }
 
         var lightSun = new THREE.DirectionalLight(0xffffff, 1.0);
         lightSun.position.set(-0.5, 4, 1).normalize();
@@ -55,9 +56,9 @@ export default class Telly {
     }
 
     animate() {
-        this.foo.animate();
-        this.bar.animate();
-        this.foobar.animate();
+        for (let tv of this.TVs) {
+          tv.animate();
+        }
 
         this.orbitControls.update();
     }
@@ -76,7 +77,7 @@ class TV extends THREE.Object3D {
       new ZoomOut(textureCollection),
     ];
 
-    this.timeOffset = Random.float(0, 1);
+    this.timeOffset = Random.float(0, 2);
     this.timer = new Timer();
 
     for (let sketch of this.sketches) {
@@ -126,12 +127,14 @@ class TV extends THREE.Object3D {
       
       this.sketchIndex = (this.sketchIndex + 1) % this.sketches.length;
       
+      this.sketches[this.sketchIndex].visible = true;
       this.sketches[this.sketchIndex].rewind();
     }
 
     if (this.timeOffset != 0 && this.timer.get() > this.timeOffset) {
       sketch.rewind();
       this.timeOffset = 0;
+      console.log("rewinding TV");
     }
   }
 }
@@ -217,6 +220,7 @@ class SlideInFromSides extends THREE.Object3D {
 
   rewind() {
     this.timer.start();
+    this.animate();
   }
 }
 
@@ -285,5 +289,6 @@ class ZoomOut extends THREE.Object3D {
 
   rewind() {
     this.timer.start();
+    this.animate();
   }
 }
