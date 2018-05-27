@@ -82,6 +82,7 @@ class TV extends THREE.Object3D {
     this.sketches = [
       new SlideInFromSides(textureCollection),
       new ZoomOut(textureCollection),
+      new Skip(textureCollection),
     ];
 
     this.timeOffset = Random.float(0, 2);
@@ -251,7 +252,6 @@ class SlideInFromSides extends THREE.Object3D {
   }
 }
 
-
 class ZoomOut extends THREE.Object3D {
   constructor(textureCollection) {
     super();
@@ -310,6 +310,91 @@ class ZoomOut extends THREE.Object3D {
     const person1From = new THREE.Vector3(zoomFrom, zoomFrom, zoomFrom);
     const person1To = new THREE.Vector3(zoomTo, zoomTo, zoomTo);
     this.person1.scale.copy(person1From.clone().lerp(person1To, easedTime));
+  }
+
+  isDone() {
+    return this.timer.get() >= this.animationTime;
+  }
+
+  rewind() {
+    this.timer.start();
+    this.animate();
+  }
+
+  updateImage(image) {
+    const material = this.faceMaterial;
+    material.map = image;
+    material.map.anisotropy = Math.pow(2, 3);
+    //material.map.minFilter = THREE.LinearMipMapLinearFilter;
+    material.needsUpdate = true;
+  }
+}
+
+//TODO: A lot of DRY with all other sketches
+class Skip extends THREE.Object3D {
+  constructor(textureCollection) {
+    super();
+
+    this.timer = new Timer();
+
+    const textureHead = textureCollection.getDefault();
+
+    const materialHead = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: textureHead,
+      side: THREE.DoubleSide,
+    });
+
+    const textureBody1 = Random.pick(textureCollection.bodies.female);
+
+    const materialBody1 = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: textureBody1,
+      side: THREE.DoubleSide,
+    });
+
+    const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
+    face1.position.y += 0.1;
+    face1.position.z -= 0.01;
+    
+    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialBody1);
+
+    // To zoom out from face:
+    face1.position.y -= 0.1;
+    body1.position.y -= 0.1;
+
+    const person1 = new THREE.Object3D();
+    person1.add(face1);
+    person1.add(body1);
+
+    const group = new THREE.Object3D();
+    group.add(person1);
+
+    this.person1 = person1;
+
+    this.add(group);
+
+    this.faceMaterial = materialHead;
+
+    this.animationTime = 3;
+  }
+
+  animate() {
+    const time = Math.min(this.timer.get()/this.animationTime, 0.999);
+
+    const positions = [
+      new THREE.Vector3(1, -0.25, 0),
+      new THREE.Vector3(-1, -0.25, 0),
+      new THREE.Vector3(0, -0.3, 0),
+      new THREE.Vector3(1, -0.3, 0),
+      new THREE.Vector3(0.5, -0.35, 0),
+    ]
+    const zooms = [1, 1.5, 2, 2.5, 3]
+
+    const i = Math.floor(time * positions.length);
+
+    this.person1.position.copy(positions[i]).multiplyScalar(0.07);
+    this.person1.scale.copy(new THREE.Vector3(zooms[i], zooms[i], zooms[i]));
   }
 
   isDone() {
