@@ -16,8 +16,11 @@ import RealtimeTextureCollection from "./realtime-texture-collection.js";
 export default class Telly {
 
     constructor(renderer, textureCollection) {
-        this._camera = new THREE.PerspectiveCamera(5, ratio(renderer), 0.1, 10000);
-        this._camera.position.set(0.25, 0.25, 20);
+        const width = renderer.getContext().drawingBufferWidth;
+        const height = renderer.getContext().drawingBufferHeight;
+        const zoom = 1000;
+        this._camera = new THREE.OrthographicCamera(width / -zoom, width / zoom, height / zoom, height / -zoom, 0.1, 1000);
+        this._camera.position.set(1.0, 0.5, 20);
         this._camera.updateProjectionMatrix();
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
@@ -28,8 +31,8 @@ export default class Telly {
 
         this.TVs = [];
 
-        for (let x = 0; x < 4; x++) {
-          for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < 8; x++) {
+          for (let y = 0; y < 5; y++) {
             const i = this.TVs.length;
             const tv = new TV(textureCollection, i * 2 + 1);
             tv.position.x += 0.3*x;
