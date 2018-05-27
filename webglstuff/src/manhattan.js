@@ -27,14 +27,18 @@ export default class Manhattan {
         lightManhattan.position.set(-0.5, 1, 1).normalize();
         this._scene.add(lightManhattan);
 
-        const levels = 6;
+        const levels = 8;
 
         let flippy = 1;
         for (let i = 0; i < levels*2; i++) {
             const level = Math.floor(i/2);
-            const position = new THREE.Vector3(15 * flippy * THREE.Math.lerp(1, 0.2, level/levels), -10, -25 - level*15);
-            const nearCamera = Math.abs(position.z) < 75;
-            const angleToCamera = Math.abs(position.z) < 50;  
+            const position = new THREE.Vector3(
+                15 * flippy * THREE.Math.lerp(1, 0.2, level/levels), 
+                -10, 
+                -25 - level*15 + 2*flippy
+            );
+            const nearCamera = Math.abs(position.z) < 125;
+            const angleToCamera = Math.abs(position.z) < 75;  
             const skyscraper = new ManhattanObject3D(textureCollection, flippy, nearCamera, angleToCamera);
             skyscraper.position.copy(position);
             this._scene.add(skyscraper);
@@ -53,7 +57,7 @@ export default class Manhattan {
 
     animate() {
         this.orbitControls.update();
-        uniforms.time.value += 1/20; // TODO: Measure time properly
+        uniforms.time.value += 1/60; // TODO: Measure time properly
     }
 
     updateImage(image) {
@@ -100,10 +104,15 @@ class ManhattanObject3D extends THREE.Object3D {
         transparent: false,
     }); 
 
+    const allFramesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialFrame); // TODO: Initialize wihtout geometry?
+    const allWallsMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterial);
+    const allLinesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialFrame);
+
     const frameGeometry1 = nearCamera ? 
-        new THREE.BoxBufferGeometry(1.5, 1.5, 0.1):
-        new THREE.PlaneBufferGeometry(1.5, 1.5);
-    const frameGeometry2 = new THREE.BoxBufferGeometry(0.1, 1.5, 1.5);
+        new THREE.BoxGeometry(1.5, 1.5, 0.1):
+        new THREE.PlaneGeometry(1.5, 1.5);
+    const frameGeometry2 = new THREE.BoxGeometry(0.1, 1.5, 1.5);
+
     const planeGeometry1 = new THREE.PlaneBufferGeometry(1.5, 1.5);
     const planeGeometry2 = planeBufferGeometry('XZ', 1.5, 1.5);
 
@@ -123,9 +132,9 @@ class ManhattanObject3D extends THREE.Object3D {
         side: THREE.DoubleSide
     });
 
-    const wallGeometry = new THREE.BoxBufferGeometry(10, 3, 10);
+    const wallGeometry = new THREE.BoxGeometry(10, 3, 10);
 
-    function makeFloor(textureCollection, deviance, imagePlanes) {
+    function makeFloor(textureCollection, deviance, height, imagePlanes) {
         const floor = new THREE.Object3D();
 
         const nofWindows = 4;
@@ -190,51 +199,69 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame.position.x -= -0.1 * flippy;
             }
 
-            floor.add(frame);
+            frame.position.y = height;
+            allFramesMesh.geometry.mergeMesh(frame);
         }
 
         const walls = new THREE.Mesh(wallGeometry, shaderMaterial);
+        walls.position.y = height;
+        allWallsMesh.geometry.mergeMesh(walls);
 
-        floor.add(walls);
+        //floor.add(walls);
 
-        const line1 = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.1, 3), shaderMaterialFrame);
+        const line1 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame);
         line1.position.set(-5, 0, -5);
-        floor.add(line1);
+        //floor.add(line1);
+        line1.position.y = height;
+        allLinesMesh.geometry.mergeMesh(line1);
 
-        const line2 = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.1, 3), shaderMaterialFrame);
+        const line2 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame);
         line2.position.set(5, 0, -5);
-        floor.add(line2);
+        //floor.add(line2);
+        line2.position.y = height;
+        allLinesMesh.geometry.mergeMesh(line2);
 
-        const line3 = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.1, 3), shaderMaterialFrame);
+        const line3 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame);
         line3.position.set(5, 0, 5);
-        floor.add(line3);
+        //floor.add(line3);
+        line3.position.y = height;
+        allLinesMesh.geometry.mergeMesh(line3);
 
-        const line4 = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.1, 3), shaderMaterialFrame);
+        const line4 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame); // TODO: Try making all geometries buffergeometry
         line4.position.set(-5, 0, 5);
-        floor.add(line4);
+        //floor.add(line4);
+        line4.position.y = height;
+        allLinesMesh.geometry.mergeMesh(line4);
 
         return floor;
     }
 
-    const distribution = [20, 10, 50]
+    const distribution = [20, 10, 60]
 
     for (let j = 0; j < distribution[0]; j++) {
-        const floor = makeFloor(textureCollection, deviance);
-        floor.position.y = distribution[1]*3+1.5 + j * 3;
+        const height = distribution[1]*3 + 0.5 + j * 3;
+        const floor = makeFloor(textureCollection, deviance, height); // TODO: Separate out makeFrame (with one geometry)
+        floor.position.y = height;
         this.add(floor);
     }
 
     for (let j = 0; j < distribution[1]; j++) {
-        const floor = makeFloor(textureCollection, deviance, this._imagePlanes);
-        floor.position.y = j * 3;
+        const height = j * 3;
+        const floor = makeFloor(textureCollection, deviance, height, this._imagePlanes);
+        floor.position.y = height;
         this.add(floor);
     }
 
     for (let j = 0; j < distribution[2]; j++) {
-        const floor = makeFloor(textureCollection, deviance);
-        floor.position.y = -4.25 + -j * 3;
+        const height = -3 - 0.5 + -j * 3;
+        const floor = makeFloor(textureCollection, deviance, height);
+        floor.position.y = height;
         this.add(floor);
     }
+
+    this.add(allFramesMesh);
+    this.add(allWallsMesh);
+    this.add(allLinesMesh);
   }
 
   get imagePlanes() {
