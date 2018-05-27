@@ -161,6 +161,31 @@ export const planeBufferGeometry = function(direction, width, height) {
   return geometry;
 }
 
+export class Timer {
+    constructor() {
+        this.timeStartMillis = new Date().getTime();
+    }
+
+    start() {
+        this.timeStartMillis = new Date().getTime();
+    }
+
+    get() {
+        return (new Date().getTime() - this.timeStartMillis) / 1000;
+    }
+}
+
+
+export const easeOutCubic = function(t) {
+  t--;
+  return t*t*t + 1.0;
+}
+
+export const easeOutQuadratic = function(t) {
+  t--;
+  return 1-t*t;
+}
+
 export {
   createPlaneGeometry,
   createTexture,

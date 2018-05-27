@@ -6,6 +6,7 @@ import Bird from "./bird.js";
 import { fetchTextureFromServer, Random, ratio } from './util.js';
 import Manhattan from './manhattan.js';
 import People from './people.js';
+import Telly from './telly.js';
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 
 const socket = ioClient("http://localhost:3000");
@@ -68,14 +69,18 @@ const initAnimation = function(domNodeId, canvasId) {
 
 	animations.people = new People(renderer, realtimeTextureCollection);
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
+	animations.telly = new Telly(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.manhattan)
+	changeAnimation(animations.telly)
 
 	document.getElementById("manhattan").onclick = function() { 
 		changeAnimation(animations.manhattan);
 	};
 	document.getElementById("people").onclick = function() { 
 		changeAnimation(animations.people);
+	};
+	document.getElementById("telly").onclick = function() { 
+		changeAnimation(animations.telly);
 	};
 }
 
@@ -90,6 +95,7 @@ const animate = function() {
 
 	animations.people.animate();
 	animations.manhattan.animate();
+	animations.telly.animate();
 	
 	renderer.render(scene, camera);
 }
