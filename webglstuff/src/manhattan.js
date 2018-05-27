@@ -61,7 +61,7 @@ export default class Manhattan {
     }
 
     updateImage(image) {
-        console.log("Updating texture " + !!image);
+        console.log("Updating texture in Manhattan " + !!image);
 
         const index = Random.int(0, this.skyscrapers[0].imagePlanes.length - 1);
 

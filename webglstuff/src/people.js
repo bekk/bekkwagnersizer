@@ -74,7 +74,7 @@ export default class People {
     }
 
     updateImage(image) {
-        console.log("Updating texture " + !!image);
+        console.log("Updating texture in People " + !!image);
 
         const index = this.getIndexInBack()
 

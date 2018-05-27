@@ -64,7 +64,11 @@ export default class Telly {
     }
 
     updateImage(image) {
-        console.log("Updating texture " + !!image);
+        console.log("Updating texture in Telly " + !!image);
+
+        const tv = Random.pick(this.TVs);
+
+        tv.updateImage(image);
     }
 }
 
@@ -115,6 +119,10 @@ class TV extends THREE.Object3D {
     this.sketchIndex = Random.int(0, this.sketches.length - 1);
   }
 
+  updateImage(image) {
+    const sketch = Random.pick(this.sketches);
+    sketch.updateImage(image);
+  }
 
   animate() {
     const sketch = this.sketches[this.sketchIndex];
@@ -147,7 +155,13 @@ class SlideInFromSides extends THREE.Object3D {
 
     const textureHead = textureCollection.getDefault();
 
-    const materialHead = new THREE.MeshBasicMaterial({
+    const materialHead1 = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: textureHead,
+      side: THREE.DoubleSide,
+    });
+
+    const materialHead2 = new THREE.MeshBasicMaterial({
       transparent: true,
       map: textureHead,
       side: THREE.DoubleSide,
@@ -169,7 +183,7 @@ class SlideInFromSides extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
+    const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead1);
     face1.position.y += 0.1;
     face1.position.z -= 0.01;
     const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialBody1);
@@ -178,7 +192,7 @@ class SlideInFromSides extends THREE.Object3D {
     person1.add(body1);
     person1.position.y -= 0.1;
 
-    const face2 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
+    const face2 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead2);
     face2.position.y += 0.1;
     face2.position.z -= 0.01;
     const body2 = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialBody2);
@@ -198,7 +212,9 @@ class SlideInFromSides extends THREE.Object3D {
 
     this.add(group);
 
-    this.animationTime = 2;
+    this.animationTime = 3;
+
+    this.faceMaterials = [materialHead1, materialHead2];
   }
 
   animate() {
@@ -221,6 +237,14 @@ class SlideInFromSides extends THREE.Object3D {
   rewind() {
     this.timer.start();
     this.animate();
+  }
+
+  updateImage(image) {
+    const material = Random.pick(this.faceMaterials);
+    material.map = image;
+    material.map.anisotropy = Math.pow(2, 3);
+    //material.map.minFilter = THREE.LinearMipMapLinearFilter;
+    material.needsUpdate = true;
   }
 }
 
@@ -268,7 +292,9 @@ class ZoomOut extends THREE.Object3D {
 
     this.add(group);
 
-    this.animationTime = 2;
+    this.faceMaterial = materialHead;
+
+    this.animationTime = 3;
   }
 
   animate() {
@@ -290,5 +316,13 @@ class ZoomOut extends THREE.Object3D {
   rewind() {
     this.timer.start();
     this.animate();
+  }
+
+  updateImage(image) {
+    const material = this.faceMaterial;
+    material.map = image;
+    material.map.anisotropy = Math.pow(2, 3);
+    //material.map.minFilter = THREE.LinearMipMapLinearFilter;
+    material.needsUpdate = true;
   }
 }

@@ -41,6 +41,7 @@ const addImage = function(fileName) {
     //realtimeTextureCollection.updateImage(texture);
 	animations.people.updateImage(texture);
 	animations.manhattan.updateImage(texture);
+	animations.telly.updateImage(texture);
 }
 
 const initAnimation = function(domNodeId, canvasId) {
