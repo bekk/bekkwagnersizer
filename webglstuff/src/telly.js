@@ -18,9 +18,9 @@ export default class Telly {
     constructor(renderer, textureCollection) {
         const width = renderer.getContext().drawingBufferWidth;
         const height = renderer.getContext().drawingBufferHeight;
-        const zoom = 1000;
+        const zoom = 1800;
         this._camera = new THREE.OrthographicCamera(width / -zoom, width / zoom, height / zoom, height / -zoom, 0.1, 1000);
-        this._camera.position.set(1.0, 0.5, 20);
+        this._camera.position.set(1.0, 0.37, 20);
         this._camera.updateProjectionMatrix();
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
@@ -32,15 +32,26 @@ export default class Telly {
         this.TVs = [];
 
         for (let x = 0; x < 8; x++) {
-          for (let y = 0; y < 5; y++) {
+          for (let y = 0; y < 4; y++) {
             const i = this.TVs.length;
             const tv = new TV(textureCollection, i * 2 + 1);
-            tv.position.x += 0.3*x;
-            tv.position.y += 0.3*y;
+            tv.position.x += 0.25*x;
+            tv.position.y += 0.25*y;
             tv.position.z += 0.1*i;
             this._scene.add(tv);
             this.TVs.push(tv)
           }
+        }
+
+        const gridMaterial = new THREE.MeshBasicMaterial({
+          map: new THREE.TextureLoader().load("http://localhost:3000/grid.png"),
+          transparent: true,
+        });
+        for (let i = 0; i < 4; i++) {
+          const grid = new THREE.Mesh(new THREE.PlaneGeometry(0.51, 1.01), gridMaterial)
+          grid.position.set(0.125 + 1.0/2*i, 0.37, 4)
+          grid.renderOrder = 1000;
+          this._scene.add(grid);
         }
 
         var lightSun = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -297,7 +308,7 @@ class ZoomOut extends THREE.Object3D {
 
     this.faceMaterial = materialHead;
 
-    this.animationTime = 3;
+    this.animationTime = Random.int(3, 8);
   }
 
   animate() {
@@ -376,7 +387,7 @@ class Skip extends THREE.Object3D {
 
     this.faceMaterial = materialHead;
 
-    this.animationTime = 3;
+    this.animationTime = Random.int(3, 10);
   }
 
   animate() {
