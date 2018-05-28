@@ -43,6 +43,8 @@ export default class Telly {
           }
         }
 
+        // TODO: La folka stå litt i ro etter animasjonen
+
         const gridMaterial = new THREE.MeshBasicMaterial({
           map: new THREE.TextureLoader().load("http://localhost:3000/grid.png"),
           transparent: true,

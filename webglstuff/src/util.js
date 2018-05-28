@@ -186,6 +186,24 @@ export const easeOutQuadratic = function(t) {
   return 1-t*t;
 }
 
+export const computeGeometry = function(geometry) {
+  geometry.verticesNeedUpdate = true;
+  geometry.elementsNeedUpdate = true;
+  geometry.uvsNeedUpdate = true;
+  geometry.normalsNeedUpdate = true;
+  geometry.tangentsNeedUpdate = true;
+  geometry.colorsNeedUpdate = true;
+  geometry.lineDistancesNeedUpdate = true;
+  geometry.buffersNeedUpdate = true;
+  geometry.groupsNeedUpdate = true;
+
+  geometry.computeVertexNormals()
+  geometry.computeFaceNormals();
+  geometry.computeMorphNormals();
+  geometry.computeBoundingSphere();
+  geometry.computeBoundingBox();
+}
+
 export {
   createPlaneGeometry,
   createTexture,

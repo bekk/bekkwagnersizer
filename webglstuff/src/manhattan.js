@@ -1,4 +1,4 @@
-import { ratio, Random, gridPosition2D, planeBufferGeometry } from './util.js';
+import { ratio, Random, gridPosition2D, planeBufferGeometry, computeGeometry } from './util.js';
 
 import fragmentShaderCode from './fragmentshader.glsl';
 import fragmentShaderCodeFrame from './fragmentshaderframe.glsl';
@@ -14,7 +14,7 @@ export default class Manhattan {
     constructor(renderer, textureCollection) {
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(90, ratio(renderer), 0.1, 10000);
-        this._camera.position.set(0, 3, -15);
+        this._camera.position.set(0, 6, -15);
         this._camera.updateProjectionMatrix();
 
         this.skyscrapers = [];
@@ -88,6 +88,13 @@ class ManhattanObject3D extends THREE.Object3D {
     const uniformsFrame = {
         time: uniforms.time,
         deviance: {value: deviance},
+        color: {value: new THREE.Vector3(1.0, deviance*0.5+0.3, deviance*0.5+0.3).multiplyScalar(0.85)},
+    }
+
+    const uniformsLine = {
+        time: uniforms.time,
+        deviance: {value: deviance},
+        color: {value: new THREE.Vector3(1.0, deviance*0.5+0.3, deviance*0.5+0.3).multiplyScalar(0.5)},
     }
 
     const shaderMaterial = new THREE.ShaderMaterial({
@@ -104,9 +111,16 @@ class ManhattanObject3D extends THREE.Object3D {
         transparent: false,
     }); 
 
+    const shaderMaterialLine = new THREE.ShaderMaterial({
+        uniforms: uniformsLine,
+        vertexShader: vertexShaderCode,
+        fragmentShader: fragmentShaderCodeFrame,
+        transparent: false,
+    }); 
+
     const allFramesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialFrame); // TODO: Initialize wihtout geometry?
     const allWallsMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterial);
-    const allLinesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialFrame);
+    const allLinesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialLine);
 
     const frameGeometry1 = nearCamera ? 
         new THREE.BoxGeometry(1.5, 1.5, 0.1):
@@ -129,7 +143,6 @@ class ManhattanObject3D extends THREE.Object3D {
         vertexShader: vertexShaderCode,
         fragmentShader: fragmentShaderCodeImage,
         transparent: true,
-        side: THREE.DoubleSide
     });
 
     const shouldersImageUniforms = {
@@ -143,10 +156,13 @@ class ManhattanObject3D extends THREE.Object3D {
         vertexShader: vertexShaderCode,
         fragmentShader: fragmentShaderCodeImage,
         transparent: true,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
     });
 
     const wallGeometry = new THREE.BoxGeometry(10, 3, 10);
+    delete wallGeometry.faces.splice(4, 4);
+    delete wallGeometry.faces.splice(6, 2);
+    computeGeometry(wallGeometry);
 
     function makeFloor(textureCollection, deviance, height, imagePlanes) {
         const floor = new THREE.Object3D();
@@ -168,7 +184,7 @@ class ManhattanObject3D extends THREE.Object3D {
                     vertexShader: vertexShaderCode,
                     fragmentShader: fragmentShaderCodeImage,
                     transparent: true,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
                 });
             } else {
                 imageMaterial = defaultImageMaterial;
@@ -199,7 +215,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame = new THREE.Mesh(frameGeometry1, shaderMaterialFrame)
                 plane.position.y = 0;
                 plane.position.x = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1;
-                plane.position.z = (5 + 0.11);
+                plane.position.z = (5 + 0.075);
             
                 frame.position.copy(plane.position);
                 frame.position.z -= 0.1;
@@ -207,7 +223,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame = new THREE.Mesh(frameGeometry2, shaderMaterialFrame);
                 plane.position.y = 0;
                 plane.position.z = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1
-                plane.position.x = (-5 - 0.11) * flippy;
+                plane.position.x = (-5 - 0.075) * flippy;
             
                 frame.position.copy(plane.position);
                 frame.position.x -= -0.1 * flippy;
@@ -230,23 +246,23 @@ class ManhattanObject3D extends THREE.Object3D {
 
         //floor.add(walls);
 
-        const line1 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame);
-        line1.position.set(-5, 0, -5);
+        const line1 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialLine);
+        line1.position.set(-5.02, 0, -5.02);
         line1.position.y = height;
         allLinesMesh.geometry.mergeMesh(line1);
 
-        const line2 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame);
-        line2.position.set(5, 0, -5);
+        const line2 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialLine);
+        line2.position.set(5.02, 0, -5.02);
         line2.position.y = height;
         allLinesMesh.geometry.mergeMesh(line2);
 
-        const line3 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame);
-        line3.position.set(5, 0, 5);
+        const line3 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialLine);
+        line3.position.set(5.02, 0, 5.02);
         line3.position.y = height;
         allLinesMesh.geometry.mergeMesh(line3);
 
-        const line4 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame); // TODO: Try making all geometries buffergeometry
-        line4.position.set(-5, 0, 5);
+        const line4 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialLine); // TODO: Try making all geometries buffergeometry
+        line4.position.set(-5.02, 0, 5.02);
         line4.position.y = height;
         allLinesMesh.geometry.mergeMesh(line4);
 
@@ -256,7 +272,7 @@ class ManhattanObject3D extends THREE.Object3D {
     const distribution = [20, 10, 60]
 
     for (let j = 0; j < distribution[0]; j++) {
-        const height = distribution[1]*3 + 0.5 + j * 3;
+        const height = distribution[1]*3 + 0.1 + j * 3;
         const floor = makeFloor(textureCollection, deviance, height); // TODO: Separate out makeFrame (with one geometry)
         floor.position.y = height;
         this.add(floor);
@@ -270,7 +286,7 @@ class ManhattanObject3D extends THREE.Object3D {
     }
 
     for (let j = 0; j < distribution[2]; j++) {
-        const height = -3 - 0.5 + -j * 3;
+        const height = -3 - 0.1 + -j * 3;
         const floor = makeFloor(textureCollection, deviance, height);
         floor.position.y = height;
         this.add(floor);
