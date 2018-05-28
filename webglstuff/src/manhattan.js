@@ -83,22 +83,40 @@ class ManhattanObject3D extends THREE.Object3D {
 
     this._imagePlanes = [];
 
+    const wallPalette = [
+        new THREE.Color(0xe423bc),
+        new THREE.Color(0xfffe47),
+        new THREE.Color(0xf9d1ae),
+        new THREE.Color(0x02e8ff),
+        new THREE.Color(0x05d17c),
+        new THREE.Color(0xefefef),
+    ];
+
+    for (let color of wallPalette) color.addScalar(0.1)
+
     const deviance = Random.float(0, 1);
+
+    const uniformsWalls = {
+        time: uniforms.time,
+        deviance: {value: deviance},
+        color: {value: Random.pick(wallPalette)},
+    }
 
     const uniformsFrame = {
         time: uniforms.time,
         deviance: {value: deviance},
-        color: {value: new THREE.Vector3(1.0, deviance*0.5+0.3, deviance*0.5+0.3).multiplyScalar(0.85)},
+        //color: {value: new THREE.Color(0x5600eb)},
+        color: {value: uniformsWalls.color.value.clone().multiplyScalar(0.8)},
     }
 
     const uniformsLine = {
         time: uniforms.time,
         deviance: {value: deviance},
-        color: {value: new THREE.Vector3(1.0, deviance*0.5+0.3, deviance*0.5+0.3).multiplyScalar(0.5)},
+        color: {value: new THREE.Vector3(1, 1, 1).multiplyScalar(0.35)},
     }
 
     const shaderMaterial = new THREE.ShaderMaterial({
-        uniforms: uniformsFrame,
+        uniforms: uniformsWalls,
         vertexShader: vertexShaderCode,
         fragmentShader: fragmentShaderCode,
         transparent: false,
