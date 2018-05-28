@@ -37,7 +37,7 @@ export default class Manhattan {
                 -10, 
                 -25 - level*15 + 2*flippy
             );
-            const nearCamera = Math.abs(position.z) < 125;
+            const nearCamera = Math.abs(position.z) < 100;
             const angleToCamera = Math.abs(position.z) < 75;  
             const skyscraper = new ManhattanObject3D(textureCollection, flippy, nearCamera, angleToCamera);
             skyscraper.position.copy(position);
@@ -69,7 +69,7 @@ export default class Manhattan {
             if (!skyscraper.imagePlanes[index]) continue;
             const plane = skyscraper.imagePlanes[index];
             plane.uforms.map.value = image;
-            //plane.material.map.anisotropy = Math.pow(2, 3);
+            plane.uforms.map.map.anisotropy = Math.pow(2, 3);
             plane.uforms.map.minFilter = THREE.LinearMipMapLinearFilter;
             plane.material.needsUpdate = true;
         }
@@ -149,6 +149,7 @@ class ManhattanObject3D extends THREE.Object3D {
     const planeGeometry2 = planeBufferGeometry('XZ', 1.5, 1.5);
 
     const defaultTexture = textureCollection.getBald();
+    defaultTexture.anisotropy = Math.pow(2, 3);
 
     const defaultImageUniforms = {
         time: uniforms.time,
@@ -232,16 +233,16 @@ class ManhattanObject3D extends THREE.Object3D {
             if (i < nofWindows) {
                 frame = new THREE.Mesh(frameGeometry1, shaderMaterialFrame)
                 plane.position.y = 0;
-                plane.position.x = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1;
-                plane.position.z = (5 + 0.075);
+                plane.position.x = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25;
+                plane.position.z = (5 + 0.2);
             
                 frame.position.copy(plane.position);
                 frame.position.z -= 0.1;
             } else {
                 frame = new THREE.Mesh(frameGeometry2, shaderMaterialFrame);
                 plane.position.y = 0;
-                plane.position.z = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1
-                plane.position.x = (-5 - 0.075) * flippy;
+                plane.position.z = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25
+                plane.position.x = (-5 - 0.2) * flippy;
             
                 frame.position.copy(plane.position);
                 frame.position.x -= -0.1 * flippy;
@@ -249,7 +250,7 @@ class ManhattanObject3D extends THREE.Object3D {
 
             const shoulders = plane.clone();
             shoulders.scale.y = 0.3;
-            if (i < nofWindows) shoulders.position.z -= 0.02; else shoulders.position.x += 0.02*flippy
+            if (i < nofWindows) shoulders.position.z -= 0.025; else shoulders.position.x += 0.025*flippy
             shoulders.position.y -= 0.4;
             shoulders.material = shouldersImageMaterial;
             if (includePlane) floor.add(shoulders)
@@ -289,8 +290,11 @@ class ManhattanObject3D extends THREE.Object3D {
 
     const distribution = [20, 10, 60]
 
+    //const debugLine = 0.1;
+    const debugLine = 0;
+
     for (let j = 0; j < distribution[0]; j++) {
-        const height = distribution[1]*3 + 0.1 + j * 3;
+        const height = distribution[1]*3 + debugLine + j * 3;
         const floor = makeFloor(textureCollection, deviance, height); // TODO: Separate out makeFrame (with one geometry)
         floor.position.y = height;
         this.add(floor);
@@ -304,7 +308,7 @@ class ManhattanObject3D extends THREE.Object3D {
     }
 
     for (let j = 0; j < distribution[2]; j++) {
-        const height = -3 - 0.1 + -j * 3;
+        const height = -3 - debugLine + -j * 3;
         const floor = makeFloor(textureCollection, deviance, height);
         floor.position.y = height;
         this.add(floor);
