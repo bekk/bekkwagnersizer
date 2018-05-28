@@ -230,6 +230,7 @@ class SlideInFromSides extends THREE.Object3D {
     this.add(group);
 
     this.animationTime = 3;
+    this.hangTime = 3;
 
     this.faceMaterials = [materialHead1, materialHead2];
   }
@@ -248,7 +249,7 @@ class SlideInFromSides extends THREE.Object3D {
   }
 
   isDone() {
-    return this.timer.get() >= this.animationTime;
+    return this.timer.get() >= this.animationTime + this.hangTime;
   }
 
   rewind() {
