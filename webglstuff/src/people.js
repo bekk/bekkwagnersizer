@@ -37,6 +37,15 @@ export default class People {
         purplePlane.position.set(0, -0.5, 0.2);
         this._scene.add(purplePlane);
 
+        const bluePlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(5,2),
+            new THREE.MeshBasicMaterial({
+                color: new THREE.Color(0x97eeff)
+            })
+        );
+        bluePlane.position.set(0, 1.5, 0);
+        this._scene.add(bluePlane);
+
         var lightSun = new THREE.DirectionalLight(0xffffff, 1.0);
         lightSun.position.set(-0.5, 4, 1).normalize();
         this._scene.add(lightSun);

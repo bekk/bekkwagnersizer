@@ -50,7 +50,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	renderer = new THREE.WebGLRenderer({antialias: true});
 	renderer.gammaInput = false;
 	renderer.gammaOutput = false;
-	renderer.setClearColor(0x97eeff);
+	renderer.setClearColor(0x000000);
 	renderer.domElement.setAttribute('id', canvasId);
 	renderer.setSize(window.innerWidth, window.innerHeight, true);
 
