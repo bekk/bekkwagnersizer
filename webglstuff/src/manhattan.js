@@ -69,7 +69,7 @@ export default class Manhattan {
             if (!skyscraper.imagePlanes[index]) continue;
             const plane = skyscraper.imagePlanes[index];
             plane.uforms.map.value = image;
-            plane.uforms.map.map.anisotropy = Math.pow(2, 3);
+            plane.uforms.map.anisotropy = Math.pow(2, 3);
             plane.uforms.map.minFilter = THREE.LinearMipMapLinearFilter;
             plane.material.needsUpdate = true;
         }
@@ -112,7 +112,7 @@ class ManhattanObject3D extends THREE.Object3D {
     const uniformsLine = {
         time: uniforms.time,
         deviance: {value: deviance},
-        color: {value: new THREE.Vector3(1, 1, 1).multiplyScalar(0.35)},
+        color: {value: uniformsWalls.color.value.clone().multiplyScalar(0.4)},
     }
 
     const shaderMaterial = new THREE.ShaderMaterial({
@@ -127,6 +127,7 @@ class ManhattanObject3D extends THREE.Object3D {
         vertexShader: vertexShaderCode,
         fragmentShader: fragmentShaderCodeFrame,
         transparent: false,
+        side: THREE.DoubleSide,
     }); 
 
     const shaderMaterialLine = new THREE.ShaderMaterial({
@@ -134,16 +135,28 @@ class ManhattanObject3D extends THREE.Object3D {
         vertexShader: vertexShaderCode,
         fragmentShader: fragmentShaderCodeFrame,
         transparent: false,
+        side: THREE.DoubleSide,
     }); 
 
-    const allFramesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialFrame); // TODO: Initialize wihtout geometry?
+    const allFramesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialLine); // TODO: Initialize wihtout geometry?
+    const allFrameBacksMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialFrame);
     const allWallsMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterial);
     const allLinesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialLine);
 
-    const frameGeometry1 = nearCamera ? 
-        new THREE.BoxGeometry(1.5, 1.5, 0.1):
-        new THREE.PlaneGeometry(1.5, 1.5);
-    const frameGeometry2 = new THREE.BoxGeometry(0.1, 1.5, 1.5);
+    const framebox1 = new THREE.BoxGeometry(1.5, 1.5, 0.1);
+    delete framebox1.faces.splice(8, 2);
+    delete framebox1.faces.splice(8, 2);
+    computeGeometry(framebox1);
+
+    const framebox2 = new THREE.BoxGeometry(0.1, 1.5, 1.5);
+    delete framebox2.faces.splice(0, 2);
+    delete framebox2.faces.splice(0, 2);
+    computeGeometry(framebox2);
+
+    const frameGeometry1 = framebox1;
+    const frameGeometry2 = framebox2;
+    const frameBackGeometry1 = new THREE.PlaneGeometry(1.5, 1.5);
+    const frameBackGeometry2 = planeBufferGeometry('XZ', 1.5, 1.5);
 
     const planeGeometry1 = new THREE.PlaneBufferGeometry(1.5, 1.5);
     const planeGeometry2 = planeBufferGeometry('XZ', 1.5, 1.5);
@@ -231,7 +244,7 @@ class ManhattanObject3D extends THREE.Object3D {
             let frame; 
 
             if (i < nofWindows) {
-                frame = new THREE.Mesh(frameGeometry1, shaderMaterialFrame)
+                frame = new THREE.Mesh(frameGeometry1, shaderMaterialLine)
                 plane.position.y = 0;
                 plane.position.x = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25;
                 plane.position.z = (5 + 0.2);
@@ -239,7 +252,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame.position.copy(plane.position);
                 frame.position.z -= 0.1;
             } else {
-                frame = new THREE.Mesh(frameGeometry2, shaderMaterialFrame);
+                frame = new THREE.Mesh(frameGeometry2, shaderMaterialLine);
                 plane.position.y = 0;
                 plane.position.z = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25
                 plane.position.x = (-5 - 0.2) * flippy;
@@ -256,7 +269,12 @@ class ManhattanObject3D extends THREE.Object3D {
             if (includePlane) floor.add(shoulders)
 
             frame.position.y = height;
-            allFramesMesh.geometry.mergeMesh(frame);
+            if (nearCamera) allFramesMesh.geometry.mergeMesh(frame);
+
+            const frameBackGeometry = i < nofWindows ? frameBackGeometry1 : frameBackGeometry2;
+            const frameBack = new THREE.Mesh(frameBackGeometry, shaderMaterialFrame);
+            frameBack.position.copy(frame.position);
+            allFrameBacksMesh.geometry.mergeMesh(frameBack)
         }
 
         const walls = new THREE.Mesh(wallGeometry, shaderMaterial);
@@ -317,6 +335,7 @@ class ManhattanObject3D extends THREE.Object3D {
     this.add(allFramesMesh);
     this.add(allWallsMesh);
     this.add(allLinesMesh);
+    this.add(allFrameBacksMesh);
   }
 
   get imagePlanes() {
