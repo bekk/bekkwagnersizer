@@ -41,6 +41,14 @@ class RealtimeTextureCollection {
     return this.defaultTexture;
   }
 
+  getBald() {
+    return new THREE.TextureLoader().load("http://localhost:3000/bald.png");;
+  }
+
+  getShoulders() {
+    return new THREE.TextureLoader().load("http://localhost:3000/shoulders.png");;
+  }
+
   updateImage(image, texture) {
     console.log("Updating texture " + !!image);
   }

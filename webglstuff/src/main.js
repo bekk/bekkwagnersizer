@@ -72,7 +72,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.telly)
+	changeAnimation(animations.manhattan)
 
 	document.getElementById("manhattan").onclick = function() { 
 		changeAnimation(animations.manhattan);

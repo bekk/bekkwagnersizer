@@ -116,7 +116,7 @@ class ManhattanObject3D extends THREE.Object3D {
     const planeGeometry1 = new THREE.PlaneBufferGeometry(1.5, 1.5);
     const planeGeometry2 = planeBufferGeometry('XZ', 1.5, 1.5);
 
-    const defaultTexture = textureCollection.getDefault();
+    const defaultTexture = textureCollection.getBald();
 
     const defaultImageUniforms = {
         time: uniforms.time,
@@ -126,6 +126,20 @@ class ManhattanObject3D extends THREE.Object3D {
 
     const defaultImageMaterial = new THREE.ShaderMaterial({
         uniforms: defaultImageUniforms,
+        vertexShader: vertexShaderCode,
+        fragmentShader: fragmentShaderCodeImage,
+        transparent: true,
+        side: THREE.DoubleSide
+    });
+
+    const shouldersImageUniforms = {
+        time: uniforms.time,
+        map: {type: "t", value: textureCollection.getShoulders()},
+        deviance: {value: deviance},
+    }
+
+    const shouldersImageMaterial = new THREE.ShaderMaterial({
+        uniforms: shouldersImageUniforms,
         vertexShader: vertexShaderCode,
         fragmentShader: fragmentShaderCodeImage,
         transparent: true,
@@ -199,6 +213,13 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame.position.x -= -0.1 * flippy;
             }
 
+            const shoulders = plane.clone();
+            shoulders.scale.y = 0.3;
+            if (i < nofWindows) shoulders.position.z -= 0.02; else shoulders.position.x += 0.02*flippy
+            shoulders.position.y -= 0.4;
+            shoulders.material = shouldersImageMaterial;
+            if (includePlane) floor.add(shoulders)
+
             frame.position.y = height;
             allFramesMesh.geometry.mergeMesh(frame);
         }
@@ -211,25 +232,21 @@ class ManhattanObject3D extends THREE.Object3D {
 
         const line1 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame);
         line1.position.set(-5, 0, -5);
-        //floor.add(line1);
         line1.position.y = height;
         allLinesMesh.geometry.mergeMesh(line1);
 
         const line2 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame);
         line2.position.set(5, 0, -5);
-        //floor.add(line2);
         line2.position.y = height;
         allLinesMesh.geometry.mergeMesh(line2);
 
         const line3 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame);
         line3.position.set(5, 0, 5);
-        //floor.add(line3);
         line3.position.y = height;
         allLinesMesh.geometry.mergeMesh(line3);
 
         const line4 = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 3), shaderMaterialFrame); // TODO: Try making all geometries buffergeometry
         line4.position.set(-5, 0, 5);
-        //floor.add(line4);
         line4.position.y = height;
         allLinesMesh.geometry.mergeMesh(line4);
 
