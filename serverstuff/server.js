@@ -41,7 +41,7 @@ app.get('/admin', (req, res) => {
 });
 
 app.use('/static', express.static(__dirname + '/'));
-app.use('/uploads', express.static(__dirname + '/uploads'));
+app.use(express.static(__dirname + '/uploads'));
 app.use('/trash', express.static(__dirname + '/trash'));
 
 app.post('/image', upload.single('image'), (req, res) => {

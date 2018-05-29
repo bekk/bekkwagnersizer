@@ -53,12 +53,7 @@ function fetchImages(container, renderer, { images }) {
   setTimeout(fetchImages.bind(null, container, renderer, { images }), 500);
 }
 
-let renderGalleryImage = renderImage.bind(
-  null,
-  deleteImage,
-  'Slett',
-  'uploads'
-);
+let renderGalleryImage = renderImage.bind(null, deleteImage, 'Slett', '');
 let renderTrashImage = renderImage.bind(
   null,
   undeleteImage,
