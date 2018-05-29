@@ -102,7 +102,7 @@ class TV extends THREE.Object3D {
       new SlideUpFromBottom(textureCollection),
     ];
 
-    this.timeOffset = Random.float(0, 2);
+    this.timeOffset = Random.float(0, 5);
     this.timer = new Timer();
 
     for (let sketch of this.sketches) {
@@ -234,7 +234,7 @@ class SlideInFromSides extends THREE.Object3D {
     this.add(group);
 
     this.animationTime = 3;
-    this.hangTime = 10;
+    this.hangTime = 15;
 
     const otherType = Random.bool(0.5);
 
@@ -319,7 +319,7 @@ class SlideUpFromBottom extends THREE.Object3D {
       person.scale.multiplyScalar(1.25);
       const normalizedIndex = nofPeople != 1 
         ? (i - (nofPeople-1)/2) / ((nofPeople-1)/2)
-        : 0;
+        : Random.pick([-0.5, 0.5]);
 
       person.position.x = normalizedIndex * 0.075;
       person.startTime = nofPeople != 1 
@@ -337,7 +337,7 @@ class SlideUpFromBottom extends THREE.Object3D {
     }
 
     this.animationTime = 3;
-    this.hangTime = 10;
+    this.hangTime = 15;
   }
 
   animate() {
@@ -417,6 +417,7 @@ class ZoomOut extends THREE.Object3D {
     const person1 = new THREE.Object3D();
     person1.add(face1);
     person1.add(body1);
+    person1.position.x = Random.pick([-0.05, 0.05])
 
     const group = new THREE.Object3D();
     group.add(person1);
@@ -428,7 +429,7 @@ class ZoomOut extends THREE.Object3D {
     this.faceMaterial = materialHead;
 
     this.animationTime = Random.int(3, 8);
-    this.hangTime = 10;
+    this.hangTime = 15;
   }
 
   animate() {
@@ -508,7 +509,7 @@ class Skip extends THREE.Object3D {
     this.faceMaterial = materialHead;
 
     this.animationTime = Random.int(3, 10);
-    this.hangTime = 10;
+    this.hangTime = 15;
   }
 
   animate() {
