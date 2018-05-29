@@ -18,9 +18,9 @@ export default class Telly {
     constructor(renderer, textureCollection) {
         const width = renderer.getContext().drawingBufferWidth;
         const height = renderer.getContext().drawingBufferHeight;
-        const zoom = 1800;
+        const zoom = 1300;
         this._camera = new THREE.OrthographicCamera(width / -zoom, width / zoom, height / zoom, height / -zoom, 0.1, 1000);
-        this._camera.position.set(1.0, 0.37, 20);
+        this._camera.position.set(1.1, 0.57, 100);
         this._camera.updateProjectionMatrix();
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
@@ -31,12 +31,12 @@ export default class Telly {
 
         this.TVs = [];
 
-        for (let x = 0; x < 8; x++) {
-          for (let y = 0; y < 4; y++) {
+        for (let x = 0; x < 16; x++) {
+          for (let y = 0; y < 8; y++) {
             const i = this.TVs.length;
             const tv = new TV(textureCollection, i * 2 + 1);
             tv.position.x += 0.25*x;
-            tv.position.y += 0.25*y;
+            tv.position.y += 0.161*y;
             tv.position.z += 0.1*i;
             this._scene.add(tv);
             this.TVs.push(tv)
@@ -49,11 +49,13 @@ export default class Telly {
           map: new THREE.TextureLoader().load("http://localhost:3000/grid.png"),
           transparent: true,
         });
-        for (let i = 0; i < 4; i++) {
-          const grid = new THREE.Mesh(new THREE.PlaneGeometry(0.51, 1.01), gridMaterial)
-          grid.position.set(0.125 + 1.0/2*i, 0.37, 4)
-          grid.renderOrder = 1000;
-          this._scene.add(grid);
+        for (let i = 0; i < 8; i++) {
+          for (let j = 0; j < 2; j++) {
+            const grid = new THREE.Mesh(new THREE.PlaneGeometry(0.51, 0.51*1.3), gridMaterial)
+            grid.position.set(0.125 + 1.0/2*i, 0.24 + j*0.65, 20)
+            grid.renderOrder = 1000;
+            this._scene.add(grid);
+          }
         }
 
         var lightSun = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -123,13 +125,13 @@ class TV extends THREE.Object3D {
 
     const hidingFrameTop = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hidingMaterial);
     hidingFrameTop.renderOrder = order;
-    hidingFrameTop.position.set(0, -0.62, 0.01);
+    hidingFrameTop.position.set(0, -0.58, 0.01);
     //hidingFrameTop.position.z = 0.2;
     this.add(hidingFrameTop);
 
     const hidingFrameBottom = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hidingMaterial);
     hidingFrameBottom.renderOrder = order;
-    hidingFrameBottom.position.set(0, 0.62, 0.01);
+    hidingFrameBottom.position.set(0, 0.58, 0.01);
     //hidingFrameBottom.position.z = 0.2;
     this.add(hidingFrameBottom);
 
