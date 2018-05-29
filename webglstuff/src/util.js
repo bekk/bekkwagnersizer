@@ -124,7 +124,7 @@ export const Random = {
     },
     pick: function(array) {
         return array[this.int(0, array.length - 1)];
-    }
+    },
 }
 
 export const addResizeListener = function(camera, renderer) {
@@ -184,6 +184,10 @@ export const easeOutCubic = function(t) {
 export const easeOutQuadratic = function(t) {
   t--;
   return 1-t*t;
+}
+
+export const clamp = function(t, min, max) {
+  return Math.max(Math.min(t, max), min);
 }
 
 export const computeGeometry = function(geometry) {

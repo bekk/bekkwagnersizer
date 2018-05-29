@@ -9,6 +9,7 @@ import { createPlaneGeometry,
   addResizeListener,
   Timer,
   easeOutCubic,
+  clamp
 } from "./util.js";
 
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
@@ -98,6 +99,7 @@ class TV extends THREE.Object3D {
       new SlideInFromSides(textureCollection),
       new ZoomOut(textureCollection),
       new Skip(textureCollection),
+      new SlideUpFromBottom(textureCollection),
     ];
 
     this.timeOffset = Random.float(0, 2);
@@ -209,7 +211,8 @@ class SlideInFromSides extends THREE.Object3D {
     const person1 = new THREE.Object3D();
     person1.add(face1);
     person1.add(body1);
-    person1.position.y -= 0.1;
+    person1.position.y -= 0.07;
+    person1.position.z -= 0.05;
 
     const face2 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead2);
     face2.position.y += 0.1;
@@ -218,9 +221,8 @@ class SlideInFromSides extends THREE.Object3D {
     const person2 = new THREE.Object3D();
     person2.add(face2);
     person2.add(body2);
-    person2.position.z -= 0.02;
-    person2.position.y -= 0.1;
-    person2.scale.multiplyScalar(1.33);
+    person2.position.y -= 0.07;
+    person2.scale.multiplyScalar(1.1);
 
     const group = new THREE.Object3D();
     group.add(person1);
@@ -233,6 +235,16 @@ class SlideInFromSides extends THREE.Object3D {
 
     this.animationTime = 3;
     this.hangTime = 3;
+
+    const otherType = Random.bool(0.5);
+
+    if (otherType) {
+      person2.scale.set(1.1, 1.1, 1.1)
+      person1.scale.multiplyScalar(2.5);
+      person2.scale.multiplyScalar(2.5);
+      person1.position.y = -0.22;
+      person2.position.y = -0.23;
+    }
 
     this.faceMaterials = [materialHead1, materialHead2];
   }
@@ -248,6 +260,108 @@ class SlideInFromSides extends THREE.Object3D {
     const person2From = new THREE.Vector3(0.2, this.person2.position.y, this.person2.position.z);
     const person2To = new THREE.Vector3(0.05, this.person2.position.y, this.person2.position.z);
     this.person2.position.copy(person2From.clone().lerp(person2To, easedTime));
+  }
+
+  isDone() {
+    return this.timer.get() >= this.animationTime + this.hangTime;
+  }
+
+  rewind() {
+    this.timer.start();
+    this.animate();
+  }
+
+  updateImage(image) {
+    const material = Random.pick(this.faceMaterials);
+    material.map = image;
+    material.map.anisotropy = Math.pow(2, 3);
+    //material.map.minFilter = THREE.LinearMipMapLinearFilter;
+    material.needsUpdate = true;
+  }
+}
+
+class SlideUpFromBottom extends THREE.Object3D {
+  constructor(textureCollection) {
+    super();
+
+    const nofPeople = Random.pick([1, 3]);
+
+    this.timer = new Timer();
+
+    this.persons = [];
+    this.faceMaterials = [];
+
+    for (let i = 0; i < nofPeople; i++) {
+      const textureHead = textureCollection.getDefault();
+
+      const materialHead = new THREE.MeshBasicMaterial({
+        transparent: true,
+        map: textureHead,
+        side: THREE.DoubleSide,
+      });
+
+      const textureBody = Random.pick(textureCollection.bodies.female);
+
+      const materialBody = new THREE.MeshBasicMaterial({
+        transparent: true,
+        map: textureBody,
+        side: THREE.DoubleSide,
+      });
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
+      face.position.y += 0.1;
+      face.position.z -= 0.01;
+      const body = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialBody);
+      const person = new THREE.Object3D();
+      person.add(face);
+      person.add(body);
+      person.position.y -= 0.12;
+      person.position.z -= 0.05 + i * 0.01;
+      person.scale.multiplyScalar(1.25);
+      const normalizedIndex = nofPeople != 1 
+        ? (i - (nofPeople-1)/2) / ((nofPeople-1)/2)
+        : 0;
+
+      person.position.x = normalizedIndex * 0.075;
+      person.startTime = nofPeople != 1 
+        ? i/(nofPeople-1)
+        : 0;
+      person.deviance = Math.random();
+
+      const group = new THREE.Object3D();
+      group.add(person);
+
+      this.persons.push(person);
+      this.faceMaterials.push(materialHead);
+
+      this.add(group);
+    }
+
+    this.animationTime = 3;
+    this.hangTime = 3;
+  }
+
+  animate() {
+    const spread = 0.6;
+    const heightSpread = 0.05;
+    const playTime = this.timer.get()/this.animationTime;
+
+    for (let person of this.persons) {
+      const time = clamp(playTime - person.startTime*spread, 0, 1);
+
+      const easedTime = easeOutCubic(time);
+
+      const personFrom = new THREE.Vector3(
+        person.position.x, 
+        -0.5 + person.deviance * heightSpread, 
+        person.position.z
+      );
+      const personTo = new THREE.Vector3(
+        person.position.x, 
+        -0.15 + person.deviance * heightSpread, 
+        person.position.z
+      );
+      person.position.copy(personFrom.clone().lerp(personTo, easedTime));
+    }
   }
 
   isDone() {
