@@ -450,25 +450,29 @@ class ManhattanObject3D extends THREE.Object3D {
 
         //floor.add(walls);
 
-        const line1 = new THREE.Mesh(new THREE.PlaneGeometry(lineThickness, 3), shaderMaterialLine);
-        line1.position.set(-5.02, 0, -5.02);
-        line1.position.y = height;
-        allLinesMesh.geometry.mergeMesh(line1);
+        function addLine(position, height) {
+            const line1 = new THREE.Mesh(new THREE.PlaneGeometry(lineThickness, height), shaderMaterialLine);
+            line1.position.copy(position);
+            allLinesMesh.geometry.mergeMesh(line1); 
+        }
 
-        const line2 = new THREE.Mesh(new THREE.PlaneGeometry(lineThickness, 3), shaderMaterialLine);
-        line2.position.set(5.02, 0, -5.02);
-        line2.position.y = height;
-        allLinesMesh.geometry.mergeMesh(line2);
+        const m = 1.5/2+0.75/2;
 
-        const line3 = new THREE.Mesh(new THREE.PlaneGeometry(lineThickness, 3), shaderMaterialLine);
-        line3.position.set(5.02, 0, 5.02);
-        line3.position.y = height;
-        allLinesMesh.geometry.mergeMesh(line3);
+        addLine(new THREE.Vector3(-5.02, height + m, -5.02), 0.75);
+        addLine(new THREE.Vector3(-5.02, height, -5.02), 1.5);
+        addLine(new THREE.Vector3(-5.02, height - m, -5.02), 0.75);
 
-        const line4 = new THREE.Mesh(new THREE.PlaneGeometry(lineThickness, 3), shaderMaterialLine); // TODO: Try making all geometries buffergeometry
-        line4.position.set(-5.02, 0, 5.02);
-        line4.position.y = height;
-        allLinesMesh.geometry.mergeMesh(line4);
+        addLine(new THREE.Vector3(5.02, height + m, -5.02), 0.75);
+        addLine(new THREE.Vector3(5.02, height, -5.02), 1.5);
+        addLine(new THREE.Vector3(5.02, height - m, -5.02), 0.75);
+
+        addLine(new THREE.Vector3(5.02, height + m, 5.02), 0.75);
+        addLine(new THREE.Vector3(5.02, height, 5.02), 1.5);
+        addLine(new THREE.Vector3(5.02, height - m, 5.02), 0.75);
+
+        addLine(new THREE.Vector3(-5.02, height + m, 5.02), 0.75);
+        addLine(new THREE.Vector3(-5.02, height, 5.02), 1.5);
+        addLine(new THREE.Vector3(-5.02, height - m, 5.02), 0.75);
 
         return floor;
     }
