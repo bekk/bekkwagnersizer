@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fsp = require('fs').promises;
 const fs = require('fs');
 const multer = require('multer');
 
@@ -75,8 +76,33 @@ app.delete('/trash/:id', function(req, res) {
 });
 
 app.get('/images', (req, res) => {
-  const images = fs.readdirSync(__dirname + '/uploads');
-  res.status(200).json({ images });
+  fsp
+    .readdir(path.join(__dirname, 'uploads'))
+    .then(function(images) {
+      if (req.query.limit) {
+        let stats = images
+          .map(image => path.join(__dirname, 'uploads', image))
+          .map(fsp.lstat);
+
+        Promise.all(stats)
+          .then(function(filestats) {
+            let result = filestats
+              .map((stat, i) => [images[i], stat])
+              .sort(function(a, b) {
+                return a[1].birthtimeMs - b[1].birthtimeMs;
+              })
+              .slice(0, req.query.limit)
+              .map(pair => pair[0]);
+            res.status(200).json({ images: result });
+          })
+          .catch(e => console.log(e.message));
+      } else {
+        res.status(200).json({ images });
+      }
+    })
+    .catch(function(e) {
+      res.status(500).json({ message: e.message });
+    });
 });
 
 app.get('/trashbin', (req, res) => {
