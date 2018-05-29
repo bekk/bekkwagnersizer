@@ -45,13 +45,13 @@ export default class Manhattan {
             const level = Math.floor(i/2);
             const position = new THREE.Vector3(
                 15 * flippy * THREE.Math.lerp(1, 0.2, level/levels), 
-                -10, 
+                -10 + Math.random(), 
                 -25 - level*15 + 2*flippy
             );
             const nearCamera = Math.abs(position.z) < 100;
             const angleToCamera = Math.abs(position.z) < 65;  
 
-            const color = Random.pick(wallPalette).clone().addScalar(THREE.Math.lerp(0, 0.6, level/levels));
+            const color = wallPalette[i % wallPalette.length].clone().addScalar(THREE.Math.lerp(0, 0.6, level/levels));
 
             const lineThickness = THREE.Math.lerp(0.05, 0.45, level/levels);
             const skyscraper = new ManhattanObject3D(
@@ -164,14 +164,14 @@ function makeFrameSides(type, lineThickness, flippy) {
         let localFramesides = new THREE.Geometry();
 
         for (let x = -1; x <= 1; x+=2) {
-            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness, 1.5-lineThickness*2);
+            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/2, 1.5-lineThickness*2);
             const mesh = new THREE.Mesh(geometry);
             mesh.position.set(frameDepth, 0, -(1.5/2 - 0.025) * x);
             localFramesides.mergeMesh(mesh);
         }
 
         for (let y = -1; y <= 1; y+=2) {
-            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness, 1.5-lineThickness*2);
+            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/2, 1.5-lineThickness*2);
             const mesh = new THREE.Mesh(geometry);
             mesh.rotation.x = Math.PI/2;
             mesh.position.set(frameDepth, -(1.5/2 - 0.025) * y, 0);
@@ -183,14 +183,14 @@ function makeFrameSides(type, lineThickness, flippy) {
         framesides.mergeMesh(localFramesidesMesh);
     } else {
         for (let x = -1; x <= 1; x+=2) {
-            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness, 1.5-lineThickness*2);
+            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/2, 1.5-lineThickness*2);
             const mesh = new THREE.Mesh(geometry);
             mesh.position.set(frameDepth/2 * flippy, 0, -(1.5/2 - 0.025) * x);
             framesides.mergeMesh(mesh);
         }
 
         for (let y = -1; y <= 1; y+=2) {
-            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness, 1.5-lineThickness*2);
+            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/2, 1.5-lineThickness*2);
             const mesh = new THREE.Mesh(geometry);
             mesh.rotation.x = Math.PI/2;
             mesh.position.set(frameDepth/2 * flippy, -(1.5/2 - 0.025) * y, 0);
@@ -199,6 +199,58 @@ function makeFrameSides(type, lineThickness, flippy) {
     }
 
     return framesides;
+}
+
+function makeWallGeometry() {
+
+    function makeWall() {
+        let side = new THREE.Geometry();
+
+        for (let y = -1; y <= 1; y += 2) {
+            const wallGeometry = new THREE.PlaneGeometry(10, 0.75);
+            computeGeometry(wallGeometry);
+
+            const mesh = new THREE.Mesh(wallGeometry);
+            mesh.position.set(0, (1.5/2+0.75/2)*y, 0);
+            side.mergeMesh(mesh);
+        }
+
+        for (let x = -1; x <= 1; x += 1) {
+            const wallGeometry = new THREE.PlaneGeometry(1, 1.5);
+            computeGeometry(wallGeometry);
+
+            const mesh = new THREE.Mesh(wallGeometry);
+            mesh.position.set(x*(1.5+0.5*2), 0, 0);
+            side.mergeMesh(mesh);
+        }
+
+        for (let x = -1; x <= 1; x += 2) {
+            const wallGeometry = new THREE.PlaneGeometry(0.5, 1.5);
+            computeGeometry(wallGeometry);
+
+            const mesh = new THREE.Mesh(wallGeometry);
+            mesh.position.set(x*(5-0.25), 0, 0);
+            side.mergeMesh(mesh);
+        }
+
+        return side;
+    }
+
+    const sideMesh1 = new THREE.Mesh(makeWall());
+    sideMesh1.position.z = 5;
+    const sideMesh2 = new THREE.Mesh(makeWall());
+    sideMesh2.position.x = -5;
+    sideMesh2.rotation.y = Math.PI/2;
+    const sideMesh3 = new THREE.Mesh(makeWall());
+    sideMesh3.position.x = 5;
+    sideMesh3.rotation.y = Math.PI/2;
+
+    const wall = new THREE.Geometry();
+    wall.mergeMesh(sideMesh1);
+    wall.mergeMesh(sideMesh2);
+    wall.mergeMesh(sideMesh3);
+
+    return wall;
 }
 
 class ManhattanObject3D extends THREE.Object3D {
@@ -261,8 +313,8 @@ class ManhattanObject3D extends THREE.Object3D {
 
     const frameGeometry1 = makeFrameLinesGeometry("XY", lineThickness, flippy);
     const frameGeometry2 = makeFrameLinesGeometry("ZY", lineThickness, flippy);
-    const frameBackGeometry1 = new THREE.PlaneGeometry(1.5*0.95, 1.5*0.95);
-    const frameBackGeometry2 = planeBufferGeometry('ZY', 1.5*0.95, 1.5*0.95);
+    const frameBackGeometry1 = new THREE.PlaneGeometry(1.6, 1.6);
+    const frameBackGeometry2 = planeBufferGeometry('ZY', 1.6, 1.6);
 
     const planeGeometry1 = new THREE.PlaneBufferGeometry(1.5, 1.5);
     const planeGeometry2 = planeBufferGeometry('ZY', 1.5, 1.5);
@@ -297,10 +349,7 @@ class ManhattanObject3D extends THREE.Object3D {
         side: THREE.DoubleSide,
     });
 
-    const wallGeometry = new THREE.BoxGeometry(10, 3, 10);
-    delete wallGeometry.faces.splice(4, 4);
-    delete wallGeometry.faces.splice(6, 2);
-    computeGeometry(wallGeometry);
+    const wallGeometry = makeWallGeometry();
 
     function makeFloor(textureCollection, deviance, height, imagePlanes) {
         const floor = new THREE.Object3D();
@@ -355,7 +404,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame = new THREE.Mesh(frameGeometry1, shaderMaterialLine)
                 plane.position.y = 0;
                 plane.position.x = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25;
-                plane.position.z = (5 + 0.2) + debugDistance;
+                plane.position.z = (5 - 0.1) + debugDistance;
             
                 frame.position.copy(plane.position);
                 frame.position.z -= 0.1;
@@ -363,7 +412,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame = new THREE.Mesh(frameGeometry2, shaderMaterialLine);
                 plane.position.y = 0;
                 plane.position.z = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25
-                plane.position.x = (-5 - 0.2 - debugDistance) * flippy;
+                plane.position.x = (-5 + 0.175 - debugDistance) * flippy;
             
                 frame.position.copy(plane.position);
 
@@ -372,9 +421,9 @@ class ManhattanObject3D extends THREE.Object3D {
             }
 
             const shoulders = plane.clone();
-            shoulders.scale.y = 0.3;
+            shoulders.scale.y = 0.4;
             if (i < nofWindows) shoulders.position.z -= 0.025; else shoulders.position.x += 0.025*flippy
-            shoulders.position.y -= 0.4;
+            shoulders.position.y -= 0.5;
             shoulders.material = shouldersImageMaterial;
             if (includePlane) floor.add(shoulders)
 
