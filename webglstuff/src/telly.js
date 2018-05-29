@@ -234,7 +234,7 @@ class SlideInFromSides extends THREE.Object3D {
     this.add(group);
 
     this.animationTime = 3;
-    this.hangTime = 3;
+    this.hangTime = 10;
 
     const otherType = Random.bool(0.5);
 
@@ -337,7 +337,7 @@ class SlideUpFromBottom extends THREE.Object3D {
     }
 
     this.animationTime = 3;
-    this.hangTime = 3;
+    this.hangTime = 10;
   }
 
   animate() {
@@ -428,6 +428,7 @@ class ZoomOut extends THREE.Object3D {
     this.faceMaterial = materialHead;
 
     this.animationTime = Random.int(3, 8);
+    this.hangTime = 10;
   }
 
   animate() {
@@ -443,7 +444,7 @@ class ZoomOut extends THREE.Object3D {
   }
 
   isDone() {
-    return this.timer.get() >= this.animationTime;
+    return this.timer.get() >= this.animationTime + this.hangTime;
   }
 
   rewind() {
@@ -507,6 +508,7 @@ class Skip extends THREE.Object3D {
     this.faceMaterial = materialHead;
 
     this.animationTime = Random.int(3, 10);
+    this.hangTime = 10;
   }
 
   animate() {
@@ -528,7 +530,7 @@ class Skip extends THREE.Object3D {
   }
 
   isDone() {
-    return this.timer.get() >= this.animationTime;
+    return this.timer.get() >= this.animationTime + this.hangTime;
   }
 
   rewind() {
