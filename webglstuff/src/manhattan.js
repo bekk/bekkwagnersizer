@@ -53,7 +53,7 @@ export default class Manhattan {
 
             const color = wallPalette[i % wallPalette.length].clone().addScalar(THREE.Math.lerp(0, 0.6, level/levels));
 
-            const lineThickness = THREE.Math.lerp(0.05, 0.45, level/levels);
+            const lineThickness = THREE.Math.lerp(0.05, 0.45, level/levels)*0.6;
             const skyscraper = new ManhattanObject3D(
                 textureCollection, flippy, nearCamera, angleToCamera, lineThickness, color
             );
