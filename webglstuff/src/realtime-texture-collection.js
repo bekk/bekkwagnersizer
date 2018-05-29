@@ -12,13 +12,16 @@ class RealtimeTextureCollection {
 
     this._nofTextures = nofTextures;
 
-    const defaultTexture = new THREE.TextureLoader().load("http://localhost:3000/head-male-01.png");
+    this.defaultTextures = [
+      new THREE.TextureLoader().load("http://localhost:3000/default1.png"),
+      new THREE.TextureLoader().load("http://localhost:3000/default2.png"),
+    ];
 
-    defaultTexture.magFilter = THREE.LinearFilter;
-    defaultTexture.minFilter = THREE.LinearMipMapLinearFilter;
-    defaultTexture.anisotropy = Math.pow(2, 3);
-
-    this.defaultTexture = defaultTexture;
+    for (let defaultTexture of this.defaultTextures) {
+      defaultTexture.magFilter = THREE.LinearFilter;
+      defaultTexture.minFilter = THREE.LinearMipMapLinearFilter;
+      defaultTexture.anisotropy = Math.pow(2, 3);
+    }
 
     const loader = new THREE.TextureLoader();
 
@@ -38,7 +41,7 @@ class RealtimeTextureCollection {
   }
 
   getDefault() {
-    return this.defaultTexture;
+    return Random.pick(this.defaultTextures);
   }
 
   getBald() {
