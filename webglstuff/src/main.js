@@ -26,7 +26,7 @@ const uniforms = {
 
 socket.on('new image', (fileName)  => {
 	console.log(`Downloading new image: ${fileName}`);
-	addImage(`http://localhost:3000/${fileName}`);
+	addImage(fileName.replace('.png', ''));
 })
 
 window.setInterval(() => {
