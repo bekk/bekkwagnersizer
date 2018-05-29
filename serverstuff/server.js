@@ -5,22 +5,25 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/')
+    cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname)
+    cb(null, file.originalname);
   }
-})
+});
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage });
 
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
   next();
 });
 
@@ -30,25 +33,63 @@ app.get('/', (req, res) => {
 
 app.get('/webgl', (req, res) => {
   res.sendFile(__dirname + '/webgl.html');
-})
+});
 
-app.use('/static', express.static(__dirname + '/'))
-app.use(express.static(__dirname + '/uploads'))
+app.get('/admin', (req, res) => {
+  res.sendFile(__dirname + '/admin.html');
+});
+
+app.use('/static', express.static(__dirname + '/'));
+app.use('/uploads', express.static(__dirname + '/uploads'));
+app.use('/trash', express.static(__dirname + '/trash'));
 
 app.post('/image', upload.single('image'), (req, res) => {
-  io.emit('new image', req.file.originalname)
+  io.emit('new image', req.file.originalname);
   res.sendStatus(200);
-})
+});
+
+app.delete('/image/:id', function(req, res) {
+  let fileName = req.params.id;
+  let oldLocation = path.join(__dirname, 'uploads', fileName);
+  let newLocation = path.join(__dirname, 'trash', fileName);
+  try {
+    fs.renameSync(oldLocation, newLocation);
+    io.emit('remove image', fileName);
+    res.sendStatus(201);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
+app.delete('/trash/:id', function(req, res) {
+  let fileName = req.params.id;
+  let oldLocation = path.join(__dirname, 'trash', fileName);
+  let newLocation = path.join(__dirname, 'uploads', fileName);
+  try {
+    fs.renameSync(oldLocation, newLocation);
+    io.emit('new image', fileName);
+    res.sendStatus(201);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
 
 app.get('/images', (req, res) => {
-  const images = fs.readdirSync('/uploads');
+  const images = fs.readdirSync(__dirname + '/uploads');
   res.status(200).json({ images });
-})
+});
+
+app.get('/trashbin', (req, res) => {
+  let images = fs
+    .readdirSync(__dirname + '/trash')
+    .filter(file => file.substring(0, 1) !== '.');
+  res.status(200).json({ images });
+});
 
 io.on('connection', socket => {
   console.log('a user connected');
 });
 
-http.listen(port = 3000, function(){
+http.listen((port = 3000), function() {
   console.log(`Listening on port ${port}`);
 });

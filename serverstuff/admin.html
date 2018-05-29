@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="no" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Pushwagnerizer Admin</title>
+    <style>
+      #gallery, #trash {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .gallery-image {
+        display: flex;
+        flex-direction: column;
+        margin: 1em;
+      }
+
+      .gallery-image button {
+        border: 2px solid black;
+        background-color: red;
+        font-size: 2em;
+        margin-top: 0.5em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bilder</h1>
+    <div id="gallery"></div>
+    <h1>Sletta bilder</h1>
+    <div id="trash"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/static/admin.js" charset="utf-8"></script>
+  </body>
+</html>
