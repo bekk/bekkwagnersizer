@@ -14,7 +14,7 @@ export default class Manhattan {
     constructor(renderer, textureCollection) {
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(90, ratio(renderer), 0.1, 10000);
-        this._camera.position.set(0, 6, -15);
+        this._camera.position.set(0 - 4, 6, -15);
         this._camera.updateProjectionMatrix();
 
         this.skyscrapers = [];
@@ -75,6 +75,68 @@ export default class Manhattan {
         }
 
     }
+}
+
+function makeFrameLinesGeometry(type) {
+    const lineThickness = 0.05;
+    const frameDepth = 0.2;
+    let framebox = new THREE.Geometry();
+
+    // TODO: DRY
+    if (type == "XY") {
+        for (let i = 0; i < 2; i++) {
+            const geometry = new THREE.BoxGeometry(1.5, 1.5, 0.1);
+            delete geometry.faces.splice(8, 4);
+            for (let vertex of geometry.vertices) vertex.z = i * frameDepth;
+
+            geometry.vertices[0].multiplyScalar(1 - lineThickness);
+            geometry.vertices[2].multiplyScalar(1 - lineThickness);
+            geometry.vertices[5].multiplyScalar(1 - lineThickness);
+            geometry.vertices[7].multiplyScalar(1 - lineThickness);
+
+            computeGeometry(geometry);
+
+            framebox.mergeMesh(new THREE.Mesh(geometry));
+        }
+
+        for (let x = -1; x <= 1; x+=2) {
+            for (let y = -1; y <= 1; y+=2) {
+                const geometry = new THREE.PlaneGeometry(frameDepth, lineThickness);
+                const mesh = new THREE.Mesh(geometry);
+                mesh.position.set(x, y, 0).multiplyScalar(1.5/2);
+                mesh.position.z = frameDepth/2;
+                mesh.position.y -= lineThickness/2 * y;
+                mesh.rotation.y = Math.PI/2;
+                framebox.mergeMesh(mesh);
+            }
+        }
+    } else {
+        for (let i = 0; i < 2; i++) {
+            const geometry = new THREE.BoxGeometry(0.1, 1.5, 1.5);
+            delete geometry.faces.splice(0, 4);
+            for (let vertex of geometry.vertices) vertex.x = i * frameDepth;
+
+            geometry.vertices[0].multiplyScalar(1 - lineThickness);
+            geometry.vertices[1].multiplyScalar(1 - lineThickness);
+            geometry.vertices[2].multiplyScalar(1 - lineThickness);
+            geometry.vertices[3].multiplyScalar(1 - lineThickness);
+
+            framebox.mergeMesh(new THREE.Mesh(geometry));
+        }
+
+        for (let z = -1; z <= 1; z+=2) {
+            for (let y = -1; y <= 1; y+=2) {
+                const geometry = new THREE.PlaneGeometry(frameDepth, lineThickness);
+                const mesh = new THREE.Mesh(geometry);
+                mesh.position.set(0, y, z).multiplyScalar(1.5/2);
+                mesh.position.x = frameDepth/2;
+                mesh.position.y -= lineThickness/2 * y;
+                framebox.mergeMesh(mesh);
+            }
+        }
+    }
+
+    return framebox;
 }
 
 class ManhattanObject3D extends THREE.Object3D {
@@ -143,23 +205,13 @@ class ManhattanObject3D extends THREE.Object3D {
     const allWallsMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterial);
     const allLinesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialLine);
 
-    const framebox1 = new THREE.BoxGeometry(1.5, 1.5, 0.1);
-    delete framebox1.faces.splice(8, 2);
-    delete framebox1.faces.splice(8, 2);
-    computeGeometry(framebox1);
-
-    const framebox2 = new THREE.BoxGeometry(0.1, 1.5, 1.5);
-    delete framebox2.faces.splice(0, 2);
-    delete framebox2.faces.splice(0, 2);
-    computeGeometry(framebox2);
-
-    const frameGeometry1 = framebox1;
-    const frameGeometry2 = framebox2;
+    const frameGeometry1 = makeFrameLinesGeometry("XY");
+    const frameGeometry2 = makeFrameLinesGeometry("ZY");
     const frameBackGeometry1 = new THREE.PlaneGeometry(1.5, 1.5);
-    const frameBackGeometry2 = planeBufferGeometry('XZ', 1.5, 1.5);
+    const frameBackGeometry2 = planeBufferGeometry('ZY', 1.5, 1.5);
 
     const planeGeometry1 = new THREE.PlaneBufferGeometry(1.5, 1.5);
-    const planeGeometry2 = planeBufferGeometry('XZ', 1.5, 1.5);
+    const planeGeometry2 = planeBufferGeometry('ZY', 1.5, 1.5);
 
     const defaultTexture = textureCollection.getBald();
     defaultTexture.anisotropy = Math.pow(2, 3);
@@ -247,7 +299,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame = new THREE.Mesh(frameGeometry1, shaderMaterialLine)
                 plane.position.y = 0;
                 plane.position.x = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25;
-                plane.position.z = (5 + 0.2);
+                plane.position.z = (5 + 0.2) + 1.13;
             
                 frame.position.copy(plane.position);
                 frame.position.z -= 0.1;
@@ -255,7 +307,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame = new THREE.Mesh(frameGeometry2, shaderMaterialLine);
                 plane.position.y = 0;
                 plane.position.z = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25
-                plane.position.x = (-5 - 0.2) * flippy;
+                plane.position.x = (-5 - 0.2 - 1.13) * flippy;
             
                 frame.position.copy(plane.position);
                 frame.position.x -= -0.1 * flippy;
@@ -274,6 +326,7 @@ class ManhattanObject3D extends THREE.Object3D {
             const frameBackGeometry = i < nofWindows ? frameBackGeometry1 : frameBackGeometry2;
             const frameBack = new THREE.Mesh(frameBackGeometry, shaderMaterialFrame);
             frameBack.position.copy(frame.position);
+            if (i < nofWindows) frameBack.position.z -= 0.1; else frameBack.position.x += 0.1*flippy
             allFrameBacksMesh.geometry.mergeMesh(frameBack)
         }
 

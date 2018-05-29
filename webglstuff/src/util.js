@@ -143,7 +143,7 @@ export const planeBufferGeometry = function(direction, width, height) {
 
   let geometry = new THREE.PlaneGeometry(width, height);
 
-  if (direction == 'XZ') {
+  if (direction == 'ZY') {
     geometry.vertices[0].set(0, width/2, -width/2);
     geometry.vertices[1].set(0, width/2, width/2);
     geometry.vertices[2].set(0, -height/2, height/2);
