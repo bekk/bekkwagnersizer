@@ -185,19 +185,26 @@ class SlideInFromSides extends THREE.Object3D {
 
     this.timer = new Timer();
 
-    const textureHead = textureCollection.getDefault();
+    const sex1 = Random.pick(["male", "female"]);
+    const textureHead1 = textureCollection.getDefault(sex1);
+
+    const sex2 = Random.pick(["male", "female"]);
+    const textureHead2 = textureCollection.getDefault(sex2);
 
     const materialHead1 = new THREE.MeshBasicMaterial({
       transparent: true,
-      map: textureHead,
+      map: textureHead1,
       side: THREE.DoubleSide,
     });
 
     const materialHead2 = new THREE.MeshBasicMaterial({
       transparent: true,
-      map: textureHead,
+      map: textureHead2,
       side: THREE.DoubleSide,
     });
+
+    materialHead1.sex = sex1;
+    materialHead2.sex = sex2;
 
     const textureBody1 = Random.pick(textureCollection.bodies.female);
 
@@ -253,8 +260,8 @@ class SlideInFromSides extends THREE.Object3D {
       person2.scale.set(1.1, 1.1, 1.1)
       person1.scale.multiplyScalar(2.5);
       person2.scale.multiplyScalar(2.5);
-      person1.position.y = -0.22;
-      person2.position.y = -0.23;
+      person1.position.y = -0.32;
+      person2.position.y = -0.33;
     }
 
     this.faceMaterials = [materialHead1, materialHead2];
@@ -282,7 +289,7 @@ class SlideInFromSides extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image) {
+  updateImage(image, sex) { // TODO: Sex
     const material = Random.pick(this.faceMaterials);
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);
@@ -529,9 +536,9 @@ class Skip extends THREE.Object3D {
     const positions = [
       new THREE.Vector3(1, -0.25, 0),
       new THREE.Vector3(-1, -0.25, 0),
-      new THREE.Vector3(0, -0.3, 0),
-      new THREE.Vector3(1, -0.3, 0),
-      new THREE.Vector3(0.5, -0.35, 0),
+      new THREE.Vector3(0, -0.35, 0),
+      new THREE.Vector3(1, -0.35, 0),
+      new THREE.Vector3(0.5, -0.4, 0),
     ]
     const zooms = [1, 1.5, 2, 2.5, 3]
 
