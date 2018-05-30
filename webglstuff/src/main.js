@@ -48,7 +48,7 @@ window.setInterval(() => {
 		fileName = 'hode-m-' + Random.int(1, 20);
 	}
 
-	addImage(fileName, sex);
+	//addImage(fileName, sex);
 }, 1000);
 
 const addImage = function(fileName, sex) {
@@ -110,6 +110,19 @@ const initAnimation = function(domNodeId, canvasId) {
 	};
 	document.getElementById("zoomIn").onclick = function() { 
 		zoomIn();
+	};
+	document.getElementById("addImage").onclick = function() { 
+		const sex = Random.pick(["male", "female"]);
+	
+		let fileName;
+		
+		if (sex == "female") {
+			fileName = 'hode-f-' + Random.int(5, 8);
+		} else {
+			fileName = 'hode-m-' + Random.int(4, 20);
+		}
+
+		addImage(fileName, sex);
 	};
 
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
