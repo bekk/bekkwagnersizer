@@ -2,6 +2,7 @@
 uniform float time;
 uniform float deviance;
 varying vec2 vUv;
+varying vec3 vNormal;
 
 float random3D(vec3 coord) {
   return fract(sin(dot(coord.xyz ,vec3(12.9898,78.233,1.23456))) * 43758.5453);
@@ -17,6 +18,7 @@ float random3D(int x, int y, int z) {
 
 void main() {
   vUv = uv;
+  vNormal = normal;
 
   vec4 worldPosition = modelMatrix * vec4(position, 1.0);
   vec3 modifiedPosition = position;

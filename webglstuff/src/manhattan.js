@@ -57,10 +57,14 @@ export default class Manhattan {
             const angleToCamera = Math.abs(position.z) < 65;  
 
             const color = wallPalette[i % wallPalette.length].clone().addScalar(THREE.Math.lerp(0, 0.6, level/levels));
+            const frameBackColor = level == 0 
+                ? 0x6ad8fd 
+                : (level > 5 ? 0xfed482 : 0x6100fd);
 
             const lineThickness = THREE.Math.lerp(0.05, 0.45, level/levels)*0.6;
             const skyscraper = new ManhattanObject3D(
-                textureCollection, flippy, nearCamera, angleToCamera, lineThickness, color
+                textureCollection, flippy, nearCamera, 
+                angleToCamera, lineThickness, color, frameBackColor
             );
             skyscraper.position.copy(position);
             this._scene.add(skyscraper);
@@ -277,7 +281,8 @@ function makeWallGeometry() {
 }
 
 class ManhattanObject3D extends THREE.Object3D {
-  constructor(textureCollection, flippy, nearCamera, angleToCamera, lineThickness, color) {
+  constructor(textureCollection, flippy, nearCamera, angleToCamera, 
+        lineThickness, color, frameBackColor) {
     super();
 
     this._imagePlanes = [];
@@ -293,15 +298,14 @@ class ManhattanObject3D extends THREE.Object3D {
     const uniformsFrame = {
         time: uniforms.time,
         deviance: {value: deviance},
-        //color: {value: new THREE.Color(0x62d8fe)},
-        color: {value: uniformsWalls.color.value.clone().multiplyScalar(0.65)},
+        color: {value: new THREE.Color(frameBackColor)},
+        //color: {value: uniformsWalls.color.value.clone().multiplyScalar(0.65)},
     }
 
     const uniformsFrameSides = {
         time: uniforms.time,
         deviance: {value: deviance},
-        //color: {value: new THREE.Color(0x5600eb)},
-        color: {value: uniformsWalls.color.value.clone().multiplyScalar(0.85)},
+        color: {value: uniformsWalls.color.value.clone().multiplyScalar(0.75)},
     }
 
     const uniformsLine = {

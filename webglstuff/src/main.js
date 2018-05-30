@@ -88,8 +88,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.people);
-	zoomOut();
+	changeAnimation(animations.manhattan);
 
 	// TODO: Skift til 12.3 * 7, x * y piksler
 
