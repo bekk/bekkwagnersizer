@@ -9,7 +9,10 @@ const PORT = 3007;
 var board = new five.Board({ repl: false });
 var strip = null;
 
+let MODE = 'NONE';
+
 app.get('/spin', function(req, res) {
+  MODE = 'SPIN';
   let color = [req.query.r, req.query.g, req.query.b];
   let speed = req.query.speed || 20;
   dualSpin(color, speed);
@@ -17,6 +20,7 @@ app.get('/spin', function(req, res) {
 });
 
 app.get('/blink', function(req, res) {
+  MODE = 'BLINK';
   let color = [req.query.r, req.query.g, req.query.b];
   let duration = req.query.duration || 2000;
   let times = req.query.times || 2;
@@ -27,6 +31,7 @@ app.get('/blink', function(req, res) {
 });
 
 app.get('/off', (req, res) => {
+  MODE = 'off';
   color([0, 0, 0]);
   strip.show();
   return res.sendStatus(204);
@@ -72,10 +77,14 @@ function fill(from, to, c, duration) {
 
 function dualSpin(c, speed) {
   function inner() {
+    if (MODE !== 'SPIN') {
+      return;
+    }
     strip.shift(1, pixel.FORWARD, true);
     strip.show();
     setTimeout(inner, speed);
   }
+
   Array(10)
     .fill(1)
     .forEach(function(n, i) {
@@ -88,7 +97,7 @@ function dualSpin(c, speed) {
 
 function blinkTimes(c1, c2, duration, n, next) {
   function inner(i) {
-    if (i >= n) {
+    if (i >= n || MODE !== 'BLINK') {
       if (next) next();
       return;
     }
@@ -116,7 +125,7 @@ function blinkBetween(c1, c2, duration, next) {
 function fadeFrom([r1, g1, b1], duration = 255 * 5) {
   let step = Math.floor(duration / 255);
   function inner(i) {
-    if (i >= 255) {
+    if (i >= 255 || MODE !== 'BLINK') {
       return;
     }
     color([parseInt(r1, 10) - i, parseInt(g1, 10) - i, parseInt(b1, 10) - i]);
