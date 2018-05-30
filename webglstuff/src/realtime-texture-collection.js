@@ -13,8 +13,16 @@ class RealtimeTextureCollection {
     this._nofTextures = nofTextures;
 
     this.defaultTextures = {
-      male: new THREE.TextureLoader().load("http://localhost:3000/hode-m-1.png"),
-      female: new THREE.TextureLoader().load("http://localhost:3000/hode-f-1.png"),
+      male: [
+        new THREE.TextureLoader().load("http://localhost:3000/hode-m-1.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-m-2.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-m-3.png"),
+      ],
+      female: [
+        new THREE.TextureLoader().load("http://localhost:3000/hode-f-1.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-f-2.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-f-3.png"),
+      ],
     };
 
     for (let sex in this.defaultTextures) {
@@ -46,7 +54,7 @@ class RealtimeTextureCollection {
 
   getDefault(sex) {
     if (sex == undefined) sex = "male";
-    return this.defaultTextures[sex];
+    return Random.pick(this.defaultTextures[sex]);
   }
 
   getBald() {
