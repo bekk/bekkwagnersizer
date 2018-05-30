@@ -13,13 +13,15 @@ import { createPlaneGeometry,
 } from "./util.js";
 
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
+import fragmentShaderCode from './fragmentshaderimage.glsl';
+import vertexShaderCode from './vertexshader-noop.glsl';
 
 export default class Telly {
 
     constructor(renderer, textureCollection) {
         const width = renderer.getContext().drawingBufferWidth;
         const height = renderer.getContext().drawingBufferHeight;
-        const zoom = 1300;
+        const zoom = 1600;
         this._camera = new THREE.OrthographicCamera(width / -zoom, width / zoom, height / zoom, height / -zoom, 0.01, 1000);
         this._camera.position.set(1.1, 0.57, 100);
         this._camera.updateProjectionMatrix();
@@ -206,12 +208,17 @@ class SlideInFromSides extends THREE.Object3D {
     materialHead1.sex = sex1;
     materialHead2.sex = sex2;
 
-    const textureBody1 = Random.pick(textureCollection.bodies.female);
+    const textureBody1 = Random.pick(textureCollection.bodies.male);
 
-    const materialBody1 = new THREE.MeshBasicMaterial({
-      transparent: true,
-      map: textureBody1,
-      side: THREE.DoubleSide,
+    const uniforms = {
+        map: {type: "t", value: textureBody1},
+    }
+
+    const materialBody1 = new THREE.ShaderMaterial({
+        uniforms: uniforms,
+        vertexShader: vertexShaderCode,
+        fragmentShader: fragmentShaderCode,
+        transparent: true,
     });
 
     const textureBody2 = Random.pick(textureCollection.bodies.male);
@@ -333,7 +340,7 @@ class SlideUpFromBottom extends THREE.Object3D {
       person.add(face);
       person.add(body);
       person.position.y -= 0.12;
-      person.position.z -= 0.05 + i * 0.01;
+      person.position.z -= 0.04 + i * 0.01;
       person.scale.multiplyScalar(1.25);
       const normalizedIndex = nofPeople != 1 
         ? (i - (nofPeople-1)/2) / ((nofPeople-1)/2)

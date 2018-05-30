@@ -12,10 +12,12 @@ import { createPlaneGeometry,
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 import PlingPlongTransition from "./pling-plong-transition.js";
 
+// TODO: Enda flere folk i høyde og bredde (cirka dobbelt så mye?)
+
 export default class People {
 
     constructor(renderer, textureCollection) {
-        const cameraHeight = 0.4;
+        const cameraHeight = 0.2;
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         this._camera.position.set(0, cameraHeight, 2.55);
         this._camera.updateProjectionMatrix();
@@ -139,8 +141,8 @@ class PeopleObject3D extends THREE.Object3D {
       const group = new THREE.Object3D();
       group.add(plane);
 
-      const nofXDir = 10;
-      const nofYDir = 10;
+      const nofXDir = 20;
+      const nofYDir = 20;
 
       group.pathPosition = Math.floor(i / nofYDir)/nofYDir + Random.float(0, 0.05);
       const magic = Math.floor(i / nofYDir) % 2 == 0;
@@ -157,9 +159,11 @@ class PeopleObject3D extends THREE.Object3D {
 
       const face = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialHead);
       face.position.y += 0.18
-      face.position.z += 0.03;
+      face.position.z += 0.05;
       group.material = materialHead;
       group.add(face)
+
+      group.scale.multiplyScalar(0.5);
 
       group.sex = sex;
 

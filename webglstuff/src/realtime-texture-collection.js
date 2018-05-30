@@ -17,11 +17,13 @@ class RealtimeTextureCollection {
         new THREE.TextureLoader().load("http://localhost:3000/hode-m-1.png"),
         new THREE.TextureLoader().load("http://localhost:3000/hode-m-2.png"),
         new THREE.TextureLoader().load("http://localhost:3000/hode-m-3.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-m-4.png"),
       ],
       female: [
         new THREE.TextureLoader().load("http://localhost:3000/hode-f-1.png"),
         new THREE.TextureLoader().load("http://localhost:3000/hode-f-2.png"),
         new THREE.TextureLoader().load("http://localhost:3000/hode-f-3.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-f-4.png"),
       ],
     };
 

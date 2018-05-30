@@ -41,7 +41,7 @@ window.setInterval(() => {
 	let fileName;
 	
 	if (sex == "female") {
-		fileName = 'hode-f-' + Random.int(1, 8);
+		fileName = 'hode-f-' + Random.int(1, 4);
 	} else {
 		fileName = 'hode-m-' + Random.int(1, 20);
 	}
@@ -77,7 +77,7 @@ const initAnimation = function(domNodeId, canvasId) {
 
     // 256 stykker på 1024^2 ser ut til å være en øvre grense for rendringen nå
     // eller overkant av 1000 stykker på 512^2
-    const nofTextures = 100;
+    const nofTextures = 400;
     const textureWidth = 512;
     const textureHeight = 512;
 	realtimeTextureCollection = new RealtimeTextureCollection(nofTextures, textureWidth, textureHeight);
