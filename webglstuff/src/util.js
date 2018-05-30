@@ -186,6 +186,10 @@ export const easeOutQuadratic = function(t) {
   return 1-t*t;
 }
 
+export const easeInOutSine = function(t) {
+  return (Math.sin(t*Math.PI - Math.PI/2) + 1) / 2;
+}
+
 export const clamp = function(t, min, max) {
   return Math.max(Math.min(t, max), min);
 }

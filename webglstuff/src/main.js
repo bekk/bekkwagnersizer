@@ -3,7 +3,7 @@ THREE.OrbitControls = require('three-orbit-controls')(THREE);
 import ioClient from 'socket.io-client';
 
 import Bird from "./bird.js";
-import { fetchTextureFromServer, Random, ratio } from './util.js';
+import { fetchTextureFromServer, Random, ratio, clamp, easeInOutSine } from './util.js';
 import Manhattan from './manhattan.js';
 import People from './people.js';
 import Telly from './telly.js';
@@ -93,6 +93,12 @@ const initAnimation = function(domNodeId, canvasId) {
 	document.getElementById("telly").onclick = function() { 
 		changeAnimation(animations.telly);
 	};
+	document.getElementById("zoomOut").onclick = function() { 
+		zoomOut();
+	};
+	document.getElementById("zoomIn").onclick = function() { 
+		zoomIn();
+	};
 
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         otherCamera.position.set(0, 0, 3);
@@ -102,10 +108,23 @@ const initAnimation = function(domNodeId, canvasId) {
         transition = new PlingPlongTransition(otherCamera);
         otherScene.add(transition);
 }
+		
+		window.state = 0;
+		window.transitionStartTime = 0;
 
 const changeAnimation = function(animation) {
 	scene = animation.scene
 	camera = animation.camera;
+}
+
+const zoomOut = function() {
+	window.state = 1;
+	window.transitionStartTime = new Date().getTime();
+}
+
+const zoomIn = function() {
+	window.state = 3;
+	window.transitionStartTime = new Date().getTime();
 }
 
 const animate = function() {
@@ -114,13 +133,26 @@ const animate = function() {
 
 	animations.people.animate();
 	animations.manhattan.animate();
-	animations.telly.animate();
+	animations.telly.animate();;
 
-		const speed = 0.5;
-	    let zoom = (Math.sin(uniforms.time.value * speed) + 1) / 2 * 0.5 + 0.5; // 0.5 ... 1.0
+	    let normalizedZoom;
+	    let speed = 0.5;
+	    if (window.state == 1) {
+	    	const timeDiff = (new Date().getTime() - window.transitionStartTime) / 1000;
+	    	const eased = easeInOutSine(clamp(timeDiff * speed, 0, 1));
+	    	normalizedZoom = 1 - eased;
+	    	if (eased == 1) window.state = 2;
+	    } else if (window.state == 3) {
+	    	const timeDiff = (new Date().getTime() - window.transitionStartTime) / 1000;
+	    	const eased = easeInOutSine(clamp(timeDiff * speed, 0, 1));
+	    	normalizedZoom = eased;
+	    	if (eased == 1) window.state = 0;
+	    } else if (window.state == 2) {
+			normalizedZoom = 0;
+	    } else {
+	    	normalizedZoom = 1;
+	    }
 
-	    const normalizedZoom = (zoom - 0.5) * 1/0.5; // 0...1
-	    const invertedNorm = 1 - normalizedZoom;	
 		transition.animate(normalizedZoom);
 		animations.people.zoomAmount(normalizedZoom);
 		animations.manhattan.zoomAmount(normalizedZoom);
