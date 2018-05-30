@@ -134,6 +134,7 @@ class PeopleObject3D extends THREE.Object3D {
 
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), material);
       plane.scale.multiplyScalar(0.75);
+      plane.position.y -= 0.06;
       
       const group = new THREE.Object3D();
       group.add(plane);
