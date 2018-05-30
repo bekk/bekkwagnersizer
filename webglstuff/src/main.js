@@ -37,7 +37,15 @@ socket.on('new image', (fileName)  => {
 window.setInterval(() => {
 	//const fileName = 'People_karakterer_mai-' + Random.int(0, 1) + Random.int(1, 9);
 	const sex = Random.pick(["male", "female"]);
-	const fileName = 'head-'+sex+'-0' + Random.int(1, 2);
+	
+	let fileName;
+	
+	if (sex == "female") {
+		fileName = 'hode-f-' + Random.int(1, 8);
+	} else {
+		fileName = 'hode-m-' + Random.int(1, 20);
+	}
+
 	addImage(fileName);
 }, 1000);
 
@@ -78,7 +86,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.people)
+	changeAnimation(animations.telly)
 
 	// TODO: Skift til 12.3 * 7, x * y piksler
 

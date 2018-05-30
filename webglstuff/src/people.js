@@ -113,6 +113,8 @@ export default class People {
     }
 }
 
+// TODO: Sjekk med Audun om de jeg tror er damekropper er damer
+
 class PeopleObject3D extends THREE.Object3D {
   constructor(textureCollection) {
     super();
@@ -121,7 +123,8 @@ class PeopleObject3D extends THREE.Object3D {
 
     for (let i = 0; i < this.nofTextures; i++) {
 
-        const textureBody = Random.pick(textureCollection.bodies.male.concat(textureCollection.bodies.female));
+      const sex = Random.pick(["female", "male"]);
+      const textureBody = Random.pick(textureCollection.bodies[sex]);
 
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -130,6 +133,7 @@ class PeopleObject3D extends THREE.Object3D {
       });
 
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), material);
+      plane.scale.multiplyScalar(0.75);
       
       const group = new THREE.Object3D();
       group.add(plane);

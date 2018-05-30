@@ -130,26 +130,22 @@ class TV extends THREE.Object3D {
 
     const hidingFrameLeft = new THREE.Mesh(new THREE.PlaneGeometry(0.4, order/5+1), hidingMaterial);
     hidingFrameLeft.renderOrder = order;
-    hidingFrameLeft.position.set(-0.32, 0, 0.01);
-    //hidingFrameLeft.position.z = 0.2;
+    hidingFrameLeft.position.set(-0.32, 0, 0.04);
     this.add(hidingFrameLeft);
 
     const hidingFrameRight = new THREE.Mesh(new THREE.PlaneGeometry(0.4, order/5+1), hidingMaterial);
     hidingFrameRight.renderOrder = order;
-    hidingFrameRight.position.set(0.32, 0, 0.01);
-    //hidingFrameRight.position.z = 0.2;
+    hidingFrameRight.position.set(0.32, 0, 0.04);
     this.add(hidingFrameRight);
 
     const hidingFrameTop = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hidingMaterial);
     hidingFrameTop.renderOrder = order;
-    hidingFrameTop.position.set(0, -0.58, 0.01);
-    //hidingFrameTop.position.z = 0.2;
+    hidingFrameTop.position.set(0, -0.58, 0.04);
     this.add(hidingFrameTop);
 
     const hidingFrameBottom = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hidingMaterial);
     hidingFrameBottom.renderOrder = order;
-    hidingFrameBottom.position.set(0, 0.58, 0.01);
-    //hidingFrameBottom.position.z = 0.2;
+    hidingFrameBottom.position.set(0, 0.58, 0.04);
     this.add(hidingFrameBottom);
 
     this.sketchIndex = Random.int(0, this.sketches.length - 1);
@@ -221,8 +217,8 @@ class SlideInFromSides extends THREE.Object3D {
 
     const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead1);
     face1.position.y += 0.1;
-    face1.position.z -= 0.01;
-    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialBody1);
+    face1.position.z += 0.01;
+    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
     const person1 = new THREE.Object3D();
     person1.add(face1);
     person1.add(body1);
@@ -231,8 +227,8 @@ class SlideInFromSides extends THREE.Object3D {
 
     const face2 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead2);
     face2.position.y += 0.1;
-    face2.position.z -= 0.01;
-    const body2 = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialBody2);
+    face2.position.z += 0.01;
+    const body2 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody2);
     const person2 = new THREE.Object3D();
     person2.add(face2);
     person2.add(body2);
@@ -324,8 +320,8 @@ class SlideUpFromBottom extends THREE.Object3D {
       });
       const face = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
       face.position.y += 0.1;
-      face.position.z -= 0.01;
-      const body = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialBody);
+      face.position.z += 0.01;
+      const body = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody);
       const person = new THREE.Object3D();
       person.add(face);
       person.add(body);
@@ -421,9 +417,9 @@ class ZoomOut extends THREE.Object3D {
 
     const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
     face1.position.y += 0.1;
-    face1.position.z -= 0.01;
+    face1.position.z += 0.01;
     
-    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialBody1);
+    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
 
     // To zoom out from face:
     face1.position.y -= 0.1;
@@ -502,9 +498,9 @@ class Skip extends THREE.Object3D {
 
     const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
     face1.position.y += 0.1;
-    face1.position.z -= 0.01;
+    face1.position.z += 0.01;
     
-    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialBody1);
+    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
 
     // To zoom out from face:
     face1.position.y -= 0.1;

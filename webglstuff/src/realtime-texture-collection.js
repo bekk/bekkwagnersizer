@@ -13,8 +13,8 @@ class RealtimeTextureCollection {
     this._nofTextures = nofTextures;
 
     this.defaultTextures = [
-      new THREE.TextureLoader().load("http://localhost:3000/default1.png"),
-      new THREE.TextureLoader().load("http://localhost:3000/default2.png"),
+      new THREE.TextureLoader().load("http://localhost:3000/hode-m-1.png"),
+      new THREE.TextureLoader().load("http://localhost:3000/hode-f-1.png"),
     ];
 
     for (let defaultTexture of this.defaultTextures) {
@@ -26,10 +26,14 @@ class RealtimeTextureCollection {
     const loader = new THREE.TextureLoader();
 
     this._bodies = {male: [], female: []};
-    
-    this._bodies.male.push(loader.load("http://localhost:3000/body-male-01.png"));
-    this._bodies.male.push(loader.load("http://localhost:3000/body-male-02.png"));
-    this._bodies.female.push(loader.load("http://localhost:3000/body-female-01.png"));
+
+    for (let i = 1; i <= 16; i++) {
+      this._bodies.male.push(loader.load("http://localhost:3000/kropp-m-"+i+".png"));
+    }
+
+    for (let i = 1; i <= 10; i++) {
+      this._bodies.female.push(loader.load("http://localhost:3000/kropp-f-"+i+".png"));
+    }
   }
 
   get nofTextures() {
