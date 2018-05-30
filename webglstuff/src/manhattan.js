@@ -74,6 +74,7 @@ export default class Manhattan {
 
 
         this.oldY = this._camera.position.y;
+        this.oldZ = this._camera.position.z;
     }
 
     get scene() {
@@ -92,16 +93,17 @@ export default class Manhattan {
     zoomAmount(normalizedZoom) {
         const invertedNorm = 1 - normalizedZoom;
 
-        const startZoom = 0.6;
+        const startZoom = 1.0;
         const endZoom = 1.0;
-        this.camera.zoom = startZoom + normalizedZoom * (endZoom - startZoom);
+        const zoom = startZoom + normalizedZoom * (endZoom - startZoom);
+        this.camera.fov = zoom * 90;
         this.camera.updateProjectionMatrix();
 
-        this.camera.position.y = this.oldY - invertedNorm * 4.2;
+        this.camera.position.z = this.oldZ + invertedNorm * 4;
+        //this.camera.position.y = this.oldY - invertedNorm * 4.2;
         this.camera.orbitControls.target.y = this.camera.position.y - 5 - 2.1 * invertedNorm;
     }
 
-    //TODO: Større hoder, mindre skuldre
     //TDOO: Skyggelegging i karmer og på vegger
 
     updateImage(image) {
