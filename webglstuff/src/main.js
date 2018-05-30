@@ -46,15 +46,15 @@ window.setInterval(() => {
 		fileName = 'hode-m-' + Random.int(1, 20);
 	}
 
-	addImage(fileName);
+	addImage(fileName, sex);
 }, 1000);
 
-const addImage = function(fileName) {
+const addImage = function(fileName, sex) {
 	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}.png`);
     //realtimeTextureCollection.updateImage(texture);
-	animations.people.updateImage(texture);
-	animations.manhattan.updateImage(texture);
-	animations.telly.updateImage(texture);
+	animations.people.updateImage(texture, sex);
+	animations.manhattan.updateImage(texture, sex);
+	animations.telly.updateImage(texture, sex);
 }
 
 const initAnimation = function(domNodeId, canvasId) {
@@ -86,7 +86,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.telly)
+	changeAnimation(animations.people)
 
 	// TODO: Skift til 12.3 * 7, x * y piksler
 

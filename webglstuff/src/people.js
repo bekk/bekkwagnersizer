@@ -84,12 +84,12 @@ export default class People {
         this.camera.orbitControls.target.y = this.camera.position.y ;
     }
 
-    getIndexInBack() {
+    getIndexInBack(sex) {
         const distanceIndeces = [];
 
         for (let i in this.peopleObject3D.children) {
           const child = this.peopleObject3D.children[i];
-          distanceIndeces.push({index: i, distance: child.position.z});
+          if (child.sex == sex) distanceIndeces.push({index: i, distance: child.position.z});
         }
 
         distanceIndeces.sort(function(a, b) {
@@ -99,10 +99,10 @@ export default class People {
         return distanceIndeces[Random.int(0, 9)].index;
     }
 
-    updateImage(image) {
-        console.log("Updating texture in People " + !!image);
+    updateImage(image, sex) {
+        console.log("Updating texture in People", !!image, sex);
 
-        const index = this.getIndexInBack()
+        const index = this.getIndexInBack(sex)
 
         const plane = this.peopleObject3D.children[index];
 
@@ -146,7 +146,7 @@ class PeopleObject3D extends THREE.Object3D {
       group.pathDeviance = (i % nofXDir + (magic ? 0.5 : 0))/nofXDir ;
 
 
-      const textureHead = textureCollection.getDefault();
+      const textureHead = textureCollection.getDefault(sex);
 
       const materialHead = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -159,6 +159,8 @@ class PeopleObject3D extends THREE.Object3D {
       face.position.z += 0.03;
       group.material = materialHead;
       group.add(face)
+
+      group.sex = sex;
 
       this.add(group);
     }

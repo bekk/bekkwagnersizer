@@ -95,6 +95,9 @@ export default class Manhattan {
         this.camera.orbitControls.target.y = this.camera.position.y - 5 - 2.1 * invertedNorm;
     }
 
+    //TODO: Større hoder, mindre skuldre
+    //TDOO: Skyggelegging i karmer og på vegger
+
     updateImage(image) {
         console.log("Updating texture in Manhattan " + !!image);
 
@@ -334,8 +337,8 @@ class ManhattanObject3D extends THREE.Object3D {
     const frameBackGeometry1 = new THREE.PlaneGeometry(1.6, 1.6);
     const frameBackGeometry2 = planeBufferGeometry('ZY', 1.6, 1.6);
 
-    const planeGeometry1 = new THREE.PlaneBufferGeometry(1.5, 1.5);
-    const planeGeometry2 = planeBufferGeometry('ZY', 1.5, 1.5);
+    const planeGeometry1 = new THREE.PlaneBufferGeometry(1.75, 1.75);
+    const planeGeometry2 = planeBufferGeometry('ZY', 1.75, 1.75);
 
     const defaultTexture = textureCollection.getBald();
     defaultTexture.anisotropy = Math.pow(2, 3);
@@ -420,15 +423,15 @@ class ManhattanObject3D extends THREE.Object3D {
 
             if (i < nofWindows) {
                 frame = new THREE.Mesh(frameGeometry1, shaderMaterialLine)
-                plane.position.y = 0;
+                plane.position.y = -0.1;
                 plane.position.x = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25;
-                plane.position.z = (5 - 0.1) + debugDistance;
+                plane.position.z = (5 - 0.175) + debugDistance;
             
                 frame.position.copy(plane.position);
-                frame.position.z -= 0.1;
+                frame.position.z -= 0.0;
             } else {
                 frame = new THREE.Mesh(frameGeometry2, shaderMaterialLine);
-                plane.position.y = 0;
+                plane.position.y = -0.1;
                 plane.position.z = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25
                 plane.position.x = (-5 + 0.175 - debugDistance) * flippy;
             
@@ -439,8 +442,8 @@ class ManhattanObject3D extends THREE.Object3D {
             }
 
             const shoulders = plane.clone();
-            shoulders.scale.y = 0.4;
-            if (i < nofWindows) shoulders.position.z -= 0.025; else shoulders.position.x += 0.025*flippy
+            shoulders.scale.y = 0.2;
+            if (i < nofWindows) shoulders.position.z -= 0.005; else shoulders.position.x += 0.025*flippy
             shoulders.position.y -= 0.5;
             shoulders.material = shouldersImageMaterial;
             if (includePlane) floor.add(shoulders)

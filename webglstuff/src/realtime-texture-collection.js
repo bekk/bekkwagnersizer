@@ -12,15 +12,15 @@ class RealtimeTextureCollection {
 
     this._nofTextures = nofTextures;
 
-    this.defaultTextures = [
-      new THREE.TextureLoader().load("http://localhost:3000/hode-m-1.png"),
-      new THREE.TextureLoader().load("http://localhost:3000/hode-f-1.png"),
-    ];
+    this.defaultTextures = {
+      male: new THREE.TextureLoader().load("http://localhost:3000/hode-m-1.png"),
+      female: new THREE.TextureLoader().load("http://localhost:3000/hode-f-1.png"),
+    };
 
-    for (let defaultTexture of this.defaultTextures) {
-      defaultTexture.magFilter = THREE.LinearFilter;
-      defaultTexture.minFilter = THREE.LinearMipMapLinearFilter;
-      defaultTexture.anisotropy = Math.pow(2, 3);
+    for (let sex in this.defaultTextures) {
+      this.defaultTextures[sex].magFilter = THREE.LinearFilter;
+      this.defaultTextures[sex].minFilter = THREE.LinearMipMapLinearFilter;
+      this.defaultTextures[sex].anisotropy = Math.pow(2, 3);
     }
 
     const loader = new THREE.TextureLoader();
@@ -44,8 +44,9 @@ class RealtimeTextureCollection {
     return this._bodies;
   }
 
-  getDefault() {
-    return Random.pick(this.defaultTextures);
+  getDefault(sex) {
+    if (sex == undefined) sex = "male";
+    return this.defaultTextures[sex];
   }
 
   getBald() {
