@@ -8,6 +8,7 @@ import Manhattan from './manhattan.js';
 import People from './people.js';
 import Telly from './telly.js';
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
+import PlingPlongTransition from "./pling-plong-transition.js";
 
 const socket = ioClient("http://localhost:3000");
 
@@ -19,6 +20,10 @@ let orbitControls;
 let textureCollection;
 const animations = {};
 let realtimeTextureCollection;
+
+let otherCamera;
+let otherScene;
+let transition;
 
 const uniforms = {
 	time: {value: 0.0},
@@ -53,6 +58,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	renderer.setClearColor(0x000000);
 	renderer.domElement.setAttribute('id', canvasId);
 	renderer.setSize(window.innerWidth, window.innerHeight, true);
+	renderer.autoClear = false;
 
 	console.log(
 		renderer.getContext().getParameter(renderer.getContext().MAX_VERTEX_TEXTURE_IMAGE_UNITS),
@@ -72,7 +78,11 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.telly)
+	changeAnimation(animations.people)
+
+	// TODO: Skift til 12.3 * 7, x * y piksler
+
+	// Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
 
 	document.getElementById("manhattan").onclick = function() { 
 		changeAnimation(animations.manhattan);
@@ -83,6 +93,14 @@ const initAnimation = function(domNodeId, canvasId) {
 	document.getElementById("telly").onclick = function() { 
 		changeAnimation(animations.telly);
 	};
+
+        otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
+        otherCamera.position.set(0, 0, 3);
+        otherCamera.updateProjectionMatrix();
+
+        otherScene = new THREE.Scene();
+        transition = new PlingPlongTransition(otherCamera);
+        otherScene.add(transition);
 }
 
 const changeAnimation = function(animation) {
@@ -97,8 +115,22 @@ const animate = function() {
 	animations.people.animate();
 	animations.manhattan.animate();
 	animations.telly.animate();
+
+		const speed = 0.5;
+	    let zoom = (Math.sin(uniforms.time.value * speed) + 1) / 2 * 0.5 + 0.5; // 0.5 ... 1.0
+
+	    const normalizedZoom = (zoom - 0.5) * 1/0.5; // 0...1
+	    const invertedNorm = 1 - normalizedZoom;	
+		transition.animate(normalizedZoom);
+		animations.people.zoomAmount(normalizedZoom);
+		animations.manhattan.zoomAmount(normalizedZoom);
+		animations.telly.zoomAmount(normalizedZoom);
 	
+	renderer.clear();
 	renderer.render(scene, camera);
+
+	renderer.clearDepth();
+	renderer.render(otherScene, otherCamera);
 }
 
 export default function main() {

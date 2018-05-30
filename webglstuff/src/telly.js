@@ -20,13 +20,15 @@ export default class Telly {
         const width = renderer.getContext().drawingBufferWidth;
         const height = renderer.getContext().drawingBufferHeight;
         const zoom = 1300;
-        this._camera = new THREE.OrthographicCamera(width / -zoom, width / zoom, height / zoom, height / -zoom, 0.1, 1000);
+        this._camera = new THREE.OrthographicCamera(width / -zoom, width / zoom, height / zoom, height / -zoom, 0.01, 1000);
         this._camera.position.set(1.1, 0.57, 100);
         this._camera.updateProjectionMatrix();
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
         this.orbitControls.target = this._camera.position.clone().sub(new THREE.Vector3(0, 0, this._camera.position.z));
         this.orbitControls.update();
+
+        this.camera.orbitControls = this.orbitControls;
 
         this._scene = new THREE.Scene();
 
@@ -63,6 +65,8 @@ export default class Telly {
         lightSun.position.set(-0.5, 4, 1).normalize();
         this._scene.add(lightSun);
 
+        this.oldY = this._scene.position.y;
+
         addResizeListener(this._camera, renderer);
     }
 
@@ -80,6 +84,17 @@ export default class Telly {
         }
 
         this.orbitControls.update();
+    }
+
+    zoomAmount(normalizedZoom) {
+        const invertedNorm = 1 - normalizedZoom;
+
+        const startZoom = 0.55;
+        const endZoom = 1.0;
+        this.camera.zoom = startZoom + normalizedZoom * (endZoom - startZoom);
+        this.camera.updateProjectionMatrix();
+
+        this._scene.position.y = this.oldY + invertedNorm * 0.4;
     }
 
     updateImage(image) {

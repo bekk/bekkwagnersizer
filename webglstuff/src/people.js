@@ -10,18 +10,21 @@ import { createPlaneGeometry,
 } from "./util.js";
 
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
+import PlingPlongTransition from "./pling-plong-transition.js";
 
 export default class People {
 
     constructor(renderer, textureCollection) {
         const cameraHeight = 0.4;
-        this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.1, 10000);
+        this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         this._camera.position.set(0, cameraHeight, 2.55);
         this._camera.updateProjectionMatrix();
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
         this.orbitControls.target = new THREE.Vector3(0, cameraHeight, 0);
         this.orbitControls.update();
+
+        this._camera.orbitControls = this.orbitControls;
 
         this._scene = new THREE.Scene();
 
@@ -31,7 +34,7 @@ export default class People {
         const purplePlane = new THREE.Mesh(
             new THREE.PlaneGeometry(5,2),
             new THREE.MeshBasicMaterial({
-                color: new THREE.Color(0xbc1a8d)
+                color: new THREE.Color(0xbc1a8d),
             })
         );
         purplePlane.position.set(0, -0.5, 0.2);
@@ -45,6 +48,8 @@ export default class People {
         );
         bluePlane.position.set(0, 1.5, 0);
         this._scene.add(bluePlane);
+
+        this.oldY = this._camera.position.y;
 
         var lightSun = new THREE.DirectionalLight(0xffffff, 1.0);
         lightSun.position.set(-0.5, 4, 1).normalize();
@@ -65,6 +70,18 @@ export default class People {
         this.peopleObject3D.updatePositions();
 
         this.orbitControls.update();
+    }
+
+    zoomAmount(normalizedZoom) {
+        const invertedNorm = 1 - normalizedZoom;
+
+        const startZoom = 0.6;
+        const endZoom = 1.0;
+        this.camera.zoom = startZoom + normalizedZoom * (endZoom - startZoom);
+        this.camera.updateProjectionMatrix();
+
+        this.camera.position.y = this.oldY - invertedNorm * 0.4;
+        this.camera.orbitControls.target.y = this.camera.position.y ;
     }
 
     getIndexInBack() {

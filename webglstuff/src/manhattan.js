@@ -4,6 +4,7 @@ import fragmentShaderCode from './fragmentshader.glsl';
 import fragmentShaderCodeFrame from './fragmentshaderframe.glsl';
 import fragmentShaderCodeImage from './fragmentshaderimage.glsl';
 import vertexShaderCode from './vertexshader.glsl';
+import PlingPlongTransition from "./pling-plong-transition.js";
 
 const uniforms = {
     time: {value: 0},
@@ -13,7 +14,7 @@ export default class Manhattan {
 
     constructor(renderer, textureCollection) {
         this._scene = new THREE.Scene();
-        this._camera = new THREE.PerspectiveCamera(90, ratio(renderer), 0.1, 10000);
+        this._camera = new THREE.PerspectiveCamera(90, ratio(renderer), 0.01, 10000);
         this._camera.position.set(0, 6, -15);
         this._camera.updateProjectionMatrix();
 
@@ -22,6 +23,8 @@ export default class Manhattan {
         this.orbitControls = new THREE.OrbitControls(this._camera);
         this.orbitControls.target = this._camera.position.clone().add(new THREE.Vector3(0, -5, -20));
         this.orbitControls.update();
+
+        this._camera.orbitControls = this.orbitControls;
 
         var lightManhattan = new THREE.DirectionalLight(0xffffff, 1.0);
         lightManhattan.position.set(-0.5, 1, 1).normalize();
@@ -62,6 +65,9 @@ export default class Manhattan {
             this.skyscrapers.push(skyscraper);
             flippy *= -1;
         }
+
+
+        this.oldY = this._camera.position.y;
     }
 
     get scene() {
@@ -75,6 +81,18 @@ export default class Manhattan {
     animate() {
         this.orbitControls.update();
         uniforms.time.value += 1/60; // TODO: Measure time properly
+    }
+
+    zoomAmount(normalizedZoom) {
+        const invertedNorm = 1 - normalizedZoom;
+
+        const startZoom = 0.6;
+        const endZoom = 1.0;
+        this.camera.zoom = startZoom + normalizedZoom * (endZoom - startZoom);
+        this.camera.updateProjectionMatrix();
+
+        this.camera.position.y = this.oldY - invertedNorm * 4.2;
+        this.camera.orbitControls.target.y = this.camera.position.y - 5 - 2.1 * invertedNorm;
     }
 
     updateImage(image) {
