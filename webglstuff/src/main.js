@@ -31,7 +31,9 @@ const uniforms = {
 
 socket.on('new image', (fileName)  => {
 	console.log(`Downloading new image: ${fileName}`);
-	addImage(fileName.replace('.png', ''));
+	fileName = fileName.replace('.png', '');
+	const sex = Random.pick(["male", "female"]); // TODO: finn kjønn fra bilde-navn
+	addImage(fileName, sex);
 })
 
 window.setInterval(() => {
@@ -86,11 +88,14 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.people)
+	changeAnimation(animations.people);
+	zoomOut();
 
 	// TODO: Skift til 12.3 * 7, x * y piksler
 
-	// Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
+	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
+
+	// TODO: Putt riktig mal på riktig kropp for perfekt match
 
 	document.getElementById("manhattan").onclick = function() { 
 		changeAnimation(animations.manhattan);

@@ -293,8 +293,15 @@ class ManhattanObject3D extends THREE.Object3D {
     const uniformsFrame = {
         time: uniforms.time,
         deviance: {value: deviance},
-        //color: {value: new THREE.Color(0x5600eb)},
+        //color: {value: new THREE.Color(0x62d8fe)},
         color: {value: uniformsWalls.color.value.clone().multiplyScalar(0.65)},
+    }
+
+    const uniformsFrameSides = {
+        time: uniforms.time,
+        deviance: {value: deviance},
+        //color: {value: new THREE.Color(0x5600eb)},
+        color: {value: uniformsWalls.color.value.clone().multiplyScalar(0.85)},
     }
 
     const uniformsLine = {
@@ -319,6 +326,14 @@ class ManhattanObject3D extends THREE.Object3D {
         side: THREE.DoubleSide,
     }); 
 
+    const shaderMaterialFrameSides = new THREE.ShaderMaterial({
+        uniforms: uniformsFrameSides,
+        vertexShader: vertexShaderCode,
+        fragmentShader: fragmentShaderCodeFrame,
+        transparent: false,
+        side: THREE.DoubleSide,
+    }); 
+
     const shaderMaterialLine = new THREE.ShaderMaterial({
         uniforms: uniformsLine,
         vertexShader: vertexShaderCode,
@@ -327,7 +342,7 @@ class ManhattanObject3D extends THREE.Object3D {
         side: THREE.DoubleSide,
     }); 
 
-    const allFrameSidesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterial);
+    const allFrameSidesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialFrameSides);
     // TODO: allFramesMesh kan vel være en del av allLinesMesh
     const allFramesMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialLine); // TODO: Initialize wihtout geometry?
     const allFrameBacksMesh = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 0.1), shaderMaterialFrame);
@@ -461,7 +476,7 @@ class ManhattanObject3D extends THREE.Object3D {
             allFrameBacksMesh.geometry.mergeMesh(frameBack)
 
             const frameSidesGeometry = makeFrameSides(i < nofWindows ? "XY" : "ZY", lineThickness, flippy);
-            const frameSides = new THREE.Mesh(frameSidesGeometry, shaderMaterialFrame);
+            const frameSides = new THREE.Mesh(frameSidesGeometry, shaderMaterialFrameSides);
             frameSides.position.copy(frame.position);
             if (i < nofWindows) frameSides.position.z -= 0.1; else frameSides.position.x += 0.0*flippy
             if (angleToCamera) allFrameSidesMesh.geometry.mergeMesh(frameSides)
