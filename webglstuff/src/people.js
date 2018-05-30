@@ -6,7 +6,8 @@ import { createPlaneGeometry,
   normalize,
   Random,
   ratio, 
-  addResizeListener 
+  addResizeListener,
+  easeOutCubic,
 } from "./util.js";
 
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
@@ -17,7 +18,7 @@ import PlingPlongTransition from "./pling-plong-transition.js";
 export default class People {
 
     constructor(renderer, textureCollection) {
-        const cameraHeight = 0.2;
+        const cameraHeight = 0.25;
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         this._camera.position.set(0, cameraHeight, 2.55);
         this._camera.updateProjectionMatrix();
@@ -144,7 +145,7 @@ class PeopleObject3D extends THREE.Object3D {
       const nofXDir = 20;
       const nofYDir = 20;
 
-      group.pathPosition = Math.floor(i / nofYDir)/nofYDir + Random.float(0, 0.05);
+      group.pathPosition = Math.floor(i / nofYDir)/nofYDir + Random.float(0, 0.035);
       const magic = Math.floor(i / nofYDir) % 2 == 0;
       group.pathDeviance = (i % nofXDir + (magic ? 0.5 : 0))/nofXDir ;
 
@@ -178,6 +179,14 @@ class PeopleObject3D extends THREE.Object3D {
   // -> malnummer-palettnummer-uuid.png
 
   getPath(position, deviance) {
+
+    const speedUpLength = 0.1;
+    const speedUpAmount = 3;
+
+    position = position < 0.1 
+      ? position * 3 
+      : (0.1*3) + (position-0.1)/(1-0.1) * (1-0.1*3);
+
     const spreadX = 2;
     const spreadY = 1.35;
     const skew = 0.30;

@@ -10,6 +10,8 @@ const uniforms = {
     time: {value: 0},
 };
 
+// TODO: Lag de nøærmeste vinduene lyseblå, og resten lilla
+
 export default class Manhattan {
 
     constructor(renderer, textureCollection) {
