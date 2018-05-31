@@ -7,7 +7,7 @@ import { fetchTextureFromServer, Random, ratio, clamp, easeInOutSine } from './u
 import Manhattan from './manhattan.js';
 import People from './people.js';
 import Telly from './telly.js';
-import KingsCross from './kingscross.js';
+import { KingsCross, Background } from './kingscross.js';
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 import PlingPlongTransition from "./pling-plong-transition.js";
 
@@ -17,6 +17,7 @@ let timeStart;
 let camera;
 let renderer;
 let scene;
+let animation;
 let orbitControls;
 let textureCollection;
 const animations = {};
@@ -25,6 +26,10 @@ let realtimeTextureCollection;
 let otherCamera;
 let otherScene;
 let transition;
+
+let backgroundCamera;
+let backgroundScene;
+let background;
 
 const uniforms = {
 	time: {value: 0.0},
@@ -136,14 +141,24 @@ const initAnimation = function(domNodeId, canvasId) {
         otherScene = new THREE.Scene();
         transition = new PlingPlongTransition(otherCamera);
         otherScene.add(transition);
+
+        backgroundCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
+        backgroundCamera.position.set(0, 0, 3);
+        backgroundCamera.lookAt(new THREE.Vector3(0, 0, 0))
+        backgroundCamera.updateProjectionMatrix();
+
+        backgroundScene = new THREE.Scene();
+        background = new Background();
+        backgroundScene.add(background);
 }
 		
 		window.state = 0;
 		window.transitionStartTime = 0;
 
-const changeAnimation = function(animation) {
-	scene = animation.scene
-	camera = animation.camera;
+const changeAnimation = function(newAnimation) {
+	scene = newAnimation.scene
+	camera = newAnimation.camera;
+	animation = newAnimation;
 }
 
 const zoomOut = function() {
@@ -189,6 +204,10 @@ const animate = function() {
 		animations.telly.zoomAmount(normalizedZoom);
 	
 	renderer.clear();
+	if (animation == animations.kingsCross) 
+		renderer.render(backgroundScene, backgroundCamera);
+
+	renderer.clearDepth();
 	renderer.render(scene, camera);
 
 	renderer.clearDepth();

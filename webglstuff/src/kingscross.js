@@ -14,7 +14,7 @@ import { createPlaneGeometry,
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 import PlingPlongTransition from "./pling-plong-transition.js";
 
-export default class KingsCross {
+export class KingsCross {
 
     constructor(renderer, textureCollection) {
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
@@ -157,8 +157,6 @@ export default class KingsCross {
 
         makePeopleRow(1.25)
         makePeopleRow(1.4)
-
-        scene.add(new Background(this._camera));
 
         var light = new THREE.DirectionalLight(0xffffff, 0.7);
         light.position.set(3, 3, -1).normalize();
@@ -364,8 +362,8 @@ class PeopleRow extends THREE.Object3D {
   }
 }
 
-class Background extends THREE.Object3D {
-  constructor(camera) {
+export class Background extends THREE.Object3D {
+  constructor() {
     super();
     const loader = new THREE.TextureLoader();
     const texture = loader.load("http://localhost:3000/kingscross.png");
@@ -378,13 +376,13 @@ class Background extends THREE.Object3D {
     });
 
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.17, 0.57), material);
-    mesh.scale.multiplyScalar(1500);
+    mesh.scale.multiplyScalar(4);
     //mesh.position.copy(camera.orbitControls.target)
-    mesh.position.set(-70, -170, -1000)
-    mesh.lookAt(camera.position);
+    //mesh.position.set(-70, -170, -1000)
+    //mesh.lookAt(camera.position);
     
     const group = new THREE.Object3D();
-    //group.add(mesh)
+    group.add(mesh)
 
     this.add(group);
   }

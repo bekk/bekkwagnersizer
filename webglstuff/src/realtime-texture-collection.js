@@ -70,6 +70,11 @@ class RealtimeTextureCollection {
   updateImage(image, texture) {
     console.log("Updating texture " + !!image);
   }
+
+  getMetadata(filename) {
+
+    //if (mappings[filename])
+  }
 }
 
 export default RealtimeTextureCollection;
