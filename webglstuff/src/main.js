@@ -185,9 +185,11 @@ const animate = function() {
 	    }
 
 		transition.animate(normalizedZoom);
+
 		animations.people.zoomAmount(normalizedZoom);
 		animations.manhattan.zoomAmount(normalizedZoom);
 		animations.telly.zoomAmount(normalizedZoom);
+		animations.kingsCross.zoomAmount(normalizedZoom);
 	
 	renderer.clear();
 	if (animation == animations.kingsCross) 

@@ -60,8 +60,8 @@ export class KingsCross {
 
           const lineGeometry = new THREE.BoxGeometry(width*0.99, height, 1);
 
-          const railingWhiteGeometry = new THREE.BoxGeometry(width*0.2, height, 0.32);
-          const railingRedGeometry = new THREE.BoxGeometry(width*0.175, height, 0.22);
+          const railingWhiteGeometry = new THREE.BoxGeometry(width*0.2, height, 0.325);
+          const railingRedGeometry = new THREE.BoxGeometry(width*0.15, height, 0.27);
 
           const lineMaterial = new THREE.MeshBasicMaterial({
             color: new THREE.Color(0.5, 0.5, 0.0).multiplyScalar(0.85)
@@ -106,6 +106,24 @@ export class KingsCross {
 
               railingsWhite.geometry.mergeMesh(railingWhite);
               railingsRed.geometry.mergeMesh(railingRed);
+
+
+              for (let k = -1; k <= 1; k+=2) {
+
+                for (let l = -1; l <= 1; l+=2) {
+                  const rivetSpread = 0.01;
+                  const rivet = new THREE.Mesh(rivetGeometry, lineMaterial);
+                  rivet.scale.x = 0.0025;
+                  rivet.scale.z = 0.0025;
+
+                  rivet.position.copy(railingWhite.position);
+                  rivet.position.y += 0.002;
+                  rivet.position.z += 0.15 * l;
+                  rivet.position.x += k * rivetSpread;
+
+                  lines.geometry.mergeMesh(rivet);
+                }
+              }
             }
 
             const rivetSpread = 0.035;
@@ -121,7 +139,6 @@ export class KingsCross {
               rivet.position.x += j * rivetSpread;
 
               lines.geometry.mergeMesh(rivet);
-
             }
           }
 
@@ -188,7 +205,6 @@ export class KingsCross {
     }
 
     zoomAmount(normalizedZoom) {
-        
     }
 
     updateImage(image, metadata) {
