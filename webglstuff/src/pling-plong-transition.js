@@ -26,9 +26,12 @@ export default class PlingPlongTransition extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
+    const skjermTexture = loader.load("http://localhost:3000/PlingPlong_Skjerm.png");
+    skjermTexture.minFilter = THREE.LinearFilter;
+
     const materialSkjerm = new THREE.MeshBasicMaterial({
       transparent: true,
-      map: loader.load("http://localhost:3000/PlingPlong_Skjerm.png"),
+      map: skjermTexture,
       side: THREE.DoubleSide,
     });
 

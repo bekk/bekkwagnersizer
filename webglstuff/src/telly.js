@@ -23,7 +23,7 @@ export default class Telly {
     constructor(renderer, textureCollection) {
         const width = renderer.getContext().drawingBufferWidth;
         const height = renderer.getContext().drawingBufferHeight;
-        const zoom = 1200;//1600;
+        const zoom = 1600;//1600;
         this._camera = new THREE.OrthographicCamera(width / -zoom, width / zoom, height / zoom, height / -zoom, 0.01, 1000);
         this._camera.position.set(1.1, 0.57, 100);
         this._camera.updateProjectionMatrix();
