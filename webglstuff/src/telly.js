@@ -18,10 +18,12 @@ import vertexShaderCode from './vertexshader-noop.glsl';
 
 export default class Telly {
 
+    // TODO: Opplegget for tilbakespoling virker error prone
+
     constructor(renderer, textureCollection) {
         const width = renderer.getContext().drawingBufferWidth;
         const height = renderer.getContext().drawingBufferHeight;
-        const zoom = 1600;
+        const zoom = 1200;//1600;
         this._camera = new THREE.OrthographicCamera(width / -zoom, width / zoom, height / zoom, height / -zoom, 0.01, 1000);
         this._camera.position.set(1.1, 0.57, 100);
         this._camera.updateProjectionMatrix();
@@ -36,7 +38,7 @@ export default class Telly {
 
         this.TVs = [];
 
-        for (let x = 0; x < 16; x++) {
+        for (let x = 0; x < 10; x++) {
           for (let y = 0; y < 8; y++) {
             const i = this.TVs.length;
             const tv = new TV(textureCollection, i * 2 + 1);
@@ -48,13 +50,11 @@ export default class Telly {
           }
         }
 
-        // TODO: La folka stå litt i ro etter animasjonen
-
         const gridMaterial = new THREE.MeshBasicMaterial({
           map: new THREE.TextureLoader().load("http://localhost:3000/grid.png"),
           transparent: true,
         });
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 5; i++) {
           for (let j = 0; j < 2; j++) {
             const grid = new THREE.Mesh(new THREE.PlaneGeometry(0.51, 0.51*1.3), gridMaterial)
             grid.position.set(0.125 + 1.0/2*i, 0.24 + j*0.65, 20)
@@ -102,9 +102,11 @@ export default class Telly {
     updateImage(image) {
         console.log("Updating texture in Telly " + !!image);
 
-        const tv = Random.pick(this.TVs);
+        for (let i = 0; i < 3; i++) {
+          const tv = Random.pick(this.TVs);
+          tv.updateImage(image);
+        }
 
-        tv.updateImage(image);
     }
 }
 
@@ -154,8 +156,12 @@ class TV extends THREE.Object3D {
   }
 
   updateImage(image) {
-    const sketch = Random.pick(this.sketches);
-    sketch.updateImage(image);
+    const nextSketch = this.sketches[this.nextSketchIndex()];
+    nextSketch.updateImage(image);
+  }
+
+  nextSketchIndex() {
+    return (this.sketchIndex + 1) % this.sketches.length;
   }
 
   animate() {
@@ -167,7 +173,7 @@ class TV extends THREE.Object3D {
       sketch.visible = false;
       sketch.rewind();
       
-      this.sketchIndex = (this.sketchIndex + 1) % this.sketches.length;
+      this.sketchIndex = this.nextSketchIndex();
       
       this.sketches[this.sketchIndex].visible = true;
       this.sketches[this.sketchIndex].rewind();
