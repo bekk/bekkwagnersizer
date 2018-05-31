@@ -23,7 +23,7 @@ export class KingsCross {
         this._camera.updateProjectionMatrix();
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
-        this.orbitControls.target = new THREE.Vector3(-0.5, -0.2, -7);
+        this.orbitControls.target = new THREE.Vector3(-0.5, -0.9, -7);
         //this.orbitControls.target = new THREE.Vector3(0, 0, -120);
         this.orbitControls.update();
 
@@ -348,7 +348,7 @@ class PeopleRow extends THREE.Object3D {
         person.normalizedPosition = 0;
       }
 
-      if (person.position.z < -13) {
+      if (person.position.z < -11) {
         person.plane.visible = false;
         person.fakePlane.visible = true;
         person.step.visible = false;
@@ -375,11 +375,9 @@ export class Background extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.17, 0.57), material);
-    mesh.scale.multiplyScalar(4);
-    //mesh.position.copy(camera.orbitControls.target)
-    //mesh.position.set(-70, -170, -1000)
-    //mesh.lookAt(camera.position);
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.17, 0.576 + 0.02), material);
+    mesh.scale.multiplyScalar(3.5);
+    mesh.position.set(0.03, 0.22, 0)
     
     const group = new THREE.Object3D();
     group.add(mesh)
