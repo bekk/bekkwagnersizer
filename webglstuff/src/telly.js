@@ -55,7 +55,7 @@ export default class Telly {
           transparent: true,
         });
         for (let i = 0; i < 5; i++) {
-          for (let j = 0; j < 2; j++) {
+          for (let j = -1; j < 3; j++) {
             const grid = new THREE.Mesh(new THREE.PlaneGeometry(0.51, 0.51*1.3), gridMaterial)
             grid.position.set(0.125 + 1.0/2*i, 0.24 + j*0.65, 20)
             grid.renderOrder = 1000;
@@ -91,12 +91,12 @@ export default class Telly {
     zoomAmount(normalizedZoom) {
         const invertedNorm = 1 - normalizedZoom;
 
-        const startZoom = 0.55;
+        const startZoom = 0.75;
         const endZoom = 1.0;
         this.camera.zoom = startZoom + normalizedZoom * (endZoom - startZoom);
         this.camera.updateProjectionMatrix();
 
-        this._scene.position.y = this.oldY + invertedNorm * 0.4;
+        this._scene.position.y = this.oldY + invertedNorm * 0.15;
     }
 
     updateImage(image) {

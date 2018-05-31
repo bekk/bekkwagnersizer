@@ -10,7 +10,7 @@ const uniforms = {
     time: {value: 0},
 };
 
-// TODO: Lag de nøærmeste vinduene lyseblå, og resten lilla
+// TODO: De nederste vinduene mangler noen ganger hode
 
 export default class Manhattan {
 
