@@ -304,7 +304,7 @@ class SlideInFromSides extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image, metadata) { // TODO: metadata
+  updateImage(image, metadata) { // TODO: bruk metadata
     const material = Random.pick(this.faceMaterials);
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);

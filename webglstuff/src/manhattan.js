@@ -533,9 +533,6 @@ class ManhattanObject3D extends THREE.Object3D {
         this.add(floor);
     }
 
-    // TODO: Gjør bygningene bak blassere
-    // Lag skerukkestreker
-
     for (let j = 0; j < distribution[1]; j++) {
         const height = j * 3;
         const floor = makeFloor(textureCollection, deviance, height, this._imagePlanes);
