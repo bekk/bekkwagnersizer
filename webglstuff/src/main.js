@@ -7,6 +7,7 @@ import { fetchTextureFromServer, Random, ratio, clamp, easeInOutSine } from './u
 import Manhattan from './manhattan.js';
 import People from './people.js';
 import Telly from './telly.js';
+import KingsCross from './kingscross.js';
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 import PlingPlongTransition from "./pling-plong-transition.js";
 
@@ -87,8 +88,9 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.people = new People(renderer, realtimeTextureCollection);
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
+	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.manhattan);
+	changeAnimation(animations.kingsCross);
 
 	// TODO: Skift til 12.3 * 7, x * y piksler
 
@@ -104,6 +106,9 @@ const initAnimation = function(domNodeId, canvasId) {
 	};
 	document.getElementById("telly").onclick = function() { 
 		changeAnimation(animations.telly);
+	};
+	document.getElementById("kingsCross").onclick = function() { 
+		changeAnimation(animations.kingsCross);
 	};
 	document.getElementById("zoomOut").onclick = function() { 
 		zoomOut();
@@ -158,7 +163,8 @@ const animate = function() {
 
 	animations.people.animate();
 	animations.manhattan.animate();
-	animations.telly.animate();;
+	animations.telly.animate();
+	animations.kingsCross.animate();
 
 	    let normalizedZoom;
 	    let speed = 0.5;
