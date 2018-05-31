@@ -54,7 +54,7 @@ export default class Manhattan {
                 -25 - level*15 + 2*flippy
             );
             const nearCamera = Math.abs(position.z) < 100;
-            const angleToCamera = Math.abs(position.z) < 65;  
+            const angleToCamera = Math.abs(position.z) < 50;  
 
             const color = wallPalette[i % wallPalette.length].clone().addScalar(THREE.Math.lerp(0, 0.6, level/levels));
             const frameBackColor = level == 0 
@@ -193,14 +193,14 @@ function makeFrameSides(type, lineThickness, flippy) {
         let localFramesides = new THREE.Geometry();
 
         for (let x = -1; x <= 1; x+=2) {
-            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/2, 1.5-lineThickness*2);
+            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/20, 1.5-lineThickness*2);
             const mesh = new THREE.Mesh(geometry);
             mesh.position.set(frameDepth, 0, -(1.5/2 - 0.025) * x);
             localFramesides.mergeMesh(mesh);
         }
 
         for (let y = -1; y <= 1; y+=2) {
-            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/2, 1.5-lineThickness*2);
+            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/20, 1.5-lineThickness*2);
             const mesh = new THREE.Mesh(geometry);
             mesh.rotation.x = Math.PI/2;
             mesh.position.set(frameDepth, -(1.5/2 - 0.025) * y, 0);
@@ -212,14 +212,14 @@ function makeFrameSides(type, lineThickness, flippy) {
         framesides.mergeMesh(localFramesidesMesh);
     } else {
         for (let x = -1; x <= 1; x+=2) {
-            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/2, 1.5-lineThickness*2);
+            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/20, 1.5-lineThickness*2);
             const mesh = new THREE.Mesh(geometry);
             mesh.position.set(frameDepth/2 * flippy, 0, -(1.5/2 - 0.025) * x);
             framesides.mergeMesh(mesh);
         }
 
         for (let y = -1; y <= 1; y+=2) {
-            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/2, 1.5-lineThickness*2);
+            const geometry = new THREE.PlaneGeometry(frameDepth-lineThickness/20, 1.5-lineThickness*2);
             const mesh = new THREE.Mesh(geometry);
             mesh.rotation.x = Math.PI/2;
             mesh.position.set(frameDepth/2 * flippy, -(1.5/2 - 0.025) * y, 0);
@@ -357,8 +357,8 @@ class ManhattanObject3D extends THREE.Object3D {
 
     const frameGeometry1 = makeFrameLinesGeometry("XY", lineThickness, flippy);
     const frameGeometry2 = makeFrameLinesGeometry("ZY", lineThickness, flippy);
-    const frameBackGeometry1 = new THREE.PlaneGeometry(1.6, 1.6);
-    const frameBackGeometry2 = planeBufferGeometry('ZY', 1.6, 1.6);
+    const frameBackGeometry1 = new THREE.PlaneGeometry(2.25, 2.25);
+    const frameBackGeometry2 = planeBufferGeometry('ZY', 2.25, 2.25);
 
     const planeGeometry1 = new THREE.PlaneBufferGeometry(1.75, 1.75);
     const planeGeometry2 = planeBufferGeometry('ZY', 1.75, 1.75);
@@ -465,11 +465,11 @@ class ManhattanObject3D extends THREE.Object3D {
             }
 
             const shoulders = plane.clone();
-            shoulders.scale.y = 0.2;
+            shoulders.scale.y = 0.25;
             if (i < nofWindows) shoulders.position.z -= 0.005; else shoulders.position.x += 0.025*flippy
-            shoulders.position.y -= 0.5;
+            shoulders.position.y -= 0.55;
             shoulders.material = shouldersImageMaterial;
-            if (includePlane) floor.add(shoulders)
+            if (angleToCamera) floor.add(shoulders)
 
             frame.position.y = height;
             if (nearCamera) allFramesMesh.geometry.mergeMesh(frame);
@@ -478,7 +478,7 @@ class ManhattanObject3D extends THREE.Object3D {
             const frameBack = new THREE.Mesh(frameBackGeometry, shaderMaterialFrame);
             frameBack.position.copy(frame.position);
             //frameBack.rotation.y = Math.PI;
-            if (i < nofWindows) frameBack.position.z -= 0.01; else frameBack.position.x += 0.25*flippy
+            if (i < nofWindows) frameBack.position.z -= 0.1; else frameBack.position.x += 0.4*flippy
             allFrameBacksMesh.geometry.mergeMesh(frameBack)
 
             const frameSidesGeometry = makeFrameSides(i < nofWindows ? "XY" : "ZY", lineThickness, flippy);
