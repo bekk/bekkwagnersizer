@@ -35,11 +35,11 @@ export class KingsCross {
         const scene = new THREE.Scene();
         this._scene = scene;
 
-        function makePeopleRow(xCoord) {
+        function makePeopleRow(xCoord, zCoord) {
           const row = new PeopleRow(textureCollection);
           scene.add(row);
           row.position.x = xCoord;
-          row.position.z = Math.random();
+          row.position.z = zCoord;
           rows.push(row);
         }
 
@@ -108,7 +108,7 @@ export class KingsCross {
               railingsRed.geometry.mergeMesh(railingRed);
             }
 
-            const rivetSpread = 0.04;
+            const rivetSpread = 0.035;
 
             for (let j = -2; j <= 2; j++) {
               const rivet = new THREE.Mesh(rivetGeometry, lineMaterial);
@@ -135,28 +135,28 @@ export class KingsCross {
 
         }
 
-        makePeopleRow(-1.4)
-        makePeopleRow(-1.25)
+        makePeopleRow(-1.4, 0.5)
+        makePeopleRow(-1.25, 0)
 
-        makeBoxRow(-1.0, 0.3)
+        makeBoxRow(-0.975, 0.3)
 
-        makePeopleRow(-0.75)
-        makePeopleRow(-0.6)
-        makePeopleRow(-0.45)
+        makePeopleRow(-0.715, 0.2);
+        makePeopleRow(-0.59, 0.15);
+        makePeopleRow(-0.465, 0.1);
 
         makeBoxRow(-0.225, 0.25)
 
-        makePeopleRow(0) 
+        makePeopleRow(0, 0) 
 
         makeBoxRow(0.225, 0.25)
 
-        makePeopleRow(0.45) 
-        makePeopleRow(0.6)
+        makePeopleRow(0.45, 0) 
+        makePeopleRow(0.6, 0.5)
 
-        makeBoxRow(0.9, 0.4)
+        makeBoxRow(0.925, 0.4)
 
-        makePeopleRow(1.25)
-        makePeopleRow(1.4)
+        makePeopleRow(1.25, 0)
+        makePeopleRow(1.4, 0.5)
 
         var light = new THREE.DirectionalLight(0xffffff, 0.7);
         light.position.set(3, 3, -1).normalize();
@@ -191,13 +191,11 @@ export class KingsCross {
         
     }
 
-    getIndexInBack(sex) {
-        
-    }
+    updateImage(image, metadata) {
+        console.log("Updating texture in KingsCross", !!image);
 
-    updateImage(image, sex) {
-        console.log("Updating texture in People", !!image, sex);
-
+        const row = Random.pick(this.rows);
+        row.updateImage(image, metadata)
     }
 
     updatePositions() {
@@ -216,6 +214,8 @@ class PeopleRow extends THREE.Object3D {
     this.nofTextures = textureCollection.nofTextures;
 
     this.people = [];
+
+    this.textureCollection = textureCollection;
 
     for (let i = 0; i < 100; i++) {
       const sex = Random.pick(["female", "male"]);
@@ -272,6 +272,7 @@ class PeopleRow extends THREE.Object3D {
       fakePlane.position.y -= 0.2;
       group.add(fakePlane)
       
+      group.face = face;
       group.plane = plane;
       group.fakePlane = fakePlane;
       this.people.push(group)
@@ -285,7 +286,7 @@ class PeopleRow extends THREE.Object3D {
         })
       );
       step.rotation.x = -Math.PI/2;
-      step.position.y = -0.45;
+      step.position.y = -0.35;
       group.add(step)
 
       group.step = step;
@@ -294,13 +295,13 @@ class PeopleRow extends THREE.Object3D {
     }
 
     const floor = new THREE.Mesh(
-      new THREE.BoxGeometry(0.5, 0.01, 100),
+      new THREE.BoxGeometry(0.75, 0.01, 100),
       new THREE.MeshBasicMaterial({
         color: new THREE.Color(0x00a5fe)
       })
     );
     floor.position.z = -50;
-    floor.position.y = -0.25
+    floor.position.y = -0.2
     this.add(floor)
   }
 
@@ -361,6 +362,38 @@ class PeopleRow extends THREE.Object3D {
       }
     }
 
+  }
+
+  getIndexInBack() {
+    const distanceIndeces = [];
+
+    for (let i in this.people) {
+      const person = this.people[i];
+      distanceIndeces.push({index: i, distance: person.position.z});
+    }
+
+    distanceIndeces.sort(function(a, b) {
+      return b.distance - a.distance; // REverse sort
+    });
+
+    return distanceIndeces[Random.int(30, 39)].index;
+  }
+
+  updateImage(image, metadata) {
+    const index = this.getIndexInBack()
+
+    const person = this.people[index];
+
+    person.face.material.map = image;
+    person.face.material.map.anisotropy = Math.pow(2, 3);
+    //person.face.material.map.minFilter = THREE.LinearMipMapLinearFilter;
+    person.face.material.needsUpdate = true;
+
+    const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
+    person.plane.material.map = body;
+    person.plane.material.map.anisotropy = Math.pow(2, 3);
+    //person.plane.map.minFilter = THREE.LinearMipMapLinearFilter;
+    person.plane.material.needsUpdate = true;
   }
 }
 
