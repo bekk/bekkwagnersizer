@@ -59,7 +59,7 @@ export default class Manhattan {
             const color = wallPalette[i % wallPalette.length].clone().addScalar(THREE.Math.lerp(0, 0.6, level/levels));
             const frameBackColor = level == 0 
                 ? 0x6ad8fd 
-                : (level > 5 ? 0xfed482 : 0x6100fd);
+                : 0x6100fd;
 
             const lineThickness = THREE.Math.lerp(0.05, 0.45, level/levels)*0.6;
             const skyscraper = new ManhattanObject3D(
@@ -357,8 +357,7 @@ class ManhattanObject3D extends THREE.Object3D {
 
     const frameGeometry1 = makeFrameLinesGeometry("XY", lineThickness, flippy);
     const frameGeometry2 = makeFrameLinesGeometry("ZY", lineThickness, flippy);
-    const frameBackGeometry1 = new THREE.PlaneGeometry(2.25, 2.25);
-    const frameBackGeometry2 = planeBufferGeometry('ZY', 2.25, 2.25);
+    const frameBackGeometry = new THREE.BoxGeometry(9.5, 3, 9.5);
 
     const planeGeometry1 = new THREE.PlaneBufferGeometry(1.75, 1.75);
     const planeGeometry2 = planeBufferGeometry('ZY', 1.75, 1.75);
@@ -474,19 +473,20 @@ class ManhattanObject3D extends THREE.Object3D {
             frame.position.y = height;
             if (nearCamera) allFramesMesh.geometry.mergeMesh(frame);
 
-            const frameBackGeometry = i < nofWindows ? frameBackGeometry1 : frameBackGeometry2;
-            const frameBack = new THREE.Mesh(frameBackGeometry, shaderMaterialFrame);
-            frameBack.position.copy(frame.position);
-            //frameBack.rotation.y = Math.PI;
-            if (i < nofWindows) frameBack.position.z -= 0.1; else frameBack.position.x += 0.4*flippy
-            allFrameBacksMesh.geometry.mergeMesh(frameBack)
-
             const frameSidesGeometry = makeFrameSides(i < nofWindows ? "XY" : "ZY", lineThickness, flippy);
             const frameSides = new THREE.Mesh(frameSidesGeometry, shaderMaterialFrameSides);
             frameSides.position.copy(frame.position);
             if (i < nofWindows) frameSides.position.z -= 0.1; else frameSides.position.x += 0.0*flippy
             if (angleToCamera) allFrameSidesMesh.geometry.mergeMesh(frameSides)
         }
+
+        const frameBack = new THREE.Mesh(frameBackGeometry, shaderMaterialFrame);
+        if (!angleToCamera) {
+            frameBack.scale.set(1, 1, 1.07);
+            frameBack.position.z = -0.8;
+        }
+        frameBack.position.y = height;
+        allFrameBacksMesh.geometry.mergeMesh(frameBack)
 
         const walls = new THREE.Mesh(wallGeometry, shaderMaterial);
         walls.position.y = height;
