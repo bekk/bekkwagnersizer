@@ -50,8 +50,11 @@ export default class Telly {
           }
         }
 
+        const gridTexture = new THREE.TextureLoader().load("http://localhost:3000/grid.png");
+        //gridTexture.minFilter = THREE.LinearFilter
+
         const gridMaterial = new THREE.MeshBasicMaterial({
-          map: new THREE.TextureLoader().load("http://localhost:3000/grid.png"),
+          map: gridTexture,
           transparent: true,
         });
         for (let i = 0; i < 5; i++) {
@@ -194,10 +197,12 @@ class SlideInFromSides extends THREE.Object3D {
     this.timer = new Timer();
 
     const sex1 = Random.pick(["male", "female"]);
-    const textureHead1 = textureCollection.getDefault(sex1);
+    const mal1 = Random.int(1, 4);
+    const textureHead1 = textureCollection.getDefault(sex1, mal1);
 
     const sex2 = Random.pick(["male", "female"]);
-    const textureHead2 = textureCollection.getDefault(sex2);
+    const mal2 = Random.int(1, 4);
+    const textureHead2 = textureCollection.getDefault(sex2, mal2);
 
     const materialHead1 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -214,8 +219,7 @@ class SlideInFromSides extends THREE.Object3D {
     materialHead1.sex = sex1;
     materialHead2.sex = sex2;
 
-    const body1 = Random.pick(textureCollection.bodies.male);
-    const textureBody1 = body1.texture;
+    const textureBody1 = textureCollection.getBody(sex1, mal1);
 
     const uniforms = {
         map: {type: "t", value: textureBody1},
@@ -228,8 +232,7 @@ class SlideInFromSides extends THREE.Object3D {
         transparent: true,
     });
 
-    const body2 = Random.pick(textureCollection.bodies.male);
-    const textureBody2 = body2.texture;
+    const textureBody2 = textureCollection.getBody(sex2, mal2);
 
     const materialBody2 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -280,6 +283,7 @@ class SlideInFromSides extends THREE.Object3D {
     }
 
     this.faceMaterials = [materialHead1, materialHead2];
+    this.bodyMaterials = [materialBody1, materialBody2];
   }
 
   animate() {
@@ -305,11 +309,18 @@ class SlideInFromSides extends THREE.Object3D {
   }
 
   updateImage(image, metadata) { // TODO: bruk metadata
-    const material = Random.pick(this.faceMaterials);
+    const index = Random.int(0, 1);
+    const material = this.faceMaterials[index];
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);
     //material.map.minFilter = THREE.LinearMipMapLinearFilter;
     material.needsUpdate = true;
+
+    const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
+    person.plane.material.map = body;
+    person.plane.material.map.anisotropy = Math.pow(2, 3);
+    //person.plane.map.minFilter = THREE.LinearMipMapLinearFilter;
+    person.plane.material.needsUpdate = true;
   }
 }
 
@@ -325,7 +336,9 @@ class SlideUpFromBottom extends THREE.Object3D {
     this.faceMaterials = [];
 
     for (let i = 0; i < nofPeople; i++) {
-      const textureHead = textureCollection.getDefault();
+      const sex = Random.pick(["male", "female"]);
+      const mal = Random.int(1, 4);
+      const textureHead = textureCollection.getDefault(sex, mal);
 
       const materialHead = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -333,8 +346,7 @@ class SlideUpFromBottom extends THREE.Object3D {
         side: THREE.DoubleSide,
       });
 
-      const body = Random.pick(textureCollection.bodies.male);
-      const textureBody = body.texture;
+      const textureBody = textureCollection.getBody(sex, mal);
 
       const materialBody = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -422,7 +434,9 @@ class ZoomOut extends THREE.Object3D {
 
     this.timer = new Timer();
 
-    const textureHead = textureCollection.getDefault();
+    const sex = Random.pick(["male", "female"]);
+    const mal = Random.int(1, 4);
+    const textureHead = textureCollection.getDefault(sex, mal);
 
     const materialHead = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -430,10 +444,7 @@ class ZoomOut extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-// TODO: Alle er male
-
-    const body1 = Random.pick(textureCollection.bodies.male);
-    const textureBody1 = body1.texture;
+    const textureBody1 = textureCollection.getBody(sex, mal);
 
     const materialBody1 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -506,7 +517,9 @@ class Skip extends THREE.Object3D {
 
     this.timer = new Timer();
 
-    const textureHead = textureCollection.getDefault();
+    const sex = Random.pick(["male", "female"]);
+    const mal = Random.int(1, 4);
+    const textureHead = textureCollection.getDefault(sex, mal);
 
     const materialHead = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -514,8 +527,7 @@ class Skip extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const body1 = Random.pick(textureCollection.bodies.male);
-    const textureBody1 = body1.texture;
+    const textureBody1 = textureCollection.getBody(sex, mal);
 
     const materialBody1 = new THREE.MeshBasicMaterial({
       transparent: true,

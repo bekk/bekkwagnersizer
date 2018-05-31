@@ -215,7 +215,7 @@ class PeopleObject3D extends THREE.Object3D {
   }
 
   updatePositions() {
-    const pathSpeed = 0.0002 * 10;
+    const pathSpeed = 0.0002;
 
     for (let plane of this.children) {
       plane.pathPosition += pathSpeed;

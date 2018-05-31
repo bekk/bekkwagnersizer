@@ -428,7 +428,7 @@ class PeopleRow extends THREE.Object3D {
       return b.distance - a.distance; // REverse sort
     });
 
-    return distanceIndeces[Random.int(30, 39)].index;
+    return distanceIndeces[Random.int(20, 29)].index;
   }
 
   updateImage(image, metadata) {
