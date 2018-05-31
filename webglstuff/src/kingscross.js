@@ -9,6 +9,7 @@ import { createPlaneGeometry,
   addResizeListener,
   easeOutCubic,
   clamp,
+  computeGeometry,
 } from "./util.js";
 
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
@@ -35,15 +36,35 @@ export class KingsCross {
         const scene = new THREE.Scene();
         this._scene = scene;
 
-        function makePeopleRow(xCoord, zCoord) {
-          const row = new PeopleRow(textureCollection);
+        const screenMaterials = [];
+        const loader = new THREE.TextureLoader();
+        for (let i = 0; i < 3; i++) {
+          const texture = loader.load("http://localhost:3000/tv"+i+".png");
+          const material = new THREE.MeshBasicMaterial({
+            transparent: true,
+            map: texture,
+            side: THREE.DoubleSide,
+          });
+          screenMaterials.push(material);
+        }
+
+        function makeScreen(i, xCoord) {
+          
+          const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 0.1), screenMaterials[i % screenMaterials.length]);
+          //mesh.scale.multiplyScalar(3.5);
+          mesh.position.set(xCoord, 0.1, -i * i * 0.03)
+          return mesh;
+      }
+
+        function makePeopleRow(xCoord, zCoord, reverseDir) {
+          const row = new PeopleRow(textureCollection, reverseDir);
           scene.add(row);
           row.position.x = xCoord;
           row.position.z = zCoord;
           rows.push(row);
         }
 
-        function makeBoxRow(xCoord, width) {
+        function makeBoxRow(xCoord, width, withScreens) {
           const length = 150;
           const height = 0.1;
           const row = new THREE.Mesh(new THREE.BoxGeometry(width, height, length), 
@@ -140,6 +161,8 @@ export class KingsCross {
 
               lines.geometry.mergeMesh(rivet);
             }
+
+            if (withScreens && i < cutoff) group.add(makeScreen(i, xCoord))
           }
 
           group.add(lines);
@@ -159,16 +182,16 @@ export class KingsCross {
 
         makePeopleRow(-0.715, 0.2);
         makePeopleRow(-0.59, 0.15);
-        makePeopleRow(-0.465, 0.1);
+        makePeopleRow(-0.465, 0.1, true);
 
-        makeBoxRow(-0.225, 0.25)
+        makeBoxRow(-0.225, 0.25, true)
 
         makePeopleRow(0, 0) 
 
-        makeBoxRow(0.225, 0.25)
+        makeBoxRow(0.225, 0.25, true)
 
         makePeopleRow(0.45, 0) 
-        makePeopleRow(0.6, 0.5)
+        makePeopleRow(0.6, 0.5, true)
 
         makeBoxRow(0.925, 0.4)
 
@@ -224,10 +247,12 @@ export class KingsCross {
 }
 
 class PeopleRow extends THREE.Object3D {
-  constructor(textureCollection) {
+  constructor(textureCollection, reverseDir) {
     super();
 
     this.nofTextures = textureCollection.nofTextures;
+
+    this.reverseDir = reverseDir;
 
     this.people = [];
 
@@ -237,17 +262,26 @@ class PeopleRow extends THREE.Object3D {
       const sex = Random.pick(["female", "male"]);
       const body = Random.pick(textureCollection.bodies[sex]);
 
+      const texture = body.texture; 
+
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: body.texture,
+        map: texture,
         side: THREE.DoubleSide,
       });
 
-      let plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), material);
+      const geometry = new THREE.PlaneGeometry(1,1);
+
+      let plane = new THREE.Mesh(geometry, material);
       plane.scale.multiplyScalar(0.75);
       plane.position.y -= 0.06;
 
-      //plane.renderOrder = 1;
+
+      // TODO: Fix for too much transparent around body textures
+      plane.scale.x *= 0.75;
+      texture.repeat.set(0.75, 1);
+      texture.offset.x = 0.125;
+
       
       const group = new THREE.Object3D();
       group.add(plane);
@@ -361,7 +395,9 @@ class PeopleRow extends THREE.Object3D {
 
       person.position.z = this.getZPos(person.normalizedPosition)
 
-      person.normalizedPosition += speed;
+      const dir = 1; //this.reverseDir ? -1 : 1;
+
+      person.normalizedPosition += speed * dir;
 
       if (person.normalizedPosition > 1) {
         person.normalizedPosition = 0;
