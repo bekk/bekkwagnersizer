@@ -45,7 +45,8 @@ export default class KingsCross {
 
         function makeBoxRow(xCoord, width) {
           const length = 150;
-          const row = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, length), 
+          const height = 0.1;
+          const row = new THREE.Mesh(new THREE.BoxGeometry(width, height, length), 
             new THREE.MeshStandardMaterial({
               emissive: new THREE.Color(0.5, 0.5, 0.0)
             }));
@@ -53,22 +54,56 @@ export default class KingsCross {
           row.position.z = -length/2;
           row.position.x = xCoord;
 
-          const lines = new THREE.Mesh(new THREE.Geometry(), 
-            new THREE.MeshBasicMaterial({
-                color: new THREE.Color(0.5, 0.5, 0.0).multiplyScalar(0.85)
-              })
-          );
+          const group = new THREE.Object3D();
+
+          group.add(row);
+
+          const lineGeometry = new THREE.BoxGeometry(width*0.99, height, 1);
+          const lineMaterial = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(0.5, 0.5, 0.0).multiplyScalar(0.85)
+          });
+
+          const lines = new THREE.Mesh(new THREE.Geometry, lineMaterial);
+
+          //const railingsRed =
+
+          const rivetGeometry = new THREE.CylinderGeometry(1, 1, height, 10);
           
           for (let i = 0; i < length*3; i++) {
-            const line = new THREE.Mesh(
-              new THREE.BoxGeometry(width*0.99, 0.1, 0.01)
-            );
+            const cutoff = length*0.8;
+            //if (i > cutoff) break;
+
+            const lineWidth = 0.001 + (i/length*3) * 0.03;
+
+            const line = new THREE.Mesh(lineGeometry, lineMaterial);
+            line.scale.z = lineWidth;
+
             line.position.set(xCoord, 0.002, -length*i/(length*3));
 
+            const rivetSpread = 0.05;
+
             lines.geometry.mergeMesh(line);
+
+            for (let j = -2; j <= 2; j++) {
+              const rivet = new THREE.Mesh(rivetGeometry, lineMaterial);
+              rivet.scale.x = 0.003;
+              rivet.scale.z = 0.003;
+
+              rivet.position.copy(line.position);
+              rivet.position.y += 0.001;
+              rivet.position.z += 0.025 + lineWidth;
+              rivet.position.x += j * rivetSpread;
+
+              lines.geometry.mergeMesh(rivet);
+
+            }
           }
 
-          scene.add(lines)
+          group.add(lines);
+
+          group.position.y -= height/2
+
+          scene.add(group)
 
         }
 
@@ -220,6 +255,8 @@ class PeopleRow extends THREE.Object3D {
       step.position.y = -0.45;
       group.add(step)
 
+      group.step = step;
+
       this.add(group);
     }
 
@@ -283,9 +320,11 @@ class PeopleRow extends THREE.Object3D {
       if (person.position.z < -13) {
         person.plane.visible = false;
         person.fakePlane.visible = true;
+        person.step.visible = false;
       } else {
         person.plane.visible = true;
         person.fakePlane.visible = false;
+        person.step.visible = true;
       }
     }
 
