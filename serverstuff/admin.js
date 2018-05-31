@@ -50,7 +50,7 @@ function fetchImages(container, renderer, { images }) {
   let markup = renderer(images.pop());
   document.querySelector(container).appendChild(markup);
 
-  setTimeout(fetchImages.bind(null, container, renderer, { images }), 500);
+  fetchImages(container, renderer, { images });
 }
 
 let renderGalleryImage = renderImage.bind(null, deleteImage, 'Slett', '');
