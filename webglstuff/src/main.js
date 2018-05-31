@@ -93,9 +93,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	changeAnimation(animations.kingsCross);
 
 	// TODO: Skift til 12.3 * 7, x * y piksler
-
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
-
 	// TODO: Putt riktig mal på riktig kropp for perfekt match
 
 	document.getElementById("manhattan").onclick = function() { 

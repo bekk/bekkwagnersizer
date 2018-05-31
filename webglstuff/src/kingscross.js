@@ -194,13 +194,13 @@ class PeopleRow extends THREE.Object3D {
       group.sex = sex;
 
       const step = new THREE.Mesh(
-        new THREE.BoxGeometry(0.5, 0.01, 0.01),
+        new THREE.PlaneGeometry(0.5, 0.03),
         new THREE.MeshBasicMaterial({
           color: new THREE.Color(0x000000)
         })
       );
-      step.rotation.x = Math.PI/4;
-      step.position.y = -0.5;
+      step.rotation.x = -Math.PI/2;
+      step.position.y = -0.45;
       group.add(step)
 
       this.add(group);
