@@ -18,11 +18,13 @@ export default class KingsCross {
 
     constructor(renderer, textureCollection) {
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
-        this._camera.position.set(0, 0.8, 0);
+        this._camera.position.set(0, 0.6, 0);
+        //this._camera.position.set(-70, 100, 100);
         this._camera.updateProjectionMatrix();
 
         this.orbitControls = new THREE.OrbitControls(this._camera);
-        this.orbitControls.target = new THREE.Vector3(-0.5, -0.5, -7);
+        this.orbitControls.target = new THREE.Vector3(-0.5, -0.2, -7);
+        //this.orbitControls.target = new THREE.Vector3(0, 0, -120);
         this.orbitControls.update();
 
         this._camera.orbitControls = this.orbitControls;
@@ -42,7 +44,7 @@ export default class KingsCross {
         }
 
         function makeBoxRow(xCoord, width) {
-          const length = 50;
+          const length = 150;
           const row = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, length), 
             new THREE.MeshStandardMaterial({
               emissive: new THREE.Color(0.5, 0.5, 0.0)
@@ -50,17 +52,23 @@ export default class KingsCross {
           scene.add(row);
           row.position.z = -length/2;
           row.position.x = xCoord;
+
+          const lines = new THREE.Mesh(new THREE.Geometry(), 
+            new THREE.MeshBasicMaterial({
+                color: new THREE.Color(0.5, 0.5, 0.0).multiplyScalar(0.85)
+              })
+          );
           
           for (let i = 0; i < length*3; i++) {
             const line = new THREE.Mesh(
-              new THREE.BoxGeometry(width*0.99, 0.1, 0.01),
-              new THREE.MeshBasicMaterial({
-                color: new THREE.Color(0.5, 0.5, 0.0).multiplyScalar(0.85)
-              })
+              new THREE.BoxGeometry(width*0.99, 0.1, 0.01)
             );
             line.position.set(xCoord, 0.002, -length*i/(length*3));
-            scene.add(line)
+
+            lines.geometry.mergeMesh(line);
           }
+
+          scene.add(lines)
 
         }
 
@@ -182,11 +190,11 @@ class PeopleRow extends THREE.Object3D {
 
       group.scale.multiplyScalar(0.5);
 
-      const spread = 0.3
+      this.spread = 2
       //const spreadIncrease = 0.001;
       //const spread = 0.02 + (i/4)*(i/4)*spreadIncrease;;
 
-      group.position.z = -i*spread
+      group.normalizedPosition = i / 100;
       group.rotation.x = -0.2;
 
       const fakePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.7), new THREE.MeshBasicMaterial({
@@ -226,17 +234,53 @@ class PeopleRow extends THREE.Object3D {
     this.add(floor)
   }
 
-  animate() {
-    let speed = 50/1000; // TODO make fps-independent
-    
-    for (let person of this.people) {
-      person.position.z += speed
+  getZPos(normalizedPosition) {
+    const maxDepth = 100 * this.spread;
 
-      if (person.position.z > 0) {
-        person.position.z = -100*0.3;
+    function easeOutLinearStepped(t) {
+      const step1Limit = 0.35;
+      const step2Limit = 0.8;
+
+      const step1Value = 0.85;
+      const step2Value = 0.97;
+
+      if (t < step1Limit) {
+        
+        const relativeT = (t - 0)/(step1Limit - 0);
+        return 0 + relativeT * (step1Value - 0);
+      
+      } else if (t < step2Limit) {
+        
+        const relativeT = (t - step1Limit)/(step2Limit - step1Limit);
+        return step1Value + relativeT * (step2Value - step1Value);
+      
+      } else {
+        
+        const relativeT = (t - step2Limit)/(1 - step2Limit);
+        return step2Value + relativeT * (1 - step2Value);
+      
+      };
+    }
+
+    const eased = easeOutLinearStepped(normalizedPosition);
+
+    return -(1 - eased)*maxDepth;
+  }
+
+  animate() {
+    let speed = 0.1/1000; // TODO make fps-independent
+
+    for (let person of this.people) {
+
+      person.position.z = this.getZPos(person.normalizedPosition)
+
+      person.normalizedPosition += speed;
+
+      if (person.normalizedPosition > 1) {
+        person.normalizedPosition = 0;
       }
 
-      if (person.position.z < (-100*0.3) * 0.4) {
+      if (person.position.z < -13) {
         person.plane.visible = false;
         person.fakePlane.visible = true;
       } else {
@@ -244,6 +288,7 @@ class PeopleRow extends THREE.Object3D {
         person.fakePlane.visible = false;
       }
     }
+
   }
 }
 
@@ -261,13 +306,13 @@ class Background extends THREE.Object3D {
     });
 
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.17, 0.57), material);
-    mesh.scale.multiplyScalar(150);
+    mesh.scale.multiplyScalar(1500);
     //mesh.position.copy(camera.orbitControls.target)
-    mesh.position.set(-10, -18, -100)
+    mesh.position.set(-70, -170, -1000)
     mesh.lookAt(camera.position);
     
     const group = new THREE.Object3D();
-    group.add(mesh)
+    //group.add(mesh)
 
     this.add(group);
   }
