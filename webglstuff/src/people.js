@@ -13,7 +13,7 @@ import { createPlaneGeometry,
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 import PlingPlongTransition from "./pling-plong-transition.js";
 
-// TODO: Enda flere folk i høyde og bredde (cirka dobbelt så mye?)
+// TODO: Pass på at det ikke er for mange folk utenfor bildet (ellers ser man ikke nye bilder)
 
 export default class People {
 
@@ -102,10 +102,10 @@ export default class People {
         return distanceIndeces[Random.int(0, 9)].index;
     }
 
-    updateImage(image, sex) {
-        console.log("Updating texture in People", !!image, sex);
+    updateImage(image, metadata) {
+        console.log("Updating texture in People", !!image, metadata);
 
-        const index = this.getIndexInBack(sex)
+        const index = this.getIndexInBack(metadata.sex)
 
         const plane = this.peopleObject3D.children[index];
 

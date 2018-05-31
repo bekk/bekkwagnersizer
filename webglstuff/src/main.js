@@ -37,32 +37,17 @@ const uniforms = {
 
 socket.on('new image', (fileName)  => {
 	console.log(`Downloading new image: ${fileName}`);
-	fileName = fileName.replace('.png', '');
-	const sex = Random.pick(["male", "female"]); // TODO: finn kjønn fra bilde-navn
-	addImage(fileName, sex);
+	addImage(fileName);
 })
 
-window.setInterval(() => {
-	//const fileName = 'People_karakterer_mai-' + Random.int(0, 1) + Random.int(1, 9);
-	const sex = Random.pick(["male", "female"]);
-	
-	let fileName;
-	
-	if (sex == "female") {
-		fileName = 'hode-f-' + Random.int(1, 4);
-	} else {
-		fileName = 'hode-m-' + Random.int(1, 20);
-	}
+const addImage = function(fileName) {
+	const metadata = realtimeTextureCollection.getMetadata(fileName)
 
-	//addImage(fileName, sex);
-}, 1000);
+	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`);
 
-const addImage = function(fileName, sex) {
-	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}.png`);
-    //realtimeTextureCollection.updateImage(texture);
-	animations.people.updateImage(texture, sex);
-	animations.manhattan.updateImage(texture, sex);
-	animations.telly.updateImage(texture, sex);
+	animations.people.updateImage(texture, metadata);
+	animations.manhattan.updateImage(texture, metadata);
+	animations.telly.updateImage(texture, metadata);
 }
 
 const initAnimation = function(domNodeId, canvasId) {
@@ -95,7 +80,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.kingsCross);
+	changeAnimation(animations.people);
 
 	// TODO: Skift til 12.3 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
@@ -120,18 +105,18 @@ const initAnimation = function(domNodeId, canvasId) {
 	document.getElementById("zoomIn").onclick = function() { 
 		zoomIn();
 	};
-	document.getElementById("addImage").onclick = function() { 
-		const sex = Random.pick(["male", "female"]);
+	document.getElementById("addImage").onclick = function() {
+		const knownFiles = [
+			"hode-f-1.png",
+			"hode-f-2.png",
+			"hode-f-3.png",
+			"hode-m-1.png",
+			"hode-m-2.png",
+			"hode-m-3.png",
+		];
+		const fileName = Random.pick(knownFiles);
 	
-		let fileName;
-		
-		if (sex == "female") {
-			fileName = 'hode-f-' + Random.int(5, 8);
-		} else {
-			fileName = 'hode-m-' + Random.int(4, 20);
-		}
-
-		addImage(fileName, sex);
+		addImage(fileName);
 	};
 
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);

@@ -14,16 +14,16 @@ class RealtimeTextureCollection {
 
     this.defaultTextures = {
       male: [
-        new THREE.TextureLoader().load("http://localhost:3000/hode-m-1.png"),
-        new THREE.TextureLoader().load("http://localhost:3000/hode-m-2.png"),
-        new THREE.TextureLoader().load("http://localhost:3000/hode-m-3.png"),
-        new THREE.TextureLoader().load("http://localhost:3000/hode-m-4.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-m-5.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-m-6.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-m-7.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-m-8.png"),
       ],
       female: [
-        new THREE.TextureLoader().load("http://localhost:3000/hode-f-1.png"),
-        new THREE.TextureLoader().load("http://localhost:3000/hode-f-2.png"),
-        new THREE.TextureLoader().load("http://localhost:3000/hode-f-3.png"),
-        new THREE.TextureLoader().load("http://localhost:3000/hode-f-4.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-f-5.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-f-6.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-f-7.png"),
+        new THREE.TextureLoader().load("http://localhost:3000/hode-f-8.png"),
       ],
     };
 
@@ -73,7 +73,17 @@ class RealtimeTextureCollection {
 
   getMetadata(filename) {
 
-    //if (mappings[filename])
+    const mappings = {
+      "hode-f-1.png": {mal: 0, animation: "people", sex: "female"},
+      "hode-f-2.png": {mal: 1, animation: "manhattan", sex: "female"},
+      "hode-f-3.png": {mal: 2, animation: "kingscross", sex: "female"},
+      "hode-m-1.png": {mal: 3, animation: "people", sex: "male"},
+      "hode-m-2.png": {mal: 4, animation: "manhattan", sex: "male"},
+      "hode-m-3.png": {mal: 5, animation: "kingscross", sex: "male"},
+    }
+
+    if (mappings[filename]) return mappings[filename];
+    else throw "IKKE IMPLEMENTERT"
   }
 }
 

@@ -99,12 +99,12 @@ export default class Telly {
         this._scene.position.y = this.oldY + invertedNorm * 0.15;
     }
 
-    updateImage(image) {
+    updateImage(image, metadata) {
         console.log("Updating texture in Telly " + !!image);
 
         for (let i = 0; i < 3; i++) {
           const tv = Random.pick(this.TVs);
-          tv.updateImage(image);
+          tv.updateImage(image, metadata);
         }
 
     }
@@ -155,9 +155,9 @@ class TV extends THREE.Object3D {
     this.sketchIndex = Random.int(0, this.sketches.length - 1);
   }
 
-  updateImage(image) {
+  updateImage(image, metadata) {
     const nextSketch = this.sketches[this.nextSketchIndex()];
-    nextSketch.updateImage(image);
+    nextSketch.updateImage(image, metadata);
   }
 
   nextSketchIndex() {
@@ -302,7 +302,7 @@ class SlideInFromSides extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image, sex) { // TODO: Sex
+  updateImage(image, metadata) { // TODO: metadata
     const material = Random.pick(this.faceMaterials);
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);
@@ -404,7 +404,7 @@ class SlideUpFromBottom extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image) {
+  updateImage(image, metadata) {
     const material = Random.pick(this.faceMaterials);
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);
@@ -484,7 +484,7 @@ class ZoomOut extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image) {
+  updateImage(image, metadata) {
     const material = this.faceMaterial;
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);
@@ -570,7 +570,7 @@ class Skip extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image) {
+  updateImage(image, metadata) {
     const material = this.faceMaterial;
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);

@@ -106,7 +106,7 @@ export default class Manhattan {
 
     //TDOO: Skyggelegging i karmer og på vegger
 
-    updateImage(image) {
+    updateImage(image, metadata) {
         console.log("Updating texture in Manhattan " + !!image);
 
         const index = Random.int(0, this.skyscrapers[0].imagePlanes.length - 1);
