@@ -13,7 +13,7 @@ import { createPlaneGeometry,
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 import PlingPlongTransition from "./pling-plong-transition.js";
 
-// TODO: Pass på at det ikke er for mange folk utenfor bildet (ellers ser man ikke nye bilder)
+// TODO: Pass på at nye bilder alltid havner inni midten
 
 export default class People {
 
@@ -33,6 +33,8 @@ export default class People {
 
         this.peopleObject3D = new PeopleObject3D(textureCollection);
         this._scene.add(this.peopleObject3D);
+
+        this.textureCollection = textureCollection;
 
         const purplePlane = new THREE.Mesh(
             new THREE.PlaneGeometry(5,2),
@@ -113,6 +115,12 @@ export default class People {
         plane.material.map.anisotropy = Math.pow(2, 3);
         //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
         plane.material.needsUpdate = true;
+
+        const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
+        plane.materialBody.map = body;
+        plane.materialBody.map.anisotropy = Math.pow(2, 3);
+        //plane.materialBody.map.minFilter = THREE.LinearMipMapLinearFilter;
+        plane.materialBody.needsUpdate = true;
     }
 }
 
@@ -127,11 +135,13 @@ class PeopleObject3D extends THREE.Object3D {
     for (let i = 0; i < this.nofTextures; i++) {
 
       const sex = Random.pick(["female", "male"]);
-      const textureBody = Random.pick(textureCollection.bodies[sex]);
+
+      const body = Random.pick(textureCollection.bodies[sex]);
+      const mal = body.metadata.mal;
 
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: textureBody,
+        map: body.texture,
         side: THREE.DoubleSide,
       });
 
@@ -150,7 +160,7 @@ class PeopleObject3D extends THREE.Object3D {
       group.pathDeviance = (i % nofXDir + (magic ? 0.5 : 0))/nofXDir ;
 
 
-      const textureHead = textureCollection.getDefault(sex);
+      const textureHead = textureCollection.getDefault(sex, mal);
 
       const materialHead = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -162,6 +172,7 @@ class PeopleObject3D extends THREE.Object3D {
       face.position.y += 0.18
       face.position.z += 0.05;
       group.material = materialHead;
+      group.materialBody = material;
       group.add(face)
 
       group.scale.multiplyScalar(0.5);
@@ -199,7 +210,7 @@ class PeopleObject3D extends THREE.Object3D {
   }
 
   updatePositions() {
-    const pathSpeed = 0.0002;
+    const pathSpeed = 0.0002 * 5;
 
     for (let plane of this.children) {
       plane.pathPosition += pathSpeed;

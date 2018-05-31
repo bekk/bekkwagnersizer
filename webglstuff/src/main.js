@@ -107,12 +107,12 @@ const initAnimation = function(domNodeId, canvasId) {
 	};
 	document.getElementById("addImage").onclick = function() {
 		const knownFiles = [
-			"hode-f-1.png",
-			"hode-f-2.png",
-			"hode-f-3.png",
-			"hode-m-1.png",
-			"hode-m-2.png",
-			"hode-m-3.png",
+			"hode-f-5.png",
+			"hode-f-6.png",
+			"hode-f-7.png",
+			"hode-m-5.png",
+			"hode-m-6.png",
+			"hode-m-7.png",
 		];
 		const fileName = Random.pick(knownFiles);
 	

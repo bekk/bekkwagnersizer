@@ -219,11 +219,11 @@ class PeopleRow extends THREE.Object3D {
 
     for (let i = 0; i < 100; i++) {
       const sex = Random.pick(["female", "male"]);
-      const textureBody = Random.pick(textureCollection.bodies[sex]);
+      const body = Random.pick(textureCollection.bodies[sex]);
 
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: textureBody,
+        map: body.texture,
         side: THREE.DoubleSide,
       });
 
@@ -236,7 +236,9 @@ class PeopleRow extends THREE.Object3D {
       const group = new THREE.Object3D();
       group.add(plane);
 
-      const textureHead = textureCollection.getDefault(sex);
+      const mal = body.metadata.mal;
+
+      const textureHead = textureCollection.getDefault(sex, mal);
 
       const materialHead = new THREE.MeshBasicMaterial({
         transparent: true,

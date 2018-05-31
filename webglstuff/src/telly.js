@@ -214,7 +214,8 @@ class SlideInFromSides extends THREE.Object3D {
     materialHead1.sex = sex1;
     materialHead2.sex = sex2;
 
-    const textureBody1 = Random.pick(textureCollection.bodies.male);
+    const body1 = Random.pick(textureCollection.bodies.male);
+    const textureBody1 = body1.texture;
 
     const uniforms = {
         map: {type: "t", value: textureBody1},
@@ -227,7 +228,8 @@ class SlideInFromSides extends THREE.Object3D {
         transparent: true,
     });
 
-    const textureBody2 = Random.pick(textureCollection.bodies.male);
+    const body2 = Random.pick(textureCollection.bodies.male);
+    const textureBody2 = body2.texture;
 
     const materialBody2 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -238,20 +240,20 @@ class SlideInFromSides extends THREE.Object3D {
     const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead1);
     face1.position.y += 0.1;
     face1.position.z += 0.01;
-    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
+    const bodyMesh1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
     const person1 = new THREE.Object3D();
     person1.add(face1);
-    person1.add(body1);
+    person1.add(bodyMesh1);
     person1.position.y -= 0.07;
     person1.position.z -= 0.05;
 
     const face2 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead2);
     face2.position.y += 0.1;
     face2.position.z += 0.01;
-    const body2 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody2);
+    const bodyMesh2 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody2);
     const person2 = new THREE.Object3D();
     person2.add(face2);
-    person2.add(body2);
+    person2.add(bodyMesh2);
     person2.position.y -= 0.07;
     person2.scale.multiplyScalar(1.1);
 
@@ -331,7 +333,8 @@ class SlideUpFromBottom extends THREE.Object3D {
         side: THREE.DoubleSide,
       });
 
-      const textureBody = Random.pick(textureCollection.bodies.female);
+      const body = Random.pick(textureCollection.bodies.male);
+      const textureBody = body.texture;
 
       const materialBody = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -341,10 +344,10 @@ class SlideUpFromBottom extends THREE.Object3D {
       const face = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
       face.position.y += 0.1;
       face.position.z += 0.01;
-      const body = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody);
+      const bodyMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody);
       const person = new THREE.Object3D();
       person.add(face);
-      person.add(body);
+      person.add(bodyMesh);
       person.position.y -= 0.12;
       person.position.z -= 0.04 + i * 0.01;
       person.scale.multiplyScalar(1.25);
@@ -427,7 +430,10 @@ class ZoomOut extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const textureBody1 = Random.pick(textureCollection.bodies.female);
+// TODO: Alle er male
+
+    const body1 = Random.pick(textureCollection.bodies.male);
+    const textureBody1 = body1.texture;
 
     const materialBody1 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -439,15 +445,15 @@ class ZoomOut extends THREE.Object3D {
     face1.position.y += 0.1;
     face1.position.z += 0.01;
     
-    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
+    const body1Mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
 
     // To zoom out from face:
     face1.position.y -= 0.1;
-    body1.position.y -= 0.1;
+    body1Mesh.position.y -= 0.1;
 
     const person1 = new THREE.Object3D();
     person1.add(face1);
-    person1.add(body1);
+    person1.add(body1Mesh);
     person1.position.x = Random.pick([-0.05, 0.05])
 
     const group = new THREE.Object3D();
@@ -508,7 +514,8 @@ class Skip extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const textureBody1 = Random.pick(textureCollection.bodies.female);
+    const body1 = Random.pick(textureCollection.bodies.male);
+    const textureBody1 = body1.texture;
 
     const materialBody1 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -520,15 +527,15 @@ class Skip extends THREE.Object3D {
     face1.position.y += 0.1;
     face1.position.z += 0.01;
     
-    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
+    const body1Mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
 
     // To zoom out from face:
     face1.position.y -= 0.1;
-    body1.position.y -= 0.1;
+    body1Mesh.position.y -= 0.1;
 
     const person1 = new THREE.Object3D();
     person1.add(face1);
-    person1.add(body1);
+    person1.add(body1Mesh);
 
     const group = new THREE.Object3D();
     group.add(person1);
