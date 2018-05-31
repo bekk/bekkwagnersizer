@@ -81,7 +81,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.kingsCross);
+	changeAnimation(animations.people);
 
 	// TODO: Skift til 12.3 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
@@ -101,6 +101,15 @@ const initAnimation = function(domNodeId, canvasId) {
 	};
 	document.getElementById("zoomOut").onclick = function() { 
 		zoomOut();
+	};
+	document.getElementById("stopSwing").onclick = function() { 
+		transition.stopSwing();
+	};
+	document.getElementById("pressButton").onclick = function() { 
+		transition.pressButton();
+	};
+	document.getElementById("releaseButton").onclick = function() { 
+		transition.releaseButton();
 	};
 	document.getElementById("zoomIn").onclick = function() { 
 		zoomIn();
@@ -135,6 +144,8 @@ const initAnimation = function(domNodeId, canvasId) {
         backgroundScene = new THREE.Scene();
         background = new Background();
         backgroundScene.add(background);
+		
+		//zoomOut();
 }
 		
 		window.state = 0;
@@ -147,6 +158,7 @@ const changeAnimation = function(newAnimation) {
 }
 
 const zoomOut = function() {
+	transition.resetAnimation();
 	window.state = 1;
 	window.transitionStartTime = new Date().getTime();
 }
@@ -164,6 +176,8 @@ const animate = function() {
 	animations.manhattan.animate();
 	animations.telly.animate();
 	animations.kingsCross.animate();
+
+		transition.animate();
 
 	    let normalizedZoom;
 	    let speed = 0.5;
@@ -183,7 +197,7 @@ const animate = function() {
 	    	normalizedZoom = 1;
 	    }
 
-		transition.animate(normalizedZoom);
+		transition.zoom(normalizedZoom);
 
 		animations.people.zoomAmount(normalizedZoom);
 		animations.manhattan.zoomAmount(normalizedZoom);

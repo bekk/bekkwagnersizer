@@ -92,9 +92,14 @@ export default class People {
     getIndexInBack(sex) {
         const distanceIndeces = [];
 
+        const centerOfScreenLimit = 1.33;
+
         for (let i in this.peopleObject3D.children) {
           const child = this.peopleObject3D.children[i];
-          if (child.sex == sex) distanceIndeces.push({index: i, distance: child.position.z});
+          if (child.sex == sex
+            && Math.abs(child.position.x) < centerOfScreenLimit) {
+              distanceIndeces.push({index: i, distance: child.position.z});
+            }
         }
 
         distanceIndeces.sort(function(a, b) {
@@ -170,7 +175,7 @@ class PeopleObject3D extends THREE.Object3D {
 
       const face = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialHead);
       face.position.y += 0.18
-      face.position.z += 0.05;
+      face.position.z += 0.1;
       group.material = materialHead;
       group.materialBody = material;
       group.add(face)
@@ -210,7 +215,7 @@ class PeopleObject3D extends THREE.Object3D {
   }
 
   updatePositions() {
-    const pathSpeed = 0.0002;
+    const pathSpeed = 0.0002 * 10;
 
     for (let plane of this.children) {
       plane.pathPosition += pathSpeed;

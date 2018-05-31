@@ -22,7 +22,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
 
     const materialKontrollPanel = new THREE.MeshBasicMaterial({
       transparent: true,
-      map: loader.load("http://localhost:3000/PlingPlong_KontrollPanel.png"),
+      map: texture,
       side: THREE.DoubleSide,
     });
 
@@ -53,10 +53,113 @@ export default class PlingPlongTransition extends THREE.Object3D {
 
     this.oldY = this.camera.position.y;
 
-    this.time = 0;
+    this.resetAnimation();
+
+    group.add(skjerm)
+
+
+    const armTexture = loader.load("http://localhost:3000/PlingPlong_Arm.png");
+    armTexture.minFilter = THREE.LinearFilter;
+    const materialArm = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: armTexture,
+      side: THREE.DoubleSide,
+    });
+    const arm = new THREE.Mesh(new THREE.PlaneGeometry(4.48, 3.06), materialArm);
+    arm.scale.multiplyScalar(0.055);
+    arm.position.set(
+      -0.28,
+      -0.52,
+      kontrollPanel.position.z + 0.02
+    );
+    group.add(arm)
+
+
+    const handTexture = loader.load("http://localhost:3000/PlingPlong_Hand.png");
+    handTexture.minFilter = THREE.LinearFilter;
+    const materialHand = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: handTexture,
+      side: THREE.DoubleSide,
+    });
+    const hand = new THREE.Mesh(new THREE.PlaneGeometry(3.32, 4.18), materialHand);
+    
+
+    const fingerTexture = loader.load("http://localhost:3000/PlingPlong_Finger-fixed.png");
+    fingerTexture.minFilter = THREE.LinearFilter;
+    const materialFinger = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: fingerTexture,
+      side: THREE.DoubleSide,
+    });
+    const finger = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 3.5), materialFinger);
+    finger.scale.multiplyScalar(0.9);
+    finger.position.set(0, 0.5, 0);
+
+    const fingerContainer = new THREE.Object3D();
+    fingerContainer.add(finger);
+    fingerContainer.position.set(0, 1.2, 0.1);
+
+    const handAndFinger = new THREE.Object3D();
+    handAndFinger.add(hand);
+    handAndFinger.add(fingerContainer);
+    handAndFinger.scale.multiplyScalar(0.055);
+    handAndFinger.position.set(
+      0,
+      0.09,
+      0,
+    );
+
+    const handAndFingerContainer = new THREE.Object3D();
+    handAndFingerContainer.position.set(
+      -0.24,
+      -0.47,
+      kontrollPanel.position.z + 0.01,
+    );
+    handAndFingerContainer.add(handAndFinger);
+
+    this.handAndFingerContainer = handAndFingerContainer;
+    this.fingerContainer = fingerContainer;
+
+    group.add(handAndFingerContainer)
   }
 
-  animate(normalizedZoom) {
+  stopSwing() {
+    this.swingSpeed = 0;
+  }
+
+  pressButton() {
+    this.pressTime = 0;
+    this.pressSpeed = 0.2;
+  }
+
+  releaseButton() {
+    this.pressTime = 1;
+    this.pressSpeed = -0.2;
+  }
+
+  resetAnimation() {
+    this.swingTime = 0;
+    this.pressTime = 0;
+    this.pressSpeed = 0;
+    this.swingSpeed = 0.003;
+  }
+
+  animate() {
+    const pressAmount = 0.2;
+
+    this.handAndFingerContainer.rotation.z = Math.sin(this.swingTime * 10) * 0.17;
+
+    this.fingerContainer.scale.y = 1 - this.pressTime * pressAmount;
+
+    this.pressTime += this.pressSpeed;
+    if (this.pressTime > 1) this.releaseButton();
+    this.pressTime = clamp(this.pressTime, 0, 1);
+
+    this.swingTime += this.swingSpeed;
+  }
+
+  zoom(normalizedZoom) {
 
     this.camera.position.copy(new THREE.Vector3(
         0,
