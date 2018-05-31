@@ -59,13 +59,24 @@ export default class KingsCross {
           group.add(row);
 
           const lineGeometry = new THREE.BoxGeometry(width*0.99, height, 1);
+
+          const railingWhiteGeometry = new THREE.BoxGeometry(width*0.2, height, 0.32);
+          const railingRedGeometry = new THREE.BoxGeometry(width*0.175, height, 0.22);
+
           const lineMaterial = new THREE.MeshBasicMaterial({
             color: new THREE.Color(0.5, 0.5, 0.0).multiplyScalar(0.85)
           });
+          const redMaterial = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(1.0, 0.3, 0.5).multiplyScalar(0.85)
+          });
+          const whiteMaterial = new THREE.MeshStandardMaterial({
+            color: new THREE.Color(1.0, 1.0, 1.0),
+            emissive: new THREE.Color(0.5, 0.5, 0.5)
+          });
 
           const lines = new THREE.Mesh(new THREE.Geometry, lineMaterial);
-
-          //const railingsRed =
+          const railingsRed = new THREE.Mesh(new THREE.Geometry, redMaterial)
+          const railingsWhite = new THREE.Mesh(new THREE.Geometry, whiteMaterial)
 
           const rivetGeometry = new THREE.CylinderGeometry(1, 1, height, 10);
           
@@ -79,10 +90,25 @@ export default class KingsCross {
             line.scale.z = lineWidth;
 
             line.position.set(xCoord, 0.002, -length*i/(length*3));
-
-            const rivetSpread = 0.05;
-
+            
             lines.geometry.mergeMesh(line);
+
+            for (let j = -1; j <= 1; j += 2) { 
+              const railingWhite = new THREE.Mesh(railingWhiteGeometry, whiteMaterial);
+              const railingRed = new THREE.Mesh(railingRedGeometry, redMaterial);
+
+              railingWhite.position.copy(line.position);
+              railingWhite.position.x += (width/2 - 0.01) * j;
+              railingWhite.position.y += 0.03;
+              railingRed.position.copy(line.position);
+              railingRed.position.x += (width/2 - 0.01) * j;
+              railingRed.position.y += 0.03 + 0.001;
+
+              railingsWhite.geometry.mergeMesh(railingWhite);
+              railingsRed.geometry.mergeMesh(railingRed);
+            }
+
+            const rivetSpread = 0.04;
 
             for (let j = -2; j <= 2; j++) {
               const rivet = new THREE.Mesh(rivetGeometry, lineMaterial);
@@ -100,6 +126,8 @@ export default class KingsCross {
           }
 
           group.add(lines);
+          group.add(railingsWhite);
+          group.add(railingsRed);
 
           group.position.y -= height/2
 
@@ -132,9 +160,14 @@ export default class KingsCross {
 
         scene.add(new Background(this._camera));
 
-        var light = new THREE.DirectionalLight(0xffffff, 1.0);
-        light.position.set(1, 3, -1).normalize();
+        var light = new THREE.DirectionalLight(0xffffff, 0.7);
+        light.position.set(3, 3, -1).normalize();
         this._scene.add(light);
+
+
+        var light2 = new THREE.DirectionalLight(0xffffff, 0.7);
+        light2.position.set(-3, 3, -1).normalize();
+        this._scene.add(light2);
 
         addResizeListener(this._camera, renderer);
     }
