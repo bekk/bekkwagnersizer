@@ -105,7 +105,10 @@ export default class KingsCross {
     }
 
     animate() {
-        this.updatePositions();
+        //this.updatePositions();
+        for (let row of this.rows) {
+          row.animate();
+        }
 
         this.orbitControls.update();
     }
@@ -124,11 +127,11 @@ export default class KingsCross {
     }
 
     updatePositions() {
-      const pathSpeed = 0.001;
+      //const pathSpeed = 0.001;
 
-      for (let row of this.rows) {
-        row.position.z += pathSpeed;
-      }
+      //for (let row of this.rows) {
+      //  row.position.z += pathSpeed;
+      //}
     }
 }
 
@@ -138,8 +141,9 @@ class PeopleRow extends THREE.Object3D {
 
     this.nofTextures = textureCollection.nofTextures;
 
-    for (let i = 0; i < 100; i++) {
+    this.people = [];
 
+    for (let i = 0; i < 100; i++) {
       const sex = Random.pick(["female", "male"]);
       const textureBody = Random.pick(textureCollection.bodies[sex]);
 
@@ -152,13 +156,7 @@ class PeopleRow extends THREE.Object3D {
       let plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), material);
       plane.scale.multiplyScalar(0.75);
       plane.position.y -= 0.06;
-      material.opacity = i < 57 ? 1 : 0;
-      if (material.opacity <= 0.2) {
-        plane = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.4), new THREE.MeshBasicMaterial({
-            color: new THREE.Color(0xbc1a8d)
-        }));
-        plane.position.z += 0.1;
-      }
+
       //plane.renderOrder = 1;
       
       const group = new THREE.Object3D();
@@ -184,12 +182,23 @@ class PeopleRow extends THREE.Object3D {
 
       group.scale.multiplyScalar(0.5);
 
-      //const spread = 0.3
-      const spreadIncrease = 0.001;
-      const spread = 0.02 + (i/4)*(i/4)*spreadIncrease;;
+      const spread = 0.3
+      //const spreadIncrease = 0.001;
+      //const spread = 0.02 + (i/4)*(i/4)*spreadIncrease;;
 
       group.position.z = -i*spread
       group.rotation.x = -0.2;
+
+      const fakePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.7), new THREE.MeshBasicMaterial({
+          color: new THREE.Color(0xbc1a8d)
+      }));
+      fakePlane.position.z += 0.1;
+      fakePlane.position.y -= 0.2;
+      group.add(fakePlane)
+      
+      group.plane = plane;
+      group.fakePlane = fakePlane;
+      this.people.push(group)
 
       group.sex = sex;
 
@@ -217,8 +226,24 @@ class PeopleRow extends THREE.Object3D {
     this.add(floor)
   }
 
-  getPath(position, deviance) {
+  animate() {
+    let speed = 50/1000; // TODO make fps-independent
+    
+    for (let person of this.people) {
+      person.position.z += speed
 
+      if (person.position.z > 0) {
+        person.position.z = -100*0.3;
+      }
+
+      if (person.position.z < (-100*0.3) * 0.4) {
+        person.plane.visible = false;
+        person.fakePlane.visible = true;
+      } else {
+        person.plane.visible = true;
+        person.fakePlane.visible = false;
+      }
+    }
   }
 }
 
