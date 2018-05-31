@@ -48,7 +48,7 @@ function fetchImages(container, renderer, { images }) {
     return;
   }
   let markup = renderer(images.pop());
-  document.querySelector(container).appendChild(markup);
+  document.querySelector(container).prepend(markup);
 
   fetchImages(container, renderer, { images });
 }
@@ -74,9 +74,9 @@ fetch('/trashbin')
 
 let socket = io('/');
 socket.on('new image', function(data) {
-  document.querySelector('#gallery').appendChild(renderGalleryImage(data));
+  document.querySelector('#gallery').prepend(renderGalleryImage(data));
 });
 
 socket.on('remove image', function(data) {
-  document.querySelector('#trash').appendChild(renderTrashImage(data));
+  document.querySelector('#trash').prepend(renderTrashImage(data));
 });
