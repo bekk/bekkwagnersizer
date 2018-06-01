@@ -23,7 +23,9 @@ const socket = ioClient("http://localhost:3000");
 // Få riktige dummyhoder inn i hver scene
 // Få grønne rader i Kings Cross
 
-// Øk antall kropper og dummyhoder fra 3-4 til alle
+// Fjerning av bilder
+
+// ======
 
 // Jobbe sammen om fargene på Manhattan
 
@@ -78,10 +80,17 @@ const addImage = function(fileName) {
 
 	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`);
 
-	animations.people.updateImage(texture, metadata);
-	animations.manhattan.updateImage(texture, metadata);
-	animations.telly.updateImage(texture, metadata);
-	animations.kingsCross.updateImage(texture, metadata);
+	if (metadata.animation == "people") {
+		animations.people.updateImage(texture, metadata);
+	} else if (metadata.animation == "manhattan") {
+		animations.manhattan.updateImage(texture, metadata);
+	} else if (metadata.animation == "telly") {
+		animations.telly.updateImage(texture, metadata);
+	} else if (metadata.animation == "kingscross") {
+		animations.kingsCross.updateImage(texture, metadata);
+	} else {
+		console.log("ERROR: ukjent animation:", metadata)
+	}
 }
 
 const initAnimation = function(domNodeId, canvasId) {

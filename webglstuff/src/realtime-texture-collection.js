@@ -306,9 +306,9 @@ class RealtimeTextureCollection {
       const split = filename.split("-")
       const mal = supermapping[split[2].split("kar")[1]];
       const sex = split[1] == "f" ? "female" : "male";
-      const animation = split[0];
+      const animation = split[0].split(/[0-9]/)[0];
       const metadata = {mal: mal, animation: animation, sex: sex};
-      console.log(metadata)
+      console.log("METADATA:", metadata)
       return metadata;
     }
     //else return {mal: 4, animation: "*", sex: "male"}
