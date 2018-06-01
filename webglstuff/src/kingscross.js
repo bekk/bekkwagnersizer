@@ -107,7 +107,7 @@ export class KingsCross {
           const rivetGeometry = new THREE.CylinderGeometry(1, 1, height, 10);
           
           for (let i = 0; i < length*3; i++) {
-            const cutoff = length*0.8;
+            const cutoff = length*0.6;
             //if (i > cutoff) break;
 
             const lineWidth = 0.001 + (i/length*3) * 0.03;
@@ -119,52 +119,54 @@ export class KingsCross {
             
             lines.geometry.mergeMesh(line);
 
-            for (let j = -1; j <= 1; j += 2) { 
-              const railingWhite = new THREE.Mesh(railingWhiteGeometry, whiteMaterial);
-              const railingRed = new THREE.Mesh(railingRedGeometry, redMaterial);
+            if (i < cutoff) {
+              for (let j = -1; j <= 1; j += 2) { 
+                const railingWhite = new THREE.Mesh(railingWhiteGeometry, whiteMaterial);
+                const railingRed = new THREE.Mesh(railingRedGeometry, redMaterial);
 
-              railingWhite.position.copy(line.position);
-              railingWhite.position.x += (width/2 - 0.01) * j;
-              railingWhite.position.y += 0.03;
-              railingRed.position.copy(line.position);
-              railingRed.position.x += (width/2 - 0.01) * j;
-              railingRed.position.y += 0.03 + 0.001;
+                railingWhite.position.copy(line.position);
+                railingWhite.position.x += (width/2 - 0.01) * j;
+                railingWhite.position.y += 0.03;
+                railingRed.position.copy(line.position);
+                railingRed.position.x += (width/2 - 0.01) * j;
+                railingRed.position.y += 0.03 + 0.001;
 
-              railingsWhite.geometry.mergeMesh(railingWhite);
-              railingsRed.geometry.mergeMesh(railingRed);
+                railingsWhite.geometry.mergeMesh(railingWhite);
+                railingsRed.geometry.mergeMesh(railingRed);
 
 
-              for (let k = -1; k <= 1; k+=2) {
+                for (let k = -1; k <= 1; k+=2) {
 
-                for (let l = -1; l <= 1; l+=2) {
-                  const rivetSpread = 0.01;
-                  const rivet = new THREE.Mesh(rivetGeometry, lineMaterial);
-                  rivet.scale.x = 0.0025;
-                  rivet.scale.z = 0.0025;
+                  for (let l = -1; l <= 1; l+=2) {
+                    const rivetSpread = 0.01;
+                    const rivet = new THREE.Mesh(rivetGeometry, lineMaterial);
+                    rivet.scale.x = 0.0025;
+                    rivet.scale.z = 0.0025;
 
-                  rivet.position.copy(railingWhite.position);
-                  rivet.position.y += 0.002;
-                  rivet.position.z += 0.15 * l;
-                  rivet.position.x += k * rivetSpread;
+                    rivet.position.copy(railingWhite.position);
+                    rivet.position.y += 0.002;
+                    rivet.position.z += 0.15 * l;
+                    rivet.position.x += k * rivetSpread;
 
-                  lines.geometry.mergeMesh(rivet);
+                    lines.geometry.mergeMesh(rivet);
+                  }
                 }
               }
-            }
 
-            const rivetSpread = 0.035;
+              const rivetSpread = 0.035;
 
-            for (let j = -2; j <= 2; j++) {
-              const rivet = new THREE.Mesh(rivetGeometry, lineMaterial);
-              rivet.scale.x = 0.003;
-              rivet.scale.z = 0.003;
+              for (let j = -2; j <= 2; j++) {
+                const rivet = new THREE.Mesh(rivetGeometry, lineMaterial);
+                rivet.scale.x = 0.003;
+                rivet.scale.z = 0.003;
 
-              rivet.position.copy(line.position);
-              rivet.position.y += 0.001;
-              rivet.position.z += 0.025 + lineWidth;
-              rivet.position.x += j * rivetSpread;
+                rivet.position.copy(line.position);
+                rivet.position.y += 0.001;
+                rivet.position.z += 0.025 + lineWidth;
+                rivet.position.x += j * rivetSpread;
 
-              lines.geometry.mergeMesh(rivet);
+                lines.geometry.mergeMesh(rivet);
+              }
             }
 
             if (withScreens && i < cutoff) group.add(makeScreen(i, xCoord, iOffset))
@@ -416,6 +418,8 @@ class PeopleRow extends THREE.Object3D {
         person.fakePlane.visible = false;
         person.step.visible = true;
       }
+
+      person.face.visible = person.position.z > -60
     }
 
   }
