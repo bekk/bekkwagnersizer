@@ -366,7 +366,7 @@ class ManhattanObject3D extends THREE.Object3D {
 
     const frameGeometry1 = makeFrameLinesGeometry("XY", lineThickness, flippy);
     const frameGeometry2 = makeFrameLinesGeometry("ZY", lineThickness, flippy);
-    const frameBackGeometry = new THREE.BoxGeometry(9.5, 3, 9.5);
+    const frameBackGeometry = new THREE.BoxGeometry(9.5, 2, 9.5);
 
     const planeGeometry1 = new THREE.PlaneBufferGeometry(2, 2.5);
     const planeGeometry2 = planeBufferGeometry('ZY', 2.5, 2.5);
