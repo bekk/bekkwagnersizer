@@ -320,7 +320,7 @@ class PeopleRow extends THREE.Object3D {
       group.rotation.x = -0.2;
 
       const fakePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.7), new THREE.MeshBasicMaterial({
-          color: new THREE.Color(0xbc1a8d)
+          color: sex == "male" ? new THREE.Color(0x009be6) : new THREE.Color(0xee7cae)
       }));
       fakePlane.position.z += 0.1;
       fakePlane.position.y -= 0.2;

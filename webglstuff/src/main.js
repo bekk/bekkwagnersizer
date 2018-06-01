@@ -48,6 +48,8 @@ let background;
 
 window.debug = false;
 
+const intervalMinutes = 1;
+
 const uniforms = {
 	time: {value: 0.0},
 };
@@ -198,7 +200,7 @@ const initAnimation = function(domNodeId, canvasId) {
 		removeIndex++;
 	};
 
-	//setInterval(orchestrate, 60*1000);
+	setInterval(orchestrate, intervalMinutes*60*1000);
 
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         otherCamera.position.set(0, 0, 3);

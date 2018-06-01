@@ -245,7 +245,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
 
     if (fingerSwing >= 0.99 && this.onTop == false) {
       this.count++;
-      console.log("COUTN", this.count)
+      //console.log("COUTN", this.count)
       this.onTop = true;
       this.callback(this.count);
     } else if (fingerSwing < 0.99) {
