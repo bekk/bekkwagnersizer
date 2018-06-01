@@ -189,11 +189,11 @@ export class KingsCross {
         makePeopleRow(-0.59, 0.15, "female");
         makePeopleRow(-0.465, 0.1, "female", true);
 
-        makeBoxRow(-0.225, 0.25, true, -5)
+        makeBoxRow(-0.226, 0.24, true, -5)
 
         makePeopleRow(0, 0, "male") 
 
-        makeBoxRow(0.225, 0.25, true, 0)
+        makeBoxRow(0.226, 0.24, true, 0)
 
         makePeopleRow(0.45, 0, "female") 
         makePeopleRow(0.6, 0.5, "female", true)

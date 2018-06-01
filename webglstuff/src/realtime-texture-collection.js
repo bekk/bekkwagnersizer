@@ -15,15 +15,33 @@ class RealtimeTextureCollection {
     const loader = new THREE.TextureLoader();
 
     this.defaultTextures = [
-      {metadata: this.getMetadata("hode-m-1.png"), texture: loader.load("http://localhost:3000/internal/hode-m-1.png")},
+      /*{metadata: this.getMetadata("hode-m-1.png"), texture: loader.load("http://localhost:3000/internal/hode-m-1.png")},
       {metadata: this.getMetadata("hode-m-2.png"), texture: loader.load("http://localhost:3000/internal/hode-m-2.png")},
       {metadata: this.getMetadata("hode-m-3.png"), texture: loader.load("http://localhost:3000/internal/hode-m-3.png")},
       {metadata: this.getMetadata("hode-m-4.png"), texture: loader.load("http://localhost:3000/internal/hode-m-4.png")},
       {metadata: this.getMetadata("hode-f-1.png"), texture: loader.load("http://localhost:3000/internal/hode-f-1.png")},
       {metadata: this.getMetadata("hode-f-2.png"), texture: loader.load("http://localhost:3000/internal/hode-f-2.png")},
       {metadata: this.getMetadata("hode-f-3.png"), texture: loader.load("http://localhost:3000/internal/hode-f-3.png")},
-      {metadata: this.getMetadata("hode-f-4.png"), texture: loader.load("http://localhost:3000/internal/hode-f-4.png")},
+      {metadata: this.getMetadata("hode-f-4.png"), texture: loader.load("http://localhost:3000/internal/hode-f-4.png")},*/
     ];
+
+    for (let i = 1; i <= 14; i++) {
+      const jukseI = i <= 4 ? i : 4;
+      const defaultTexture = {
+        metadata: this.getMetadata("hode-m-"+i+".png"), 
+        texture: loader.load("http://localhost:3000/internal/hode-m-"+jukseI+".png")
+      };
+      this.defaultTextures.push(defaultTexture);
+    }
+
+    for (let i = 1; i <= 11; i++) {
+      const jukseI = i <= 4 ? i : 4;
+      const defaultTexture = {
+        metadata: this.getMetadata("hode-f-"+i+".png"), 
+        texture: loader.load("http://localhost:3000/internal/hode-f-"+jukseI+".png")
+      };
+      this.defaultTextures.push(defaultTexture);
+    }
 
     for (let sex in this.defaultTextures) {
       this.defaultTextures[sex].magFilter = THREE.LinearFilter;
@@ -33,7 +51,7 @@ class RealtimeTextureCollection {
 
     this._bodies = {male: [], female: []};
 
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 14; i++) {
       const filename = "kropp-m-"+i+".png";
       const metadata = this.getMetadata(filename);
       this._bodies.male.push({
@@ -42,7 +60,7 @@ class RealtimeTextureCollection {
       });
     }
 
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 11; i++) {
       const filename = "kropp-f-"+i+".png";
       const metadata = this.getMetadata(filename);
       this._bodies.female.push({
@@ -53,7 +71,7 @@ class RealtimeTextureCollection {
 
         this._kcBodies = {male: [], female: []};
 
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 14; i++) {
           const filename = "kropp-m-"+i+"-kc.png";
           const metadata = this.getMetadata(filename);
           this._kcBodies.male.push({
@@ -62,7 +80,7 @@ class RealtimeTextureCollection {
           });
         }
 
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 11; i++) {
           const filename = "kropp-f-"+i+"-kc.png";
           const metadata = this.getMetadata(filename);
           this._kcBodies.female.push({
@@ -75,7 +93,7 @@ class RealtimeTextureCollection {
 
         this._tellyBodies = {male: [], female: []};
 
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 14; i++) {
           const filename = "kropp-m-"+i+"-telly.png";
           const metadata = this.getMetadata(filename);
           this._tellyBodies.male.push({
@@ -84,7 +102,7 @@ class RealtimeTextureCollection {
           });
         }
 
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 11; i++) {
           const filename = "kropp-f-"+i+"-telly.png";
           const metadata = this.getMetadata(filename);
           this._tellyBodies.female.push({
@@ -168,17 +186,35 @@ class RealtimeTextureCollection {
       "hode-f-2.png": {mal: 2, animation: "manhattan", sex: "female"},
       "hode-f-3.png": {mal: 3, animation: "kingscross", sex: "female"},
       "hode-f-4.png": {mal: 4, animation: "people", sex: "female"},
+      "hode-f-5.png": {mal: 5, animation: "people", sex: "female"},
+      "hode-f-6.png": {mal: 6, animation: "manhattan", sex: "female"},
+      "hode-f-7.png": {mal: 7, animation: "kingscross", sex: "female"},
+      "hode-f-8.png": {mal: 8, animation: "people", sex: "female"},
+      "hode-f-9.png": {mal: 9, animation: "people", sex: "female"},
+      "hode-f-10.png": {mal: 10, animation: "manhattan", sex: "female"},
+      "hode-f-11.png": {mal: 11, animation: "kingscross", sex: "female"},
+
       "hode-m-1.png": {mal: 1, animation: "people", sex: "male"},
       "hode-m-2.png": {mal: 2, animation: "manhattan", sex: "male"},
       "hode-m-3.png": {mal: 3, animation: "kingscross", sex: "male"},
       "hode-m-4.png": {mal: 4, animation: "people", sex: "male"},
+      "hode-m-5.png": {mal: 5, animation: "people", sex: "male"},
+      "hode-m-6.png": {mal: 6, animation: "manhattan", sex: "male"},
+      "hode-m-7.png": {mal: 7, animation: "kingscross", sex: "male"},
+      "hode-m-8.png": {mal: 8, animation: "people", sex: "male"},
+      "hode-m-9.png": {mal: 9, animation: "people", sex: "male"},
+      "hode-m-10.png": {mal: 10, animation: "manhattan", sex: "male"},
+      "hode-m-11.png": {mal: 11, animation: "kingscross", sex: "male"},
+      "hode-m-12.png": {mal: 12, animation: "people", sex: "male"},
+      "hode-m-13.png": {mal: 13, animation: "people", sex: "male"},
+      "hode-m-14.png": {mal: 14, animation: "manhattan", sex: "male"},
 
-      "hode-f-5.png": {mal: 1, animation: "people", sex: "female"},
+     /* "hode-f-5.png": {mal: 1, animation: "people", sex: "female"},
       "hode-f-6.png": {mal: 2, animation: "manhattan", sex: "female"},
       "hode-f-7.png": {mal: 3, animation: "kingscross", sex: "female"},
       "hode-m-5.png": {mal: 1, animation: "people", sex: "male"},
       "hode-m-6.png": {mal: 2, animation: "manhattan", sex: "male"},
-      "hode-m-7.png": {mal: 3, animation: "kingscross", sex: "male"},
+      "hode-m-7.png": {mal: 3, animation: "kingscross", sex: "male"},*/
 
       /*"kropp-f-1.png": {mal: 1, animation: "*", sex: "female"},
       "kropp-f-2.png": {mal: 2, animation: "*", sex: "female"},
@@ -223,12 +259,52 @@ class RealtimeTextureCollection {
       mappings["kropp-m-"+i+"-telly.png"] = {mal: i, animation: "*", sex: "male"}
     }
 
+    const supermapping = {
+      1: 1,
+      2: 2,
+      3: 3,
+      4: 4,
+      5: 5,
+      6: 6,
+
+      7: 1,
+      8: 2,
+      9: 3,
+
+      10: 7,
+      11: 8,
+
+      12: 4,
+
+      13: 10,
+
+      14: 5,
+
+      15: 10,
+
+      16: null, // NO NO
+      17: 6,
+      18: 7,
+      19: 8,
+
+      20: 11,
+
+      21: 9,
+
+      22: 12,
+      23: 13,
+      24: 14,
+
+      25: 10,
+      26: 11,
+    }
+
     if (mappings[filename]) {
       return mappings[filename];
     } else { // kingscross1-m-kar10-df5e6890-659c-11e8-8ce3-a7bb79d21297.png
       //throw "IKKE IMPLEMENTERT for " + filename;
       const split = filename.split("-")
-      const mal = split[2].split("kar")[1];
+      const mal = supermapping[split[2].split("kar")[1]];
       const sex = split[1] == "f" ? "female" : "male";
       const animation = split[0];
       const metadata = {mal: mal, animation: animation, sex: sex};

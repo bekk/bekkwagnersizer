@@ -69,7 +69,7 @@ fetch('http://localhost:3000/all')
   })
   .then(function(myJson) {
     knownFiles = myJson.files.filter((filename) => filename.indexOf(".png") != -1);
-    console.log("Known files:", knownFiles)
+    console.log("Known files:", knownFiles.length)
   });
 let knownFilesIndex = 0;
 
