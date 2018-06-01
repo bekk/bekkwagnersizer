@@ -141,6 +141,10 @@ const initAnimation = function(domNodeId, canvasId) {
 		addImage(fileName);
 	};
 
+	document.getElementById("orchestrate").onclick = function() { 
+		orchestrate();
+	};
+
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         otherCamera.position.set(0, 0, 3);
         otherCamera.updateProjectionMatrix();
@@ -168,6 +172,14 @@ const changeAnimation = function(newAnimation) {
 	scene = newAnimation.scene
 	camera = newAnimation.camera;
 	animation = newAnimation;
+}
+
+const orchestrate = function() {
+	zoomOut();
+	setTimeout(() => transition.stopSwing(), 4000);
+	setTimeout(() => transition.pressButton(), 6000);
+	setTimeout(() => changeAnimation(animations.people), 6500);
+	setTimeout(zoomIn, 7000);
 }
 
 const zoomOut = function() {
