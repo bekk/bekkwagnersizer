@@ -97,12 +97,12 @@ export default class PlingPlongTransition extends THREE.Object3D {
     });
     const shoe = new THREE.Mesh(new THREE.PlaneGeometry(7.47, 6.2), materialShoe);
     shoe.scale.multiplyScalar(0.05);
-    shoe.position.set(-0.02, 0.02, 0);
+    shoe.position.set(-0.08, 0.1, 0);
 
     const shoeContainter = new THREE.Object3D();
     shoeContainter.position.set(
-      -0.125,
-      -0.46,
+      -0.07,
+      -0.53,
       kontrollPanel.position.z + 0.01
     );
     shoeContainter.add(shoe);
@@ -238,7 +238,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
   animate() {
     const pressAmount = 0.2;
 
-    this.shoeContainter.rotation.z = Math.sin(this.swingTime * 7 + 1.2) * 0.08;
+    this.shoeContainter.rotation.z = Math.sin(this.swingTime * 21 + 1.2) * 0.06;
 
     const fingerSwing = Math.sin(this.swingTime * 9);
     this.handAndFingerContainer.rotation.z = fingerSwing * 0.13 - 0.06;
