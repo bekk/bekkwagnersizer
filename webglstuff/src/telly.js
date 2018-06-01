@@ -196,6 +196,8 @@ class SlideInFromSides extends THREE.Object3D {
 
     this.timer = new Timer();
 
+    this.textureCollection = textureCollection;
+
     const sex1 = Random.pick(["male", "female"]);
     const mal1 = Random.int(1, 4);
     const textureHead1 = textureCollection.getDefault(sex1, mal1);
@@ -316,6 +318,7 @@ class SlideInFromSides extends THREE.Object3D {
     //material.map.minFilter = THREE.LinearMipMapLinearFilter;
     material.needsUpdate = true;
 
+    // TODO: Gjør dette på alle sketsjer
     const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
     this.bodyMaterials[index].map = body;
     this.bodyMaterials[index].map.anisotropy = Math.pow(2, 3);

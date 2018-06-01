@@ -40,10 +40,21 @@ socket.on('new image', (fileName)  => {
 	addImage(fileName);
 })
 
+let knownFiles = [];
+fetch('http://localhost:3000/all')
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(myJson) {
+    knownFiles = myJson.files.filter((filename) => filename.indexOf(".png") != -1);
+    console.log("Known files:", knownFiles)
+  });
+let knownFilesIndex = 0;
+
 const addImage = function(fileName) {
 	const metadata = realtimeTextureCollection.getMetadata(fileName)
 
-	const texture = fetchTextureFromServer(`http://localhost:3000/internal/${fileName}`);
+	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`);
 
 	animations.people.updateImage(texture, metadata);
 	animations.manhattan.updateImage(texture, metadata);
@@ -117,15 +128,15 @@ const initAnimation = function(domNodeId, canvasId) {
 		zoomIn();
 	};
 	document.getElementById("addImage").onclick = function() {
-		const knownFiles = [
-			"hode-f-5.png",
-			"hode-f-6.png",
-			"hode-f-7.png",
-			"hode-m-5.png",
-			"hode-m-6.png",
-			"hode-m-7.png",
-		];
-		const fileName = Random.pick(knownFiles);
+
+		if (knownFilesIndex > knownFiles.length - 1) {
+			console.log("All files added");
+			return;
+		};
+
+		const fileName = knownFiles[knownFilesIndex++];
+
+		console.log("Adding", fileName)
 	
 		addImage(fileName);
 	};
