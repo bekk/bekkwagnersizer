@@ -211,8 +211,16 @@ class RealtimeTextureCollection {
 
     }
 
-    if (mappings[filename]) return mappings[filename];
-    else throw "IKKE IMPLEMENTERT for " + filename;
+    if (mappings[filename]) {
+      return mappings[filename];
+    } else { // kingscross1-m-kar10-df5e6890-659c-11e8-8ce3-a7bb79d21297.png
+      //throw "IKKE IMPLEMENTERT for " + filename;
+      const split = filename.split("-")
+      const mal = split[2];
+      const sex = split[1]
+      const animation = split[0];
+      return {mal: mal, animation: animation, sex: sex}
+    }
     //else return {mal: 4, animation: "*", sex: "male"}
   }
 }

@@ -468,7 +468,7 @@ export class Background extends THREE.Object3D {
 
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.17, 0.576 + 0.02), material);
     mesh.scale.multiplyScalar(3.9);
-    mesh.position.set(0.05, 0.205, 0)
+    mesh.position.set(0.037, 0.16, 0)
     
     const group = new THREE.Object3D();
     group.add(mesh)

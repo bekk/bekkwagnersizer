@@ -96,6 +96,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	renderer.autoClear = false;
 
 	// Skur 13: 1240 861
+	// SKur 13 60hz: 1491 1080
 	console.log(window.innerWidth, window.innerHeight); // 1680, 1050
 
 	console.log(
