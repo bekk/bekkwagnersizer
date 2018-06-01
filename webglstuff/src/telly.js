@@ -125,8 +125,8 @@ class TV extends THREE.Object3D {
     this.sketches = [
       //new SlideInFromSides(textureCollection),
       //new ZoomOut(textureCollection),
-      new Skip(textureCollection),
-      //new SlideUpFromBottom(textureCollection),
+      //new Skip(textureCollection),
+      new SlideUpFromBottom(textureCollection),
     ];
 
     this.timeOffset = Random.float(0, 5);
@@ -411,7 +411,7 @@ class SlideUpFromBottom extends THREE.Object3D {
       );
       const personTo = new THREE.Vector3(
         person.position.x, 
-        -0.15 + person.deviance * heightSpread, 
+        -0.2 + person.deviance * heightSpread, 
         person.position.z
       );
       person.position.copy(personFrom.clone().lerp(personTo, easedTime));
@@ -577,9 +577,9 @@ class Skip extends THREE.Object3D {
     const positions = [
       new THREE.Vector3(1, -0.35, 0),
       new THREE.Vector3(-1, -0.35, 0),
-      new THREE.Vector3(0, -0.45, 0),
-      new THREE.Vector3(1, -0.45, 0),
-      new THREE.Vector3(0.5, -0.5, 0),
+      new THREE.Vector3(0, -0.95, 0),
+      new THREE.Vector3(1, -0.95, 0),
+      new THREE.Vector3(0.5, -1.2, 0),
     ]
     const zooms = [1, 1.5, 2, 2.5, 3]
 
