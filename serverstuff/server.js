@@ -19,7 +19,7 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Headers',
@@ -53,7 +53,7 @@ app.post('/image', upload.single('image'), (req, res) => {
   res.sendStatus(200);
 });
 
-app.delete('/image/:id', function(req, res) {
+app.delete('/image/:id', function (req, res) {
   let fileName = req.params.id;
   let oldLocation = path.join(__dirname, 'uploads', fileName);
   let newLocation = path.join(__dirname, 'trash', fileName);
@@ -66,7 +66,7 @@ app.delete('/image/:id', function(req, res) {
   }
 });
 
-app.delete('/trash/:id', function(req, res) {
+app.delete('/trash/:id', function (req, res) {
   let fileName = req.params.id;
   let oldLocation = path.join(__dirname, 'trash', fileName);
   let newLocation = path.join(__dirname, 'uploads', fileName);
@@ -82,18 +82,18 @@ app.delete('/trash/:id', function(req, res) {
 app.get('/images', (req, res) => {
   fsp
     .readdir(path.join(__dirname, 'uploads'))
-    .then(function(images) {
+    .then(function (images) {
       if (req.query.limit) {
-        let stats = images
+        const stats = images
           .map(image => path.join(__dirname, 'uploads', image))
           .map(fsp.lstat);
 
         Promise.all(stats)
-          .then(function(filestats) {
-            let result = filestats
+          .then(function (filestats) {
+            const result = filestats
               .map((stat, i) => [images[i], stat])
               .sort(function(a, b) {
-                return a[1].birthtimeMs - b[1].birthtimeMs;
+                return b[1].birthtimeMs - a[1].birthtimeMs;
               })
               .slice(0, req.query.limit)
               .map(pair => pair[0]);
@@ -104,7 +104,7 @@ app.get('/images', (req, res) => {
         res.status(200).json({ images });
       }
     })
-    .catch(function(e) {
+    .catch(function (e) {
       res.status(500).json({ message: e.message });
     });
 });
@@ -120,6 +120,6 @@ io.on('connection', socket => {
   console.log('a user connected');
 });
 
-http.listen((port = 3000), function() {
+http.listen((port = 3000), function () {
   console.log(`Listening on port ${port}`);
 });

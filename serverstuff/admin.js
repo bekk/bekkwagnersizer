@@ -43,6 +43,7 @@ function undeleteImage(imgSrc) {
   });
 }
 
+// recursively renders images.
 function fetchImages(container, renderer, { images }) {
   if (images.length < 1) {
     return;
