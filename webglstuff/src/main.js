@@ -20,7 +20,8 @@ const socket = ioClient("http://localhost:3000");
 
 // Ta hensyn til hvilken scene hvert bilde fra Joachim hører til
 
-// Få dummyhoder av Audun
+// Få riktige dummyhoder inn i hver scene
+// Få grønne rader i Kings Cross
 // Få kropper i farger i Telly
 
 // Øk antall kropper og dummyhoder fra 3-4 til alle
