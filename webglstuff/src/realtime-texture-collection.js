@@ -180,7 +180,7 @@ class RealtimeTextureCollection {
       "hode-m-6.png": {mal: 2, animation: "manhattan", sex: "male"},
       "hode-m-7.png": {mal: 3, animation: "kingscross", sex: "male"},
 
-      "kropp-f-1.png": {mal: 1, animation: "*", sex: "female"},
+      /*"kropp-f-1.png": {mal: 1, animation: "*", sex: "female"},
       "kropp-f-2.png": {mal: 2, animation: "*", sex: "female"},
       "kropp-f-3.png": {mal: 3, animation: "*", sex: "female"},
       "kropp-f-4.png": {mal: 4, animation: "*", sex: "female"},
@@ -207,8 +207,20 @@ class RealtimeTextureCollection {
       "kropp-m-1-telly.png": {mal: 1, animation: "*", sex: "male"},
       "kropp-m-2-telly.png": {mal: 2, animation: "*", sex: "male"},
       "kropp-m-3-telly.png": {mal: 3, animation: "*", sex: "male"},
-      "kropp-m-4-telly.png": {mal: 4, animation: "*", sex: "male"},
+      "kropp-m-4-telly.png": {mal: 4, animation: "*", sex: "male"},*/
 
+    }
+
+    for (let i = 1; i <= 11; i++) {
+      mappings["kropp-f-"+i+".png"] = {mal: i, animation: "*", sex: "female"}
+      mappings["kropp-f-"+i+"-kc.png"] = {mal: i, animation: "*", sex: "female"}
+      mappings["kropp-f-"+i+"-telly.png"] = {mal: i, animation: "*", sex: "female"}
+    }
+
+    for (let i = 1; i <= 14; i++) {
+      mappings["kropp-m-"+i+".png"] = {mal: i, animation: "*", sex: "male"}
+      mappings["kropp-m-"+i+"-kc.png"] = {mal: i, animation: "*", sex: "male"}
+      mappings["kropp-m-"+i+"-telly.png"] = {mal: i, animation: "*", sex: "male"}
     }
 
     if (mappings[filename]) {
@@ -216,10 +228,12 @@ class RealtimeTextureCollection {
     } else { // kingscross1-m-kar10-df5e6890-659c-11e8-8ce3-a7bb79d21297.png
       //throw "IKKE IMPLEMENTERT for " + filename;
       const split = filename.split("-")
-      const mal = split[2];
-      const sex = split[1]
+      const mal = split[2].split("kar")[1];
+      const sex = split[1] == "f" ? "female" : "male";
       const animation = split[0];
-      return {mal: mal, animation: animation, sex: sex}
+      const metadata = {mal: mal, animation: animation, sex: sex};
+      console.log(metadata)
+      return metadata;
     }
     //else return {mal: 4, animation: "*", sex: "male"}
   }
