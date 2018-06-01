@@ -17,7 +17,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     this.camera = camera;
 
     const loader = new THREE.TextureLoader();
-    const texture = loader.load("http://localhost:3000/internal/PlingPlong_KontrollPanel.png");
+    const texture = loader.load("http://localhost:3000/internal/PlingPlong_KontrollPanel-smaller.png");
     texture.minFilter = THREE.LinearFilter;
 
     const materialKontrollPanel = new THREE.MeshBasicMaterial({
@@ -26,7 +26,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const skjermTexture = loader.load("http://localhost:3000/internal/PlingPlong_Skjerm.png");
+    const skjermTexture = loader.load("http://localhost:3000/internal/PlingPlong_Skjerm-smaller.png");
     skjermTexture.minFilter = THREE.LinearFilter;
 
     const materialSkjerm = new THREE.MeshBasicMaterial({
@@ -177,6 +177,12 @@ export default class PlingPlongTransition extends THREE.Object3D {
     this.shoeContainter = shoeContainter;
 
     group.add(handAndFingerContainer)
+
+
+    this.count = 0;
+    this.onTop = false;
+    this.callback = () => {};
+    this.onButtonDownCallback = () => {};
   }
 
   stopSwing() {
@@ -185,7 +191,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
 
   pressButton() {
     this.pressTime = 0;
-    this.pressSpeed = 0.2;
+    this.pressSpeed = 0.3;
   }
 
   releaseButton() {
@@ -200,17 +206,40 @@ export default class PlingPlongTransition extends THREE.Object3D {
     this.swingSpeed = 0.003;
   }
 
+  onButtonTop(callback) {
+    this.count = 0;
+    this.onTop = false;
+    this.callback = callback;
+  }
+
+  onButtonDown(callback) {
+    this.onButtonDownCallback = callback;
+  }
+
   animate() {
     const pressAmount = 0.2;
 
     this.shoeContainter.rotation.z = Math.sin(this.swingTime * 7 + 1.2) * 0.08;
 
-    this.handAndFingerContainer.rotation.z = Math.sin(this.swingTime * 9) * 0.13;
+    const fingerSwing = Math.sin(this.swingTime * 9);
+    this.handAndFingerContainer.rotation.z = fingerSwing * 0.13 - 0.04;
+
+    if (fingerSwing >= 0.99 && this.onTop == false) {
+      this.count++;
+      console.log("COUTN", this.count)
+      this.onTop = true;
+      this.callback(this.count);
+    } else if (fingerSwing < 0.99) {
+      this.onTop = false;
+    }
 
     this.fingerContainer.scale.y = 1 - this.pressTime * pressAmount;
 
     this.pressTime += this.pressSpeed;
-    if (this.pressTime > 1) this.releaseButton();
+    if (this.pressTime > 1) {
+      this.releaseButton();
+      this.onButtonDownCallback();
+    }
     this.pressTime = clamp(this.pressTime, 0, 1);
 
     this.swingTime += this.swingSpeed;

@@ -23,7 +23,6 @@ const socket = ioClient("http://localhost:3000");
 // Kropper i farger på Kings Cross
 
 // Jobbe sammen om fargene på Manhattan
-// Få inn bukse og sko uanimert
 
 // Pling Plong:
 	// Sving hånd like mange ganger som ben
@@ -32,9 +31,7 @@ const socket = ioClient("http://localhost:3000");
 
 // Kingscross: damene på rekke
 
-// Lavest pri: Mørkeblå på sidene i ruløletrappgropa, lyseblå på gulvet. Hex kommer fra Audun
-
-// Sko animert
+// Lavest pri: Mørkeblå på sidene i rulletrappgropa, lyseblå på gulvet. Hex kommer fra Audun
 
 let timeStart;
 let camera;
@@ -213,10 +210,15 @@ const getNextAnimation = function() {
 
 const orchestrate = function() {
 	zoomOut();
-	setTimeout(() => transition.stopSwing(), 6000);
-	setTimeout(() => transition.pressButton(), 8000);
-	setTimeout(() => changeAnimation(getNextAnimation()), 8500);
-	setTimeout(zoomIn, 9000);
+	transition.onButtonTop((times) => {
+		if (times == 3) {
+			transition.stopSwing();
+			transition.onButtonDown(() => changeAnimation(getNextAnimation()));
+			setTimeout(() => transition.pressButton(), 1000);
+			setTimeout(zoomIn, 3000);
+		}
+	});
+
 }
 
 const zoomOut = function() {
