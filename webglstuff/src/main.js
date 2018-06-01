@@ -17,6 +17,8 @@ const socket = ioClient("http://localhost:3000");
 // ============
 // Blinking i People
 
+// Timings i orchestrate
+
 // Få hoder og kropper FFS av Ben og Audun
 // Kropper i farger på Kings Cross
 
@@ -42,6 +44,7 @@ let animation;
 let orbitControls;
 let textureCollection;
 const animations = {};
+let animationIndex = 0;
 let realtimeTextureCollection;
 
 let otherCamera;
@@ -115,7 +118,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.manhattan);
+	changeAnimation(animations.people);
 
 	// TODO: Skift til 12.4 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
@@ -195,11 +198,24 @@ const changeAnimation = function(newAnimation) {
 	animation = newAnimation;
 }
 
+const getNextAnimation = function() {
+	let total = 0;
+	const array = [];
+	for (let key in animations) {
+		total++;
+		array.push(animations[key]);
+	}
+
+	animationIndex = (animationIndex + 1) % total;
+
+	return array[animationIndex];
+}
+
 const orchestrate = function() {
 	zoomOut();
 	setTimeout(() => transition.stopSwing(), 6000);
 	setTimeout(() => transition.pressButton(), 8000);
-	setTimeout(() => changeAnimation(animations.people), 8500);
+	setTimeout(() => changeAnimation(getNextAnimation()), 8500);
 	setTimeout(zoomIn, 9000);
 }
 
