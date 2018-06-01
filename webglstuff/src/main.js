@@ -84,12 +84,11 @@ const addImage = function(fileName) {
 		animations.people.updateImage(texture, metadata);
 	} else if (metadata.animation == "manhattan") {
 		animations.manhattan.updateImage(texture, metadata);
-	} else if (metadata.animation == "telly") {
 		animations.telly.updateImage(texture, metadata);
 	} else if (metadata.animation == "kingscross") {
 		animations.kingsCross.updateImage(texture, metadata);
 	} else {
-		console.log("ERROR: ukjent animation:", metadata)
+		throw "ERROR: ukjent animation: " + metadata.animation
 	}
 }
 
@@ -177,6 +176,8 @@ const initAnimation = function(domNodeId, canvasId) {
 	document.getElementById("orchestrate").onclick = function() { 
 		orchestrate();
 	};
+
+	setInterval(orchestrate, 30*1000);
 
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         otherCamera.position.set(0, 0, 3);
