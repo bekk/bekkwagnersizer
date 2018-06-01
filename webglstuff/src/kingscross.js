@@ -41,8 +41,8 @@ export class KingsCross {
 
         const screenMaterials = [];
         const loader = new THREE.TextureLoader();
-        for (let i = 0; i < 3; i++) {
-          const texture = loader.load("http://localhost:3000/internal/tv"+i+".png");
+        for (let i = 1; i <= 10; i++) {
+          const texture = loader.load("http://localhost:3000/internal/Skjerm"+i+".png");
           const material = new THREE.MeshBasicMaterial({
             transparent: true,
             map: texture,
@@ -55,7 +55,8 @@ export class KingsCross {
           
           const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.13), screenMaterials[i % screenMaterials.length]);
           //mesh.scale.multiplyScalar(3.5);
-          mesh.position.set(xCoord, 0.1, -i * i * 0.03)
+          i += 6;
+          mesh.position.set(xCoord, 0.11, -i * i * 0.028 + 0.10)
           return mesh;
       }
 
@@ -392,7 +393,7 @@ class PeopleRow extends THREE.Object3D {
   }
 
   animate() {
-    let speed = 0.1/1000; // TODO make fps-independent
+    let speed = 0.05/1000; // TODO make fps-independent
 
     for (let person of this.people) {
 
@@ -456,7 +457,7 @@ export class Background extends THREE.Object3D {
   constructor() {
     super();
     const loader = new THREE.TextureLoader();
-    const texture = loader.load("http://localhost:3000/internal/kingscross.png");
+    const texture = loader.load("http://localhost:3000/internal/KingsCross-bg.png");
     texture.minFilter = THREE.LinearFilter;
 
     const material = new THREE.MeshBasicMaterial({
@@ -467,7 +468,7 @@ export class Background extends THREE.Object3D {
 
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.17, 0.576 + 0.02), material);
     mesh.scale.multiplyScalar(3.5);
-    mesh.position.set(0.03, 0.22, 0)
+    mesh.position.set(0.05, 0.205, 0)
     
     const group = new THREE.Object3D();
     group.add(mesh)

@@ -16,6 +16,7 @@ const socket = ioClient("http://localhost:3000");
 // FINAL TODO:
 // ============
 // Blinking i People
+// Glitch i Manhattan
 
 // Få hoder og kropper FFS av Ben og Audun
 // Kropper i farger på Kings Cross
@@ -111,7 +112,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.people);
+	changeAnimation(animations.kingsCross);
 
 	// TODO: Skift til 12.4 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
