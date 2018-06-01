@@ -215,7 +215,7 @@ class PeopleObject3D extends THREE.Object3D {
     return new THREE.Vector3(
       normalize(deviance) * spreadX,
       normalize(Math.sin(scaledPosition * Math.PI)) * spreadY/2,
-      position + deviance*0.01,
+      position + deviance*0.03,
     );
   }
 
