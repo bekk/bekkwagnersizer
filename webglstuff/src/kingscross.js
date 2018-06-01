@@ -51,11 +51,11 @@ export class KingsCross {
           screenMaterials.push(material);
         }
 
-        function makeScreen(i, xCoord) {
+        function makeScreen(i, xCoord, iOffset) {
           
           const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.13), screenMaterials[i % screenMaterials.length]);
           //mesh.scale.multiplyScalar(3.5);
-          i += 6;
+          i += 6 + iOffset;
           mesh.position.set(xCoord, 0.11, -i * i * 0.028 + 0.10)
           return mesh;
       }
@@ -68,7 +68,7 @@ export class KingsCross {
           rows.push(row);
         }
 
-        function makeBoxRow(xCoord, width, withScreens) {
+        function makeBoxRow(xCoord, width, withScreens, iOffset) {
           const length = 150;
           const height = 0.1;
           const row = new THREE.Mesh(new THREE.BoxGeometry(width, height, length), 
@@ -167,7 +167,7 @@ export class KingsCross {
               lines.geometry.mergeMesh(rivet);
             }
 
-            if (withScreens && i < cutoff) group.add(makeScreen(i, xCoord))
+            if (withScreens && i < cutoff) group.add(makeScreen(i, xCoord, iOffset))
           }
 
           group.add(lines);
@@ -183,22 +183,22 @@ export class KingsCross {
         makePeopleRow(-1.4, 0.5, "male")
         makePeopleRow(-1.25, 0, "male")
 
-        makeBoxRow(-0.975, 0.3, true)
+        makeBoxRow(-0.975, 0.3, true, -2)
 
         makePeopleRow(-0.715, 0.2, "male");
         makePeopleRow(-0.59, 0.15, "female");
         makePeopleRow(-0.465, 0.1, "female", true);
 
-        makeBoxRow(-0.225, 0.25, true)
+        makeBoxRow(-0.225, 0.25, true, -5)
 
         makePeopleRow(0, 0, "male") 
 
-        makeBoxRow(0.225, 0.25, true)
+        makeBoxRow(0.225, 0.25, true, 0)
 
         makePeopleRow(0.45, 0, "female") 
         makePeopleRow(0.6, 0.5, "female", true)
 
-        makeBoxRow(0.925, 0.4, true)
+        makeBoxRow(0.925, 0.4, true, -7)
 
         makePeopleRow(1.25, 0, "male")
         makePeopleRow(1.4, 0.5, "female")
@@ -467,7 +467,7 @@ export class Background extends THREE.Object3D {
     });
 
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.17, 0.576 + 0.02), material);
-    mesh.scale.multiplyScalar(3.5);
+    mesh.scale.multiplyScalar(3.9);
     mesh.position.set(0.05, 0.205, 0)
     
     const group = new THREE.Object3D();

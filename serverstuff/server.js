@@ -50,6 +50,7 @@ app.use('/internal', express.static(__dirname + '/internal'));
 app.use('/trash', express.static(__dirname + '/trash'));
 
 app.post('/image', upload.single('image'), (req, res) => {
+  console.log(JSON.Stringify(req, null, 2));
   io.emit('new image', req.file.originalname);
   res.sendStatus(200);
 });

@@ -95,6 +95,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	renderer.setSize(window.innerWidth, window.innerHeight, true);
 	renderer.autoClear = false;
 
+	// Skur 13: 1240 861
 	console.log(window.innerWidth, window.innerHeight); // 1680, 1050
 
 	console.log(
@@ -116,7 +117,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.telly);
+	changeAnimation(animations.kingsCross);
 
 	// TODO: Skift til 12.4 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
