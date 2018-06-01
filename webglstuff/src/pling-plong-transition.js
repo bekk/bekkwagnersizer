@@ -74,6 +74,42 @@ export default class PlingPlongTransition extends THREE.Object3D {
     );
     group.add(arm)
 
+    const pantsTexture = loader.load("http://localhost:3000/internal/PlingPlong_Pants.png");
+    pantsTexture.minFilter = THREE.LinearFilter;
+    const materialPants = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: pantsTexture,
+      side: THREE.DoubleSide,
+    });
+    const pants = new THREE.Mesh(new THREE.PlaneGeometry(7.47, 6.2), materialPants);
+    pants.scale.multiplyScalar(0.05);
+    pants.position.set(
+      0.1,
+      -0.45,
+      kontrollPanel.position.z + 0.02
+    );
+    group.add(pants)
+
+    const shoeTexture = loader.load("http://localhost:3000/internal/PlingPlong_Shoe.png");
+    shoeTexture.minFilter = THREE.LinearFilter;
+    const materialShoe = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: shoeTexture,
+      side: THREE.DoubleSide,
+    });
+    const shoe = new THREE.Mesh(new THREE.PlaneGeometry(7.47, 6.2), materialShoe);
+    shoe.scale.multiplyScalar(0.05);
+    shoe.position.set(-0.02, 0.02, 0);
+
+    const shoeContainter = new THREE.Object3D();
+    shoeContainter.position.set(
+      -0.125,
+      -0.45,
+      kontrollPanel.position.z + 0.01
+    );
+    shoeContainter.add(shoe);
+    group.add(shoeContainter)
+
 
     const buttonTexture = loader.load("http://localhost:3000/internal/PlingPlong_Btn.png");
     buttonTexture.minFilter = THREE.LinearFilter;
@@ -112,6 +148,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     const finger = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 3.5), materialFinger);
     finger.scale.multiplyScalar(0.9);
     finger.position.set(0, 0.5, 0);
+    finger.rotation.z = -0.1;
 
     const fingerContainer = new THREE.Object3D();
     fingerContainer.add(finger);
@@ -137,6 +174,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
 
     this.handAndFingerContainer = handAndFingerContainer;
     this.fingerContainer = fingerContainer;
+    this.shoeContainter = shoeContainter;
 
     group.add(handAndFingerContainer)
   }
@@ -165,7 +203,9 @@ export default class PlingPlongTransition extends THREE.Object3D {
   animate() {
     const pressAmount = 0.2;
 
-    this.handAndFingerContainer.rotation.z = Math.sin(this.swingTime * 10) * 0.13;
+    this.shoeContainter.rotation.z = Math.sin(this.swingTime * 7 + 1.2) * 0.08;
+
+    this.handAndFingerContainer.rotation.z = Math.sin(this.swingTime * 9) * 0.13;
 
     this.fingerContainer.scale.y = 1 - this.pressTime * pressAmount;
 
