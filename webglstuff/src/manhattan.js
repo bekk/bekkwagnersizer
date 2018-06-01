@@ -32,6 +32,15 @@ export default class Manhattan {
         lightManhattan.position.set(-0.5, 1, 1).normalize();
         this._scene.add(lightManhattan);
 
+        const whitePlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(300, 300),
+            new THREE.MeshBasicMaterial({
+                color: new THREE.Color(0xffffff),
+            })
+        );
+        whitePlane.position.set(0, 0, -200);
+        this._scene.add(whitePlane);
+
          const wallPalette = [
             new THREE.Color(0xe423bc),
             new THREE.Color(0xfffe47),
@@ -359,8 +368,8 @@ class ManhattanObject3D extends THREE.Object3D {
     const frameGeometry2 = makeFrameLinesGeometry("ZY", lineThickness, flippy);
     const frameBackGeometry = new THREE.BoxGeometry(9.5, 3, 9.5);
 
-    const planeGeometry1 = new THREE.PlaneBufferGeometry(1.75, 1.75);
-    const planeGeometry2 = planeBufferGeometry('ZY', 1.75, 1.75);
+    const planeGeometry1 = new THREE.PlaneBufferGeometry(2, 2.5);
+    const planeGeometry2 = planeBufferGeometry('ZY', 2.5, 2.5);
 
     const defaultTexture = textureCollection.getBald();
     defaultTexture.anisotropy = Math.pow(2, 3);
@@ -445,7 +454,7 @@ class ManhattanObject3D extends THREE.Object3D {
 
             if (i < nofWindows) {
                 frame = new THREE.Mesh(frameGeometry1, shaderMaterialLine)
-                plane.position.y = -0.1;
+                plane.position.y = -0.25;
                 plane.position.x = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25;
                 plane.position.z = (5 - 0.175) + debugDistance;
             
@@ -453,7 +462,7 @@ class ManhattanObject3D extends THREE.Object3D {
                 frame.position.z -= 0.0;
             } else {
                 frame = new THREE.Mesh(frameGeometry2, shaderMaterialLine);
-                plane.position.y = -0.1;
+                plane.position.y = -0.25;
                 plane.position.z = (i%nofWindows - nofWindows/2) / nofWindows * spread + 1.25
                 plane.position.x = (-5 + 0.175 - debugDistance) * flippy;
             
@@ -465,8 +474,8 @@ class ManhattanObject3D extends THREE.Object3D {
 
             const shoulders = plane.clone();
             shoulders.scale.y = 0.25;
-            if (i < nofWindows) shoulders.position.z -= 0.005; else shoulders.position.x += 0.025*flippy
-            shoulders.position.y -= 0.55;
+            if (i < nofWindows) shoulders.position.z -= 0.01; else shoulders.position.x += 0.035*flippy
+            shoulders.position.y -= 0.4;
             shoulders.material = shouldersImageMaterial;
             if (angleToCamera) floor.add(shoulders)
 
