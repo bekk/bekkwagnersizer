@@ -267,7 +267,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     }
     this.pressTime = clamp(this.pressTime, 0, 1);
 
-    this.swingTime += this.swingSpeed;
+    this.swingTime += this.swingSpeed * window.fpsFactor;
   }
 
   zoom(normalizedZoom) {

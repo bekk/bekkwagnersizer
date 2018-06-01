@@ -46,6 +46,9 @@ let backgroundCamera;
 let backgroundScene;
 let background;
 
+window.fpsFactor = 1.0;
+window.lastTime = new Date().getTime();
+
 window.debug = false;
 
 const intervalMinutes = 1;
@@ -270,7 +273,11 @@ const zoomIn = function() {
 
 const animate = function() {
 	requestAnimationFrame(animate);
+
 	uniforms.time.value = (new Date().getTime() - timeStart) / 1000;
+
+	window.fpsFactor = (new Date().getTime() - window.lastTime)/(1000/60);
+	window.lastTime = new Date().getTime()
 
 	animations.people.animate();
 	animations.manhattan.animate();
