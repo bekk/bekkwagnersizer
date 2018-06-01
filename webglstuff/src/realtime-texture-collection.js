@@ -70,6 +70,28 @@ class RealtimeTextureCollection {
             texture: loader.load("http://localhost:3000/internal/" + filename)
           });
         }
+
+
+
+        this._tellyBodies = {male: [], female: []};
+
+        for (let i = 1; i <= 4; i++) {
+          const filename = "kropp-m-"+i+"-telly.png";
+          const metadata = this.getMetadata(filename);
+          this._tellyBodies.male.push({
+            metadata: metadata,
+            texture: loader.load("http://localhost:3000/internal/" + filename)
+          });
+        }
+
+        for (let i = 1; i <= 4; i++) {
+          const filename = "kropp-f-"+i+"-telly.png";
+          const metadata = this.getMetadata(filename);
+          this._tellyBodies.female.push({
+            metadata: metadata,
+            texture: loader.load("http://localhost:3000/internal/" + filename)
+          });
+        }
   }
 
   get nofTextures() {
@@ -82,6 +104,10 @@ class RealtimeTextureCollection {
 
   get kcBodies() {
     return this._kcBodies;
+  }
+
+  get tellyBodies() {
+    return this._tellyBodies;
   }
 
   getDefault(sex, mal) {
@@ -102,6 +128,19 @@ class RealtimeTextureCollection {
     if (mal == undefined) mal = 1;
 
     for (let body of this._bodies.male.concat(this._bodies.female)) {
+      if (body.metadata.sex == sex
+        && body.metadata.mal == mal) {
+        return body.texture;
+      }
+    }
+    throw "Fant ikke body for " + sex + " " + mal;
+  }
+
+  getTellyBody(sex, mal) {
+    if (sex == undefined) sex = "female";
+    if (mal == undefined) mal = 1;
+
+    for (let body of this._tellyBodies.male.concat(this._tellyBodies.female)) {
       if (body.metadata.sex == sex
         && body.metadata.mal == mal) {
         return body.texture;
@@ -159,6 +198,16 @@ class RealtimeTextureCollection {
       "kropp-m-2-kc.png": {mal: 2, animation: "*", sex: "male"},
       "kropp-m-3-kc.png": {mal: 3, animation: "*", sex: "male"},
       "kropp-m-4-kc.png": {mal: 4, animation: "*", sex: "male"},
+
+
+      "kropp-f-1-telly.png": {mal: 1, animation: "*", sex: "female"},
+      "kropp-f-2-telly.png": {mal: 2, animation: "*", sex: "female"},
+      "kropp-f-3-telly.png": {mal: 3, animation: "*", sex: "female"},
+      "kropp-f-4-telly.png": {mal: 4, animation: "*", sex: "female"},
+      "kropp-m-1-telly.png": {mal: 1, animation: "*", sex: "male"},
+      "kropp-m-2-telly.png": {mal: 2, animation: "*", sex: "male"},
+      "kropp-m-3-telly.png": {mal: 3, animation: "*", sex: "male"},
+      "kropp-m-4-telly.png": {mal: 4, animation: "*", sex: "male"},
 
     }
 

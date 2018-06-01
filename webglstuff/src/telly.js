@@ -226,7 +226,7 @@ class SlideInFromSides extends THREE.Object3D {
     materialHead1.sex = sex1;
     materialHead2.sex = sex2;
 
-    const textureBody1 = textureCollection.getBody(sex1, mal1);
+    const textureBody1 = textureCollection.getTellyBody(sex1, mal1);
 
     const uniforms = {
         map: {type: "t", value: textureBody1},
@@ -239,7 +239,7 @@ class SlideInFromSides extends THREE.Object3D {
         transparent: true,
     });
 
-    const textureBody2 = textureCollection.getBody(sex2, mal2);
+    const textureBody2 = textureCollection.getTellyBody(sex2, mal2);
 
     const materialBody2 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -324,7 +324,7 @@ class SlideInFromSides extends THREE.Object3D {
     material.needsUpdate = true;
 
     // TODO: Gjør dette på alle sketsjer
-    const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
+    const body = this.textureCollection.getTellyBody(metadata.sex, metadata.mal)
     this.bodyMaterials[index].map = body;
     this.bodyMaterials[index].map.anisotropy = Math.pow(2, 3);
     //person.plane.map.minFilter = THREE.LinearMipMapLinearFilter;
@@ -354,7 +354,7 @@ class SlideUpFromBottom extends THREE.Object3D {
         side: THREE.DoubleSide,
       });
 
-      const textureBody = textureCollection.getBody(sex, mal);
+      const textureBody = textureCollection.getTellyBody(sex, mal);
 
       const materialBody = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -452,7 +452,7 @@ class ZoomOut extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const textureBody1 = textureCollection.getBody(sex, mal);
+    const textureBody1 = textureCollection.getTellyBody(sex, mal);
 
     const materialBody1 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -535,7 +535,7 @@ class Skip extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const textureBody1 = textureCollection.getBody(sex, mal);
+    const textureBody1 = textureCollection.getTellyBody(sex, mal);
 
     const materialBody1 = new THREE.MeshBasicMaterial({
       transparent: true,
