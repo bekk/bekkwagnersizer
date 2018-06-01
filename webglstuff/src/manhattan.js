@@ -68,7 +68,7 @@ export default class Manhattan {
                 -10 + Math.random(), 
                 -25 - level*15 + 2*flippy
             );
-            const nearCamera = Math.abs(position.z) < 100;
+            const nearCamera = Math.abs(position.z) < 125*10;
             const angleToCamera = Math.abs(position.z) < 50;  
 
             const color = wallPalette[i % wallPalette.length].clone().addScalar(THREE.Math.lerp(0, 0.6, level/levels));

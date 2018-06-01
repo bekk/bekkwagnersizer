@@ -25,7 +25,7 @@ void main() {
 
   float adjustedTime = time + deviance*10.0;
   
-  modifiedPosition.x += sin(worldPosition.y / 10.0 + adjustedTime/2.0) * 2.0;
+  modifiedPosition.x += sin(worldPosition.y / 10.0 + adjustedTime/2.5) * 2.0;
 
   float worldHeightStepped = ((worldPosition.y + 0.6) / 3.0);
   float noise = sin(worldHeightStepped * 2.0);
