@@ -55,7 +55,7 @@ export default class Telly {
           }
         }
 
-        const gridTexture = new THREE.TextureLoader().load("http://localhost:3000/internal/grid.png");
+        const gridTexture = new THREE.TextureLoader().load("http://localhost:3000/internal/grid-better.png");
         //gridTexture.minFilter = THREE.LinearFilter
 
         const gridMaterial = new THREE.MeshBasicMaterial({
@@ -123,10 +123,10 @@ class TV extends THREE.Object3D {
     super();
 
     this.sketches = [
-      new SlideInFromSides(textureCollection),
-      new ZoomOut(textureCollection),
+      //new SlideInFromSides(textureCollection),
+      //new ZoomOut(textureCollection),
       new Skip(textureCollection),
-      new SlideUpFromBottom(textureCollection),
+      //new SlideUpFromBottom(textureCollection),
     ];
 
     this.timeOffset = Random.float(0, 5);
@@ -474,7 +474,7 @@ class ZoomOut extends THREE.Object3D {
     person1.add(face1);
     person1.add(body1Mesh);
     person1.position.x = Random.pick([-0.05, 0.05])
-    person1.position.y -= 0.02;
+    person1.position.y -= 0.03;
 
     const group = new THREE.Object3D();
     group.add(person1);
@@ -493,7 +493,7 @@ class ZoomOut extends THREE.Object3D {
     const time = Math.min(this.timer.get()/this.animationTime, 1);
     const easedTime = easeOutCubic(time);
 
-    const zoomFrom = 3;
+    const zoomFrom = 2.75;
     const zoomTo = 1;
 
     const person1From = new THREE.Vector3(zoomFrom, zoomFrom, zoomFrom);
@@ -575,11 +575,11 @@ class Skip extends THREE.Object3D {
     const time = Math.min(this.timer.get()/this.animationTime, 0.999);
 
     const positions = [
-      new THREE.Vector3(1, -0.35, 0),
-      new THREE.Vector3(-1, -0.35, 0),
-      new THREE.Vector3(0, -0.95, 0),
-      new THREE.Vector3(1, -0.95, 0),
-      new THREE.Vector3(0.5, -1.2, 0),
+      new THREE.Vector3(1, -0.45, 0),
+      new THREE.Vector3(-1, -0.45, 0),
+      new THREE.Vector3(0, -1.15, 0),
+      new THREE.Vector3(1, -1.15, 0),
+      new THREE.Vector3(0.5, -1.4, 0),
     ]
     const zooms = [1, 1.5, 2, 2.5, 3]
 
