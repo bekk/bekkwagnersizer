@@ -17,7 +17,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     this.camera = camera;
 
     const loader = new THREE.TextureLoader();
-    const texture = loader.load("http://localhost:3000/PlingPlong_KontrollPanel.png");
+    const texture = loader.load("http://localhost:3000/internal/PlingPlong_KontrollPanel.png");
     texture.minFilter = THREE.LinearFilter;
 
     const materialKontrollPanel = new THREE.MeshBasicMaterial({
@@ -26,7 +26,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const skjermTexture = loader.load("http://localhost:3000/PlingPlong_Skjerm.png");
+    const skjermTexture = loader.load("http://localhost:3000/internal/PlingPlong_Skjerm.png");
     skjermTexture.minFilter = THREE.LinearFilter;
 
     const materialSkjerm = new THREE.MeshBasicMaterial({
@@ -58,7 +58,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     group.add(skjerm)
 
 
-    const armTexture = loader.load("http://localhost:3000/PlingPlong_Arm.png");
+    const armTexture = loader.load("http://localhost:3000/internal/PlingPlong_Arm.png");
     armTexture.minFilter = THREE.LinearFilter;
     const materialArm = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -75,7 +75,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     group.add(arm)
 
 
-    const handTexture = loader.load("http://localhost:3000/PlingPlong_Hand.png");
+    const handTexture = loader.load("http://localhost:3000/internal/PlingPlong_Hand.png");
     handTexture.minFilter = THREE.LinearFilter;
     const materialHand = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -85,7 +85,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     const hand = new THREE.Mesh(new THREE.PlaneGeometry(3.32, 4.18), materialHand);
     
 
-    const fingerTexture = loader.load("http://localhost:3000/PlingPlong_Finger-fixed.png");
+    const fingerTexture = loader.load("http://localhost:3000/internal/PlingPlong_Finger-fixed.png");
     fingerTexture.minFilter = THREE.LinearFilter;
     const materialFinger = new THREE.MeshBasicMaterial({
       transparent: true,

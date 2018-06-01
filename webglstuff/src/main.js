@@ -43,7 +43,7 @@ socket.on('new image', (fileName)  => {
 const addImage = function(fileName) {
 	const metadata = realtimeTextureCollection.getMetadata(fileName)
 
-	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`);
+	const texture = fetchTextureFromServer(`http://localhost:3000/internal/${fileName}`);
 
 	animations.people.updateImage(texture, metadata);
 	animations.manhattan.updateImage(texture, metadata);
@@ -61,6 +61,8 @@ const initAnimation = function(domNodeId, canvasId) {
 	renderer.domElement.setAttribute('id', canvasId);
 	renderer.setSize(window.innerWidth, window.innerHeight, true);
 	renderer.autoClear = false;
+
+	console.log(window.innerWidth, window.innerHeight); // 1680, 1050
 
 	console.log(
 		renderer.getContext().getParameter(renderer.getContext().MAX_VERTEX_TEXTURE_IMAGE_UNITS),
@@ -83,7 +85,7 @@ const initAnimation = function(domNodeId, canvasId) {
 
 	changeAnimation(animations.telly);
 
-	// TODO: Skift til 12.3 * 7, x * y piksler
+	// TODO: Skift til 12.4 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
 	// TODO: Hent alle bilder på nytt hvis restart
 

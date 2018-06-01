@@ -15,14 +15,14 @@ class RealtimeTextureCollection {
     const loader = new THREE.TextureLoader();
 
     this.defaultTextures = [
-      {metadata: this.getMetadata("hode-m-1.png"), texture: loader.load("http://localhost:3000/hode-m-1.png")},
-      {metadata: this.getMetadata("hode-m-2.png"), texture: loader.load("http://localhost:3000/hode-m-2.png")},
-      {metadata: this.getMetadata("hode-m-3.png"), texture: loader.load("http://localhost:3000/hode-m-3.png")},
-      {metadata: this.getMetadata("hode-m-4.png"), texture: loader.load("http://localhost:3000/hode-m-4.png")},
-      {metadata: this.getMetadata("hode-f-1.png"), texture: loader.load("http://localhost:3000/hode-f-1.png")},
-      {metadata: this.getMetadata("hode-f-2.png"), texture: loader.load("http://localhost:3000/hode-f-2.png")},
-      {metadata: this.getMetadata("hode-f-3.png"), texture: loader.load("http://localhost:3000/hode-f-3.png")},
-      {metadata: this.getMetadata("hode-f-4.png"), texture: loader.load("http://localhost:3000/hode-f-4.png")},
+      {metadata: this.getMetadata("hode-m-1.png"), texture: loader.load("http://localhost:3000/internal/hode-m-1.png")},
+      {metadata: this.getMetadata("hode-m-2.png"), texture: loader.load("http://localhost:3000/internal/hode-m-2.png")},
+      {metadata: this.getMetadata("hode-m-3.png"), texture: loader.load("http://localhost:3000/internal/hode-m-3.png")},
+      {metadata: this.getMetadata("hode-m-4.png"), texture: loader.load("http://localhost:3000/internal/hode-m-4.png")},
+      {metadata: this.getMetadata("hode-f-1.png"), texture: loader.load("http://localhost:3000/internal/hode-f-1.png")},
+      {metadata: this.getMetadata("hode-f-2.png"), texture: loader.load("http://localhost:3000/internal/hode-f-2.png")},
+      {metadata: this.getMetadata("hode-f-3.png"), texture: loader.load("http://localhost:3000/internal/hode-f-3.png")},
+      {metadata: this.getMetadata("hode-f-4.png"), texture: loader.load("http://localhost:3000/internal/hode-f-4.png")},
     ];
 
     for (let sex in this.defaultTextures) {
@@ -38,7 +38,7 @@ class RealtimeTextureCollection {
       const metadata = this.getMetadata(filename);
       this._bodies.male.push({
         metadata: metadata,
-        texture: loader.load("http://localhost:3000/" + filename)
+        texture: loader.load("http://localhost:3000/internal/" + filename)
       });
     }
 
@@ -47,7 +47,7 @@ class RealtimeTextureCollection {
       const metadata = this.getMetadata(filename);
       this._bodies.female.push({
         metadata: metadata,
-        texture: loader.load("http://localhost:3000/" + filename)
+        texture: loader.load("http://localhost:3000/internal/" + filename)
       });
     }
   }
@@ -87,11 +87,11 @@ class RealtimeTextureCollection {
   }
 
   getBald() {
-    return new THREE.TextureLoader().load("http://localhost:3000/bald.png");
+    return new THREE.TextureLoader().load("http://localhost:3000/internal/bald.png");
   }
 
   getShoulders() {
-    return new THREE.TextureLoader().load("http://localhost:3000/shoulders.png");;
+    return new THREE.TextureLoader().load("http://localhost:3000/internal/shoulders.png");;
   }
 
   updateImage(image, texture) {

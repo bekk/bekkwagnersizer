@@ -39,7 +39,7 @@ export class KingsCross {
         const screenMaterials = [];
         const loader = new THREE.TextureLoader();
         for (let i = 0; i < 3; i++) {
-          const texture = loader.load("http://localhost:3000/tv"+i+".png");
+          const texture = loader.load("http://localhost:3000/internal/tv"+i+".png");
           const material = new THREE.MeshBasicMaterial({
             transparent: true,
             map: texture,
@@ -453,7 +453,7 @@ export class Background extends THREE.Object3D {
   constructor() {
     super();
     const loader = new THREE.TextureLoader();
-    const texture = loader.load("http://localhost:3000/kingscross.png");
+    const texture = loader.load("http://localhost:3000/internal/kingscross.png");
     texture.minFilter = THREE.LinearFilter;
 
     const material = new THREE.MeshBasicMaterial({

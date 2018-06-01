@@ -42,6 +42,7 @@ app.get('/admin', (req, res) => {
 
 app.use('/static', express.static(__dirname + '/'));
 app.use(express.static(__dirname + '/uploads'));
+app.use('/internal', express.static(__dirname + '/internal'));
 app.use('/trash', express.static(__dirname + '/trash'));
 
 app.post('/image', upload.single('image'), (req, res) => {
@@ -74,6 +75,14 @@ app.delete('/trash/:id', function(req, res) {
     res.status(500).json({ message: e.message });
   }
 });
+
+app.get('/all', (req, res) => {
+  fs
+    .readdir(path.join(__dirname, 'uploads'), function(err, files) {
+      console.log(files)
+      res.status(200).json({ files });
+    })
+})
 
 app.get('/images', (req, res) => {
   fsp

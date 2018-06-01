@@ -50,7 +50,7 @@ export default class Telly {
           }
         }
 
-        const gridTexture = new THREE.TextureLoader().load("http://localhost:3000/grid.png");
+        const gridTexture = new THREE.TextureLoader().load("http://localhost:3000/internal/grid.png");
         //gridTexture.minFilter = THREE.LinearFilter
 
         const gridMaterial = new THREE.MeshBasicMaterial({
@@ -317,10 +317,10 @@ class SlideInFromSides extends THREE.Object3D {
     material.needsUpdate = true;
 
     const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
-    person.plane.material.map = body;
-    person.plane.material.map.anisotropy = Math.pow(2, 3);
+    this.bodyMaterials[index].map = body;
+    this.bodyMaterials[index].map.anisotropy = Math.pow(2, 3);
     //person.plane.map.minFilter = THREE.LinearMipMapLinearFilter;
-    person.plane.material.needsUpdate = true;
+    this.bodyMaterials[index].needsUpdate = true;
   }
 }
 
