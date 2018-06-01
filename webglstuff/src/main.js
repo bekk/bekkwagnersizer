@@ -17,19 +17,13 @@ const socket = ioClient("http://localhost:3000");
 // ============
 // Blinking i People
 
-// Timings i orchestrate
-
 // Få hoder og kropper FFS av Ben og Audun
 // Kropper i farger på Kings Cross
 
 // Jobbe sammen om fargene på Manhattan
 
 // Pling Plong:
-	// Sving hånd like mange ganger som ben
-		// Stopp på knappen
 	// Knapp ned
-
-// Kingscross: damene på rekke
 
 // Lavest pri: Mørkeblå på sidene i rulletrappgropa, lyseblå på gulvet. Hex kommer fra Audun
 

@@ -56,8 +56,8 @@ export class KingsCross {
           return mesh;
       }
 
-        function makePeopleRow(xCoord, zCoord, reverseDir) {
-          const row = new PeopleRow(textureCollection, reverseDir);
+        function makePeopleRow(xCoord, zCoord, sex, reverseDir) {
+          const row = new PeopleRow(textureCollection, sex, reverseDir);
           scene.add(row);
           row.position.x = xCoord;
           row.position.z = zCoord;
@@ -176,28 +176,28 @@ export class KingsCross {
 
         }
 
-        makePeopleRow(-1.4, 0.5)
-        makePeopleRow(-1.25, 0)
+        makePeopleRow(-1.4, 0.5, "male")
+        makePeopleRow(-1.25, 0, "male")
 
         makeBoxRow(-0.975, 0.3, true)
 
-        makePeopleRow(-0.715, 0.2);
-        makePeopleRow(-0.59, 0.15);
-        makePeopleRow(-0.465, 0.1, true);
+        makePeopleRow(-0.715, 0.2, "female");
+        makePeopleRow(-0.59, 0.15, "female");
+        makePeopleRow(-0.465, 0.1, "male", true);
 
         makeBoxRow(-0.225, 0.25, true)
 
-        makePeopleRow(0, 0) 
+        makePeopleRow(0, 0, "male") 
 
         makeBoxRow(0.225, 0.25, true)
 
-        makePeopleRow(0.45, 0) 
-        makePeopleRow(0.6, 0.5, true)
+        makePeopleRow(0.45, 0, "male") 
+        makePeopleRow(0.6, 0.5, "female", true)
 
         makeBoxRow(0.925, 0.4, true)
 
-        makePeopleRow(1.25, 0)
-        makePeopleRow(1.4, 0.5)
+        makePeopleRow(1.25, 0, "male")
+        makePeopleRow(1.4, 0.5, "male")
 
         var light = new THREE.DirectionalLight(0xffffff, 0.7);
         light.position.set(3, 3, -1).normalize();
@@ -248,7 +248,7 @@ export class KingsCross {
 }
 
 class PeopleRow extends THREE.Object3D {
-  constructor(textureCollection, reverseDir) {
+  constructor(textureCollection, sex, reverseDir) {
     super();
 
     this.nofTextures = textureCollection.nofTextures;
@@ -260,7 +260,6 @@ class PeopleRow extends THREE.Object3D {
     this.textureCollection = textureCollection;
 
     for (let i = 0; i < 100; i++) {
-      const sex = Random.pick(["female", "male"]);
       const body = Random.pick(textureCollection.bodies[sex]);
 
       const texture = body.texture; 
