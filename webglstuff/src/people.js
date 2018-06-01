@@ -179,7 +179,7 @@ class PeopleObject3D extends THREE.Object3D {
 
       const face = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialHead);
       face.position.y += 0.18
-      face.position.z += 0.1;
+      face.position.z += 0.01;
       //face.scale.multiplyScalar(1.85);
       group.material = materialHead;
       group.materialBody = material;

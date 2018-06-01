@@ -26,6 +26,7 @@ class RealtimeTextureCollection {
     ];
 
     this.defaultTexturesTelly = [];
+    this.defaultTexturesKC = [];
 
     for (let i = 1; i <= 14; i++) {
       const texture = loader.load("http://localhost:3000/internal/hode-m-"+i+".png");
@@ -70,6 +71,28 @@ class RealtimeTextureCollection {
             texture: texture
           };
           this.defaultTexturesTelly.push(defaultTexture);
+        }
+
+        for (let i = 1; i <= 14; i++) {
+          const texture = loader.load("http://localhost:3000/internal/hode-m-"+i+"-kc.png");
+          texture.repeat.set(0.6, 0.6);
+          texture.offset.set(0.2, 0.2)
+          const defaultTexture = {
+            metadata: this.getMetadata("hode-m-"+i+".png"), 
+            texture: texture
+          };
+          this.defaultTexturesKC.push(defaultTexture);
+        }
+
+        for (let i = 1; i <= 11; i++) {
+          const texture = loader.load("http://localhost:3000/internal/hode-f-"+i+"-kc.png")
+          texture.repeat.set(0.6, 0.6);
+          texture.offset.set(0.2, 0.2)
+          const defaultTexture = {
+            metadata: this.getMetadata("hode-f-"+i+".png"), 
+            texture: texture
+          };
+          this.defaultTexturesKC.push(defaultTexture);
         }
 
     for (let sex in this.defaultTextures) {
@@ -175,6 +198,19 @@ class RealtimeTextureCollection {
     if (mal == undefined) mal = 1;
 
     for (let defaultTexture of this.defaultTexturesTelly) {
+      if (defaultTexture.metadata.sex == sex
+        && defaultTexture.metadata.mal == mal) {
+        return defaultTexture.texture;
+      }
+    }
+    throw "Fant ikke default texture for " + sex + " " + mal;
+  }
+
+  getDefaultKC(sex, mal) {
+    if (sex == undefined) sex = "female";
+    if (mal == undefined) mal = 1;
+
+    for (let defaultTexture of this.defaultTexturesKC) {
       if (defaultTexture.metadata.sex == sex
         && defaultTexture.metadata.mal == mal) {
         return defaultTexture.texture;

@@ -292,7 +292,7 @@ class PeopleRow extends THREE.Object3D {
 
       const mal = body.metadata.mal;
 
-      const textureHead = textureCollection.getDefault(sex, mal);
+      const textureHead = textureCollection.getDefaultKC(sex, mal);
 
       const materialHead = new THREE.MeshBasicMaterial({
         transparent: true,

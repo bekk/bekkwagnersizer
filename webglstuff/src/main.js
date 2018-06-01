@@ -177,7 +177,7 @@ const initAnimation = function(domNodeId, canvasId) {
 		orchestrate();
 	};
 
-	setInterval(orchestrate, 60*1000);
+	//setInterval(orchestrate, 60*1000);
 
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         otherCamera.position.set(0, 0, 3);

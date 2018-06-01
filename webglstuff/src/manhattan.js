@@ -39,7 +39,7 @@ export default class Manhattan {
         this._scene.add(lightManhattan);
 
         const whitePlane = new THREE.Mesh(
-            new THREE.PlaneGeometry(300, 300),
+            new THREE.PlaneGeometry(300, 500),
             new THREE.MeshBasicMaterial({
                 color: new THREE.Color(0xffffff),
             })
