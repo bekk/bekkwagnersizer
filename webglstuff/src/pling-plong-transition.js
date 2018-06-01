@@ -102,7 +102,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     const shoeContainter = new THREE.Object3D();
     shoeContainter.position.set(
       -0.07,
-      -0.53,
+      -0.54,
       kontrollPanel.position.z + 0.01
     );
     shoeContainter.add(shoe);
