@@ -19,8 +19,6 @@ const socket = ioClient("http://localhost:3000");
 // Glitch i Manhattan
 // Glitch i Kings Cross også
 
-// Ta hensyn til hvilken scene hvert bilde fra Joachim hører til
-
 // Få grønne rader i Kings Cross (og hoder på hver sin undertype)
 
 // Fjerning av bilder
@@ -64,6 +62,10 @@ socket.on('new image', (fileName)  => {
 	addImage(fileName);
 })
 
+socket.on('remove image', (fileName)  => {
+	removeImage(fileName);
+})
+
 let knownFiles = [];
 fetch('http://localhost:3000/all')
   .then(function(response) {
@@ -80,6 +82,8 @@ const addImage = function(fileName) {
 
 	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`);
 
+	texture.fileName = fileName;
+
 	if (metadata.animation == "people") {
 		animations.people.updateImage(texture, metadata);
 	} else if (metadata.animation == "manhattan") {
@@ -90,6 +94,23 @@ const addImage = function(fileName) {
 	} else {
 		throw "ERROR: ukjent animation: " + metadata.animation
 	}
+}
+
+const removeImage = function(fileName) {
+	console.log(`REMOVING image: ${fileName}`);
+	for (let animation of [animations.people, animations.manhattan, animations.telly, animations.kingsCross]) {
+		animation.scene.traverse(function(child) {
+			if (child.material && child.material.map && child.material.map.fileName && child.material.map.fileName == fileName) {
+				console.log("Found map to remove");
+				child.material.map = realtimeTextureCollection.getBald();
+				child.material.map.anisotropy = Math.pow(2, 3);
+				child.material.map.minFilter = THREE.LinearMipMapLinearFilter;
+				child.material.needsUpdate = true;
+			}
+		})
+	}
+
+	animations.manhattan.removeImage(fileName);
 }
 
 const initAnimation = function(domNodeId, canvasId) {
@@ -175,6 +196,11 @@ const initAnimation = function(domNodeId, canvasId) {
 
 	document.getElementById("orchestrate").onclick = function() { 
 		orchestrate();
+	};
+	document.getElementById("removeImage").onclick = function() {
+		window.removeIndex = window.removeIndex || 0;
+		removeImage(knownFiles[removeIndex]);
+		removeIndex++;
 	};
 
 	//setInterval(orchestrate, 60*1000);

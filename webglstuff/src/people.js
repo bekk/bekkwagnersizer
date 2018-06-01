@@ -122,13 +122,13 @@ export default class People {
 
         plane.material.map = image;
         plane.material.map.anisotropy = Math.pow(2, 3);
-        //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
+        plane.material.map.minFilter = THREE.LinearFilter;
         plane.material.needsUpdate = true;
 
         const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
         plane.materialBody.map = body;
         plane.materialBody.map.anisotropy = Math.pow(2, 3);
-        //plane.materialBody.map.minFilter = THREE.LinearMipMapLinearFilter;
+        plane.materialBody.map.minFilter = THREE.LinearFilter;
         plane.materialBody.needsUpdate = true;
     }
 }

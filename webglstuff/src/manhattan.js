@@ -26,6 +26,8 @@ export default class Manhattan {
 
         this.skyscrapers = [];
 
+        this.textureCollection = textureCollection;
+
         if (window.debug) {
             this.orbitControls = new THREE.OrbitControls(this._camera);
             this.orbitControls.target = target;
@@ -119,8 +121,6 @@ export default class Manhattan {
         if (window.debug) this.camera.orbitControls.target.y = this.camera.position.y - 5 - 2.1 * invertedNorm;
     }
 
-    //TDOO: Skyggelegging i karmer og på vegger
-
     updateImage(image, metadata) {
         console.log("Updating texture in Manhattan " + !!image);
 
@@ -130,11 +130,26 @@ export default class Manhattan {
             if (!skyscraper.imagePlanes[index]) continue;
             const plane = skyscraper.imagePlanes[index];
             plane.uforms.map.value = image;
-            plane.uforms.map.anisotropy = Math.pow(2, 3);
-            plane.uforms.map.minFilter = THREE.LinearMipMapLinearFilter;
+            plane.uforms.map.value.anisotropy = Math.pow(2, 3);
+            plane.uforms.map.value.minFilter = THREE.LinearMipMapLinearFilter;
             plane.material.needsUpdate = true;
         }
 
+    }
+
+    removeImage(fileName) {
+        const that = this;
+        for (let skyscraper of this.skyscrapers) {
+            for (let plane of skyscraper.imagePlanes) {
+                if (plane.uforms.map.value.fileName && plane.uforms.map.value.fileName == fileName) {
+                    console.log("Found map to remove in Manhattan");
+                    plane.uforms.map.value = that.textureCollection.getBald();
+                    plane.uforms.map.value.anisotropy = Math.pow(2, 3);
+                    plane.uforms.map.value.minFilter = THREE.LinearMipMapLinearFilter;
+                    plane.material.needsUpdate = true;
+                }
+            }
+        }
     }
 }
 
@@ -303,6 +318,8 @@ class ManhattanObject3D extends THREE.Object3D {
     super();
 
     this._imagePlanes = [];
+
+    this.textureCollection = textureCollection;
 
     const deviance = Random.float(0, 1);
 
