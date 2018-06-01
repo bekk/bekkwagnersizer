@@ -17,11 +17,11 @@ const socket = ioClient("http://localhost:3000");
 // ============
 // Blinking i People
 // Glitch i Manhattan
+// Glitch i Kings Cross også
 
 // Ta hensyn til hvilken scene hvert bilde fra Joachim hører til
 
-// Få riktige dummyhoder inn i hver scene
-// Få grønne rader i Kings Cross
+// Få grønne rader i Kings Cross (og hoder på hver sin undertype)
 
 // Fjerning av bilder
 

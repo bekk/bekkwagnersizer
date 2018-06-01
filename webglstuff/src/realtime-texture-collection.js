@@ -53,8 +53,8 @@ class RealtimeTextureCollection {
 
         for (let i = 1; i <= 14; i++) {
           const texture = loader.load("http://localhost:3000/internal/hode-m-"+i+"-telly.png");
-          texture.repeat.set(0.6, 0.6);
-          texture.offset.set(0.2, 0.2)
+          //texture.repeat.set(0.6, 0.6);
+          //texture.offset.set(0.2, 0.2)
           const defaultTexture = {
             metadata: this.getMetadata("hode-m-"+i+".png"), 
             texture: texture
@@ -64,8 +64,8 @@ class RealtimeTextureCollection {
 
         for (let i = 1; i <= 11; i++) {
           const texture = loader.load("http://localhost:3000/internal/hode-f-"+i+"-telly.png")
-          texture.repeat.set(0.6, 0.6);
-          texture.offset.set(0.2, 0.2)
+          //texture.repeat.set(0.6, 0.6);
+          //texture.offset.set(0.2, 0.2)
           const defaultTexture = {
             metadata: this.getMetadata("hode-f-"+i+".png"), 
             texture: texture
@@ -75,8 +75,8 @@ class RealtimeTextureCollection {
 
         for (let i = 1; i <= 14; i++) {
           const texture = loader.load("http://localhost:3000/internal/hode-m-"+i+"-kc.png");
-          texture.repeat.set(0.6, 0.6);
-          texture.offset.set(0.2, 0.2)
+          //texture.repeat.set(0.6, 0.6);
+          //texture.offset.set(0.2, 0.2)
           const defaultTexture = {
             metadata: this.getMetadata("hode-m-"+i+".png"), 
             texture: texture
@@ -86,8 +86,8 @@ class RealtimeTextureCollection {
 
         for (let i = 1; i <= 11; i++) {
           const texture = loader.load("http://localhost:3000/internal/hode-f-"+i+"-kc.png")
-          texture.repeat.set(0.6, 0.6);
-          texture.offset.set(0.2, 0.2)
+          //texture.repeat.set(0.6, 0.6);
+          //texture.offset.set(0.2, 0.2)
           const defaultTexture = {
             metadata: this.getMetadata("hode-f-"+i+".png"), 
             texture: texture

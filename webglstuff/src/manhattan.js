@@ -480,7 +480,7 @@ class ManhattanObject3D extends THREE.Object3D {
 
             const shoulders = plane.clone();
             shoulders.scale.y = 0.25;
-            if (i < nofWindows) shoulders.position.z -= 0.01; else shoulders.position.x += 0.035*flippy
+            if (i < nofWindows) shoulders.position.z -= 0.01; else shoulders.position.x += 0.05*flippy
             shoulders.position.y -= 0.4;
             shoulders.material = shouldersImageMaterial;
             if (angleToCamera) floor.add(shoulders)
