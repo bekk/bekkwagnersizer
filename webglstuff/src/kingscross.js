@@ -20,15 +20,18 @@ export class KingsCross {
     constructor(renderer, textureCollection) {
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         this._camera.position.set(0, 0.6, 0);
-        //this._camera.position.set(-70, 100, 100);
         this._camera.updateProjectionMatrix();
 
-        this.orbitControls = new THREE.OrbitControls(this._camera);
-        this.orbitControls.target = new THREE.Vector3(-0.5, -0.9, -7);
-        //this.orbitControls.target = new THREE.Vector3(0, 0, -120);
-        this.orbitControls.update();
+        const target = new THREE.Vector3(-0.5, -0.9, -7);
+        this._camera.lookAt(target);
 
-        this._camera.orbitControls = this.orbitControls;
+        if (window.debug) {
+          this.orbitControls = new THREE.OrbitControls(this._camera);
+          this.orbitControls.target = target;
+          this.orbitControls.update();
+
+          this._camera.orbitControls = this.orbitControls;
+        }
 
         const rows = [];
         this.rows = rows;
@@ -225,7 +228,7 @@ export class KingsCross {
           row.animate();
         }
 
-        this.orbitControls.update();
+        if (window.debug) this.orbitControls.update();
     }
 
     zoomAmount(normalizedZoom) {

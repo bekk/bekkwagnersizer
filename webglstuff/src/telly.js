@@ -28,11 +28,16 @@ export default class Telly {
         this._camera.position.set(1.1, 0.57, 100);
         this._camera.updateProjectionMatrix();
 
-        this.orbitControls = new THREE.OrbitControls(this._camera);
-        this.orbitControls.target = this._camera.position.clone().sub(new THREE.Vector3(0, 0, this._camera.position.z));
-        this.orbitControls.update();
+        const target = this._camera.position.clone().sub(new THREE.Vector3(0, 0, this._camera.position.z));
+        this._camera.lookAt(target);
 
-        this.camera.orbitControls = this.orbitControls;
+        if (window.debug) {
+          this.orbitControls = new THREE.OrbitControls(this._camera);
+          this.orbitControls.target = target;
+          this.orbitControls.update();
+
+          this.camera.orbitControls = this.orbitControls;
+        }
 
         this._scene = new THREE.Scene();
 
@@ -88,7 +93,7 @@ export default class Telly {
           tv.animate();
         }
 
-        this.orbitControls.update();
+        if (window.debug) this.orbitControls.update();
     }
 
     zoomAmount(normalizedZoom) {

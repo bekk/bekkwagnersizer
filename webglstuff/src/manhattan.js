@@ -15,18 +15,24 @@ const uniforms = {
 export default class Manhattan {
 
     constructor(renderer, textureCollection) {
+
         this._scene = new THREE.Scene();
         this._camera = new THREE.PerspectiveCamera(90, ratio(renderer), 0.01, 10000);
         this._camera.position.set(0, 6, -15);
         this._camera.updateProjectionMatrix();
 
+        const target = this._camera.position.clone().add(new THREE.Vector3(0, -5, -20));
+        this._camera.lookAt(target);
+
         this.skyscrapers = [];
 
-        this.orbitControls = new THREE.OrbitControls(this._camera);
-        this.orbitControls.target = this._camera.position.clone().add(new THREE.Vector3(0, -5, -20));
-        this.orbitControls.update();
-
-        this._camera.orbitControls = this.orbitControls;
+        if (window.debug) {
+            this.orbitControls = new THREE.OrbitControls(this._camera);
+            this.orbitControls.target = target;
+            this.orbitControls.update();
+            
+            this._camera.orbitControls = this.orbitControls;
+        }
 
         var lightManhattan = new THREE.DirectionalLight(0xffffff, 1.0);
         lightManhattan.position.set(-0.5, 1, 1).normalize();
@@ -95,7 +101,7 @@ export default class Manhattan {
     }
 
     animate() {
-        this.orbitControls.update();
+        if (window.debug) this.orbitControls.update();
         uniforms.time.value += 1/60; // TODO: Measure time properly
     }
 
@@ -110,7 +116,7 @@ export default class Manhattan {
 
         this.camera.position.z = this.oldZ + invertedNorm * 4;
         //this.camera.position.y = this.oldY - invertedNorm * 4.2;
-        this.camera.orbitControls.target.y = this.camera.position.y - 5 - 2.1 * invertedNorm;
+        if (window.debug) this.camera.orbitControls.target.y = this.camera.position.y - 5 - 2.1 * invertedNorm;
     }
 
     //TDOO: Skyggelegging i karmer og på vegger

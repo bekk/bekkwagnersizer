@@ -46,6 +46,8 @@ let backgroundCamera;
 let backgroundScene;
 let background;
 
+window.debug = false;
+
 const uniforms = {
 	time: {value: 0.0},
 };

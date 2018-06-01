@@ -19,15 +19,19 @@ export default class People {
 
     constructor(renderer, textureCollection) {
         const cameraHeight = 0.25;
+        const target = new THREE.Vector3(0, cameraHeight, 0);
         this._camera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         this._camera.position.set(0, cameraHeight, 2.55);
+        this._camera.lookAt(new THREE.Vector3(0, cameraHeight, 0));
         this._camera.updateProjectionMatrix();
 
-        this.orbitControls = new THREE.OrbitControls(this._camera);
-        this.orbitControls.target = new THREE.Vector3(0, cameraHeight, 0);
-        this.orbitControls.update();
+        if (window.debug) {
+          this.orbitControls = new THREE.OrbitControls(this._camera);
+          this.orbitControls.target = target;
+          this.orbitControls.update();
 
-        this._camera.orbitControls = this.orbitControls;
+          this._camera.orbitControls = this.orbitControls;
+        }
 
         this._scene = new THREE.Scene();
 
@@ -74,7 +78,7 @@ export default class People {
     animate() {
         this.peopleObject3D.updatePositions();
 
-        this.orbitControls.update();
+        if (window.debug) this.orbitControls.update();
     }
 
     zoomAmount(normalizedZoom) {
@@ -86,7 +90,7 @@ export default class People {
         this.camera.updateProjectionMatrix();
 
         this.camera.position.y = this.oldY - invertedNorm * 0.4;
-        this.camera.orbitControls.target.y = this.camera.position.y ;
+        if (window.debug) this.camera.orbitControls.target.y = this.camera.position.y ;
     }
 
     getIndexInBack(sex) {
