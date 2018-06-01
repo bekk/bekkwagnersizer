@@ -123,10 +123,10 @@ class TV extends THREE.Object3D {
     super();
 
     this.sketches = [
-      new SlideInFromSides(textureCollection),
-      new ZoomOut(textureCollection),
+      //new SlideInFromSides(textureCollection),
+      //new ZoomOut(textureCollection),
       new Skip(textureCollection),
-      new SlideUpFromBottom(textureCollection),
+      //new SlideUpFromBottom(textureCollection),
     ];
 
     this.timeOffset = Random.float(0, 5);
@@ -254,7 +254,7 @@ class SlideInFromSides extends THREE.Object3D {
     const person1 = new THREE.Object3D();
     person1.add(face1);
     person1.add(bodyMesh1);
-    person1.position.y -= 0.17;
+    person1.position.y -= 0.12;
     person1.position.z -= 0.05;
 
     const face2 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead2);
@@ -264,7 +264,7 @@ class SlideInFromSides extends THREE.Object3D {
     const person2 = new THREE.Object3D();
     person2.add(face2);
     person2.add(bodyMesh2);
-    person2.position.y -= 0.17;
+    person2.position.y -= 0.12;
     person2.scale.multiplyScalar(1.1);
 
     const group = new THREE.Object3D();
@@ -285,8 +285,8 @@ class SlideInFromSides extends THREE.Object3D {
       person2.scale.set(1.1, 1.1, 1.1)
       person1.scale.multiplyScalar(2.5);
       person2.scale.multiplyScalar(2.5);
-      person1.position.y = -0.32;
-      person2.position.y = -0.33;
+      person1.position.y = -0.40;
+      person2.position.y = -0.40;
     }
 
     this.faceMaterials = [materialHead1, materialHead2];
@@ -474,6 +474,7 @@ class ZoomOut extends THREE.Object3D {
     person1.add(face1);
     person1.add(body1Mesh);
     person1.position.x = Random.pick([-0.05, 0.05])
+    person1.position.y -= 0.02;
 
     const group = new THREE.Object3D();
     group.add(person1);

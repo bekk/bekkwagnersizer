@@ -22,7 +22,6 @@ const socket = ioClient("http://localhost:3000");
 
 // Få riktige dummyhoder inn i hver scene
 // Få grønne rader i Kings Cross
-// Få kropper i farger i Telly
 
 // Øk antall kropper og dummyhoder fra 3-4 til alle
 
@@ -117,7 +116,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.people);
+	changeAnimation(animations.telly);
 
 	// TODO: Skift til 12.4 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
