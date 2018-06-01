@@ -10,8 +10,6 @@ const uniforms = {
     time: {value: 0},
 };
 
-// TODO: De nederste vinduene mangler noen ganger hode
-
 export default class Manhattan {
 
     constructor(renderer, textureCollection) {
@@ -118,7 +116,7 @@ export default class Manhattan {
 
         this.camera.position.z = this.oldZ + invertedNorm * 4;
         //this.camera.position.y = this.oldY - invertedNorm * 4.2;
-        if (window.debug) this.camera.orbitControls.target.y = this.camera.position.y - 5 - 2.1 * invertedNorm;
+        //if (window.debug) this.camera.orbitControls.target.y = this.camera.position.y - 5 - 2.1 * invertedNorm;
     }
 
     updateImage(image, metadata) {
@@ -408,6 +406,7 @@ class ManhattanObject3D extends THREE.Object3D {
         vertexShader: vertexShaderCode,
         fragmentShader: fragmentShaderCodeImage,
         transparent: true,
+        side: THREE.DoubleSide,
     });
 
     const shouldersImageUniforms = {
