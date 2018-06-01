@@ -277,14 +277,14 @@ class PeopleRow extends THREE.Object3D {
       const geometry = new THREE.PlaneGeometry(1,1);
 
       let plane = new THREE.Mesh(geometry, material);
-      plane.scale.multiplyScalar(0.75);
+      plane.scale.multiplyScalar(0.65);
       plane.position.y -= 0.06;
 
 
       // TODO: Fix for too much transparent around body textures
-      plane.scale.x *= 0.75;
-      texture.repeat.set(0.75, 1);
-      texture.offset.x = 0.125;
+      //plane.scale.x *= 0.75;
+      //texture.repeat.set(0.75, 1);
+      //texture.offset.x = 0.125;
 
       
       const group = new THREE.Object3D();
@@ -304,7 +304,7 @@ class PeopleRow extends THREE.Object3D {
       });
 
       const face = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialHead);
-      face.position.y += 0.18
+      face.position.y += 0.23
       face.position.z += 0.04;
       //face.renderOrder = 1;
       group.material = materialHead;

@@ -248,23 +248,23 @@ class SlideInFromSides extends THREE.Object3D {
     });
 
     const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead1);
-    face1.position.y += 0.1;
+    face1.position.y += 0.13;
     face1.position.z += 0.01;
     const bodyMesh1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
     const person1 = new THREE.Object3D();
     person1.add(face1);
     person1.add(bodyMesh1);
-    person1.position.y -= 0.07;
+    person1.position.y -= 0.17;
     person1.position.z -= 0.05;
 
     const face2 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead2);
-    face2.position.y += 0.1;
+    face2.position.y += 0.13;
     face2.position.z += 0.01;
     const bodyMesh2 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody2);
     const person2 = new THREE.Object3D();
     person2.add(face2);
     person2.add(bodyMesh2);
-    person2.position.y -= 0.07;
+    person2.position.y -= 0.17;
     person2.scale.multiplyScalar(1.1);
 
     const group = new THREE.Object3D();
@@ -362,7 +362,7 @@ class SlideUpFromBottom extends THREE.Object3D {
         side: THREE.DoubleSide,
       });
       const face = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
-      face.position.y += 0.1;
+      face.position.y += 0.13;
       face.position.z += 0.01;
       const bodyMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody);
       const person = new THREE.Object3D();
@@ -461,7 +461,7 @@ class ZoomOut extends THREE.Object3D {
     });
 
     const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
-    face1.position.y += 0.1;
+    face1.position.y += 0.13;
     face1.position.z += 0.01;
     
     const body1Mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
@@ -544,7 +544,7 @@ class Skip extends THREE.Object3D {
     });
 
     const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
-    face1.position.y += 0.1;
+    face1.position.y += 0.13;
     face1.position.z += 0.01;
     
     const body1Mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
@@ -574,11 +574,11 @@ class Skip extends THREE.Object3D {
     const time = Math.min(this.timer.get()/this.animationTime, 0.999);
 
     const positions = [
-      new THREE.Vector3(1, -0.25, 0),
-      new THREE.Vector3(-1, -0.25, 0),
-      new THREE.Vector3(0, -0.35, 0),
       new THREE.Vector3(1, -0.35, 0),
-      new THREE.Vector3(0.5, -0.4, 0),
+      new THREE.Vector3(-1, -0.35, 0),
+      new THREE.Vector3(0, -0.45, 0),
+      new THREE.Vector3(1, -0.45, 0),
+      new THREE.Vector3(0.5, -0.5, 0),
     ]
     const zooms = [1, 1.5, 2, 2.5, 3]
 
