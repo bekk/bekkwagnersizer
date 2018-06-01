@@ -1,3 +1,5 @@
+const LIMIT = 50;
+
 function renderImage(onClick, onClickLabel, location, imgSrc) {
   let container = document.createElement('div');
   container.setAttribute('class', 'gallery-image');
@@ -29,21 +31,6 @@ function deleteImage(imgSrc) {
   });
 }
 
-function undeleteImage(imgSrc) {
-  fetch(`trash/${imgSrc}`, {
-    method: 'DELETE'
-  }).then(function(res) {
-    if (res.ok) {
-      document
-        .querySelector(`#trash #img-${imgSrc.replace('.', '-')}`)
-        .remove();
-    } else {
-      console.error('Reversering av sletting feilet');
-    }
-  });
-}
-
-// recursively renders images.
 function fetchImages(container, renderer, { images }) {
   if (images.length < 1) {
     return;
@@ -55,29 +42,17 @@ function fetchImages(container, renderer, { images }) {
 }
 
 let renderGalleryImage = renderImage.bind(null, deleteImage, 'Slett', '');
-let renderTrashImage = renderImage.bind(
-  null,
-  undeleteImage,
-  'Reverser slett',
-  'trash'
-);
 
 let fetchGallery = fetchImages.bind(null, '#gallery', renderGalleryImage);
-let fetchTrash = fetchImages.bind(null, '#trash', renderTrashImage);
 
-fetch('/images')
+fetch(`/images?limit=${LIMIT}`)
   .then(res => res.json())
   .then(fetchGallery);
-
-fetch('/trashbin')
-  .then(res => res.json())
-  .then(fetchTrash);
 
 let socket = io('/');
 socket.on('new image', function(data) {
   document.querySelector('#gallery').prepend(renderGalleryImage(data));
-});
-
-socket.on('remove image', function(data) {
-  document.querySelector('#trash').prepend(renderTrashImage(data));
+  if (document.querySelectorAll('#gallery .gallery-image').length > LIMIT) {
+    document.querySelector('#gallery').lastChild.remove();
+  }
 });
