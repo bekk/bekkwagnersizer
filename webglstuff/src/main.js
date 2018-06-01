@@ -21,8 +21,6 @@ const socket = ioClient("http://localhost:3000");
 
 // Få grønne rader i Kings Cross (og hoder på hver sin undertype)
 
-// Fjerning av bilder
-
 // ======
 
 // Jobbe sammen om fargene på Manhattan

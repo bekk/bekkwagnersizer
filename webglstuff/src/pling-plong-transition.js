@@ -53,8 +53,6 @@ export default class PlingPlongTransition extends THREE.Object3D {
 
     this.oldY = this.camera.position.y;
 
-    this.resetAnimation();
-
     group.add(skjerm)
 
 
@@ -75,7 +73,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     group.add(arm)
 
     const pantsTexture = loader.load("http://localhost:3000/internal/PlingPlong_Pants.png");
-    pantsTexture.minFilter = THREE.LinearFilter;
+    pantsTexture.minFilter = THREE.LinearMipMapLinearFilter;
     const materialPants = new THREE.MeshBasicMaterial({
       transparent: true,
       map: pantsTexture,
@@ -91,7 +89,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     group.add(pants)
 
     const shoeTexture = loader.load("http://localhost:3000/internal/PlingPlong_Shoe.png");
-    shoeTexture.minFilter = THREE.LinearFilter;
+    shoeTexture.minFilter = THREE.LinearMipMapLinearFilter;
     const materialShoe = new THREE.MeshBasicMaterial({
       transparent: true,
       map: shoeTexture,
@@ -104,7 +102,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     const shoeContainter = new THREE.Object3D();
     shoeContainter.position.set(
       -0.125,
-      -0.45,
+      -0.46,
       kontrollPanel.position.z + 0.01
     );
     shoeContainter.add(shoe);
@@ -127,9 +125,22 @@ export default class PlingPlongTransition extends THREE.Object3D {
     );
     group.add(button)
 
+    const buttonPressedTexture = loader.load("http://localhost:3000/internal/PlingPlong_Btn-pressed.png");
+    buttonPressedTexture.minFilter = THREE.LinearFilter;
+    const materialButtonPressed = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: buttonPressedTexture,
+      side: THREE.DoubleSide,
+    });
+    const buttonPressed = new THREE.Mesh(new THREE.PlaneGeometry(1.07, 1.42), materialButtonPressed);
+    buttonPressed.scale.multiplyScalar(0.04);
+    buttonPressed.position.copy(button.position);
+    group.add(buttonPressed)
+    buttonPressed.visible = false;
+
 
     const handTexture = loader.load("http://localhost:3000/internal/PlingPlong_Hand.png");
-    handTexture.minFilter = THREE.LinearFilter;
+    handTexture.minFilter = THREE.LinearMipMapLinearFilter;
     const materialHand = new THREE.MeshBasicMaterial({
       transparent: true,
       map: handTexture,
@@ -175,6 +186,8 @@ export default class PlingPlongTransition extends THREE.Object3D {
     this.handAndFingerContainer = handAndFingerContainer;
     this.fingerContainer = fingerContainer;
     this.shoeContainter = shoeContainter;
+    this.button = button;
+    this.buttonPressed = buttonPressed;
 
     group.add(handAndFingerContainer)
 
@@ -183,6 +196,8 @@ export default class PlingPlongTransition extends THREE.Object3D {
     this.onTop = false;
     this.callback = () => {};
     this.onButtonDownCallback = () => {};
+
+    this.resetAnimation();
   }
 
   stopSwing() {
@@ -191,7 +206,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
 
   pressButton() {
     this.pressTime = 0;
-    this.pressSpeed = 0.3;
+    this.pressSpeed = 0.2;
   }
 
   releaseButton() {
@@ -204,6 +219,10 @@ export default class PlingPlongTransition extends THREE.Object3D {
     this.pressTime = 0;
     this.pressSpeed = 0;
     this.swingSpeed = 0.003;
+
+
+    this.buttonPressed.visible = false;
+    this.button.visible = true;
   }
 
   onButtonTop(callback) {
@@ -222,7 +241,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     this.shoeContainter.rotation.z = Math.sin(this.swingTime * 7 + 1.2) * 0.08;
 
     const fingerSwing = Math.sin(this.swingTime * 9);
-    this.handAndFingerContainer.rotation.z = fingerSwing * 0.13 - 0.04;
+    this.handAndFingerContainer.rotation.z = fingerSwing * 0.13 - 0.06;
 
     if (fingerSwing >= 0.99 && this.onTop == false) {
       this.count++;
@@ -236,6 +255,12 @@ export default class PlingPlongTransition extends THREE.Object3D {
     this.fingerContainer.scale.y = 1 - this.pressTime * pressAmount;
 
     this.pressTime += this.pressSpeed;
+
+    if (this.pressTime > 0.8) {
+      this.buttonPressed.visible = true;
+      this.button.visible = false;
+    }
+
     if (this.pressTime > 1) {
       this.releaseButton();
       this.onButtonDownCallback();
