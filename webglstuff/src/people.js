@@ -13,7 +13,7 @@ import { createPlaneGeometry,
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 import PlingPlongTransition from "./pling-plong-transition.js";
 
-// TODO: Enda flere folk i høyde og bredde (cirka dobbelt så mye?)
+// TODO: Pass på at nye bilder alltid havner inni midten
 
 export default class People {
 
@@ -33,6 +33,8 @@ export default class People {
 
         this.peopleObject3D = new PeopleObject3D(textureCollection);
         this._scene.add(this.peopleObject3D);
+
+        this.textureCollection = textureCollection;
 
         const purplePlane = new THREE.Mesh(
             new THREE.PlaneGeometry(5,2),
@@ -90,9 +92,14 @@ export default class People {
     getIndexInBack(sex) {
         const distanceIndeces = [];
 
+        const centerOfScreenLimit = 1.33;
+
         for (let i in this.peopleObject3D.children) {
           const child = this.peopleObject3D.children[i];
-          if (child.sex == sex) distanceIndeces.push({index: i, distance: child.position.z});
+          if (child.sex == sex
+            && Math.abs(child.position.x) < centerOfScreenLimit) {
+              distanceIndeces.push({index: i, distance: child.position.z});
+            }
         }
 
         distanceIndeces.sort(function(a, b) {
@@ -102,10 +109,10 @@ export default class People {
         return distanceIndeces[Random.int(0, 9)].index;
     }
 
-    updateImage(image, sex) {
-        console.log("Updating texture in People", !!image, sex);
+    updateImage(image, metadata) {
+        console.log("Updating texture in People", !!image, metadata);
 
-        const index = this.getIndexInBack(sex)
+        const index = this.getIndexInBack(metadata.sex)
 
         const plane = this.peopleObject3D.children[index];
 
@@ -113,6 +120,12 @@ export default class People {
         plane.material.map.anisotropy = Math.pow(2, 3);
         //plane.material.map.minFilter = THREE.LinearMipMapLinearFilter;
         plane.material.needsUpdate = true;
+
+        const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
+        plane.materialBody.map = body;
+        plane.materialBody.map.anisotropy = Math.pow(2, 3);
+        //plane.materialBody.map.minFilter = THREE.LinearMipMapLinearFilter;
+        plane.materialBody.needsUpdate = true;
     }
 }
 
@@ -127,11 +140,13 @@ class PeopleObject3D extends THREE.Object3D {
     for (let i = 0; i < this.nofTextures; i++) {
 
       const sex = Random.pick(["female", "male"]);
-      const textureBody = Random.pick(textureCollection.bodies[sex]);
+
+      const body = Random.pick(textureCollection.bodies[sex]);
+      const mal = body.metadata.mal;
 
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: textureBody,
+        map: body.texture,
         side: THREE.DoubleSide,
       });
 
@@ -150,7 +165,7 @@ class PeopleObject3D extends THREE.Object3D {
       group.pathDeviance = (i % nofXDir + (magic ? 0.5 : 0))/nofXDir ;
 
 
-      const textureHead = textureCollection.getDefault(sex);
+      const textureHead = textureCollection.getDefault(sex, mal);
 
       const materialHead = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -160,8 +175,9 @@ class PeopleObject3D extends THREE.Object3D {
 
       const face = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.4), materialHead);
       face.position.y += 0.18
-      face.position.z += 0.05;
+      face.position.z += 0.1;
       group.material = materialHead;
+      group.materialBody = material;
       group.add(face)
 
       group.scale.multiplyScalar(0.5);

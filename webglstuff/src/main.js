@@ -7,6 +7,7 @@ import { fetchTextureFromServer, Random, ratio, clamp, easeInOutSine } from './u
 import Manhattan from './manhattan.js';
 import People from './people.js';
 import Telly from './telly.js';
+import { KingsCross, Background } from './kingscross.js';
 import RealtimeTextureCollection from "./realtime-texture-collection.js";
 import PlingPlongTransition from "./pling-plong-transition.js";
 
@@ -16,6 +17,7 @@ let timeStart;
 let camera;
 let renderer;
 let scene;
+let animation;
 let orbitControls;
 let textureCollection;
 const animations = {};
@@ -25,38 +27,28 @@ let otherCamera;
 let otherScene;
 let transition;
 
+let backgroundCamera;
+let backgroundScene;
+let background;
+
 const uniforms = {
 	time: {value: 0.0},
 };
 
 socket.on('new image', (fileName)  => {
 	console.log(`Downloading new image: ${fileName}`);
-	fileName = fileName.replace('.png', '');
-	const sex = Random.pick(["male", "female"]); // TODO: finn kjønn fra bilde-navn
-	addImage(fileName, sex);
+	addImage(fileName);
 })
 
-window.setInterval(() => {
-	//const fileName = 'People_karakterer_mai-' + Random.int(0, 1) + Random.int(1, 9);
-	const sex = Random.pick(["male", "female"]);
-	
-	let fileName;
-	
-	if (sex == "female") {
-		fileName = 'hode-f-' + Random.int(1, 4);
-	} else {
-		fileName = 'hode-m-' + Random.int(1, 20);
-	}
+const addImage = function(fileName) {
+	const metadata = realtimeTextureCollection.getMetadata(fileName)
 
-	addImage(fileName, sex);
-}, 1000);
+	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`);
 
-const addImage = function(fileName, sex) {
-	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}.png`);
-    //realtimeTextureCollection.updateImage(texture);
-	animations.people.updateImage(texture, sex);
-	animations.manhattan.updateImage(texture, sex);
-	animations.telly.updateImage(texture, sex);
+	animations.people.updateImage(texture, metadata);
+	animations.manhattan.updateImage(texture, metadata);
+	animations.telly.updateImage(texture, metadata);
+	animations.kingsCross.updateImage(texture, metadata);
 }
 
 const initAnimation = function(domNodeId, canvasId) {
@@ -87,14 +79,13 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.people = new People(renderer, realtimeTextureCollection);
 	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
+	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.manhattan);
+	changeAnimation(animations.telly);
 
 	// TODO: Skift til 12.3 * 7, x * y piksler
-
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
-
-	// TODO: Putt riktig mal på riktig kropp for perfekt match
+	// TODO: Hent alle bilder på nytt hvis restart
 
 	document.getElementById("manhattan").onclick = function() { 
 		changeAnimation(animations.manhattan);
@@ -105,11 +96,36 @@ const initAnimation = function(domNodeId, canvasId) {
 	document.getElementById("telly").onclick = function() { 
 		changeAnimation(animations.telly);
 	};
+	document.getElementById("kingsCross").onclick = function() { 
+		changeAnimation(animations.kingsCross);
+	};
 	document.getElementById("zoomOut").onclick = function() { 
 		zoomOut();
 	};
+	document.getElementById("stopSwing").onclick = function() { 
+		transition.stopSwing();
+	};
+	document.getElementById("pressButton").onclick = function() { 
+		transition.pressButton();
+	};
+	document.getElementById("releaseButton").onclick = function() { 
+		transition.releaseButton();
+	};
 	document.getElementById("zoomIn").onclick = function() { 
 		zoomIn();
+	};
+	document.getElementById("addImage").onclick = function() {
+		const knownFiles = [
+			"hode-f-5.png",
+			"hode-f-6.png",
+			"hode-f-7.png",
+			"hode-m-5.png",
+			"hode-m-6.png",
+			"hode-m-7.png",
+		];
+		const fileName = Random.pick(knownFiles);
+	
+		addImage(fileName);
 	};
 
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
@@ -119,17 +135,30 @@ const initAnimation = function(domNodeId, canvasId) {
         otherScene = new THREE.Scene();
         transition = new PlingPlongTransition(otherCamera);
         otherScene.add(transition);
+
+        backgroundCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
+        backgroundCamera.position.set(0, 0, 3);
+        backgroundCamera.lookAt(new THREE.Vector3(0, 0, 0))
+        backgroundCamera.updateProjectionMatrix();
+
+        backgroundScene = new THREE.Scene();
+        background = new Background();
+        backgroundScene.add(background);
+		
+		//zoomOut();
 }
 		
 		window.state = 0;
 		window.transitionStartTime = 0;
 
-const changeAnimation = function(animation) {
-	scene = animation.scene
-	camera = animation.camera;
+const changeAnimation = function(newAnimation) {
+	scene = newAnimation.scene
+	camera = newAnimation.camera;
+	animation = newAnimation;
 }
 
 const zoomOut = function() {
+	transition.resetAnimation();
 	window.state = 1;
 	window.transitionStartTime = new Date().getTime();
 }
@@ -145,7 +174,10 @@ const animate = function() {
 
 	animations.people.animate();
 	animations.manhattan.animate();
-	animations.telly.animate();;
+	animations.telly.animate();
+	animations.kingsCross.animate();
+
+		transition.animate();
 
 	    let normalizedZoom;
 	    let speed = 0.5;
@@ -165,12 +197,18 @@ const animate = function() {
 	    	normalizedZoom = 1;
 	    }
 
-		transition.animate(normalizedZoom);
+		transition.zoom(normalizedZoom);
+
 		animations.people.zoomAmount(normalizedZoom);
 		animations.manhattan.zoomAmount(normalizedZoom);
 		animations.telly.zoomAmount(normalizedZoom);
+		animations.kingsCross.zoomAmount(normalizedZoom);
 	
 	renderer.clear();
+	if (animation == animations.kingsCross) 
+		renderer.render(backgroundScene, backgroundCamera);
+
+	renderer.clearDepth();
 	renderer.render(scene, camera);
 
 	renderer.clearDepth();

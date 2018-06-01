@@ -18,10 +18,12 @@ import vertexShaderCode from './vertexshader-noop.glsl';
 
 export default class Telly {
 
+    // TODO: Opplegget for tilbakespoling virker error prone
+
     constructor(renderer, textureCollection) {
         const width = renderer.getContext().drawingBufferWidth;
         const height = renderer.getContext().drawingBufferHeight;
-        const zoom = 1600;
+        const zoom = 1600;//1600;
         this._camera = new THREE.OrthographicCamera(width / -zoom, width / zoom, height / zoom, height / -zoom, 0.01, 1000);
         this._camera.position.set(1.1, 0.57, 100);
         this._camera.updateProjectionMatrix();
@@ -36,7 +38,7 @@ export default class Telly {
 
         this.TVs = [];
 
-        for (let x = 0; x < 16; x++) {
+        for (let x = 0; x < 10; x++) {
           for (let y = 0; y < 8; y++) {
             const i = this.TVs.length;
             const tv = new TV(textureCollection, i * 2 + 1);
@@ -48,14 +50,15 @@ export default class Telly {
           }
         }
 
-        // TODO: La folka stå litt i ro etter animasjonen
+        const gridTexture = new THREE.TextureLoader().load("http://localhost:3000/grid.png");
+        //gridTexture.minFilter = THREE.LinearFilter
 
         const gridMaterial = new THREE.MeshBasicMaterial({
-          map: new THREE.TextureLoader().load("http://localhost:3000/grid.png"),
+          map: gridTexture,
           transparent: true,
         });
-        for (let i = 0; i < 8; i++) {
-          for (let j = 0; j < 2; j++) {
+        for (let i = 0; i < 5; i++) {
+          for (let j = -1; j < 3; j++) {
             const grid = new THREE.Mesh(new THREE.PlaneGeometry(0.51, 0.51*1.3), gridMaterial)
             grid.position.set(0.125 + 1.0/2*i, 0.24 + j*0.65, 20)
             grid.renderOrder = 1000;
@@ -91,20 +94,22 @@ export default class Telly {
     zoomAmount(normalizedZoom) {
         const invertedNorm = 1 - normalizedZoom;
 
-        const startZoom = 0.55;
+        const startZoom = 0.75;
         const endZoom = 1.0;
         this.camera.zoom = startZoom + normalizedZoom * (endZoom - startZoom);
         this.camera.updateProjectionMatrix();
 
-        this._scene.position.y = this.oldY + invertedNorm * 0.4;
+        this._scene.position.y = this.oldY + invertedNorm * 0.15;
     }
 
-    updateImage(image) {
+    updateImage(image, metadata) {
         console.log("Updating texture in Telly " + !!image);
 
-        const tv = Random.pick(this.TVs);
+        for (let i = 0; i < 3; i++) {
+          const tv = Random.pick(this.TVs);
+          tv.updateImage(image, metadata);
+        }
 
-        tv.updateImage(image);
     }
 }
 
@@ -153,9 +158,13 @@ class TV extends THREE.Object3D {
     this.sketchIndex = Random.int(0, this.sketches.length - 1);
   }
 
-  updateImage(image) {
-    const sketch = Random.pick(this.sketches);
-    sketch.updateImage(image);
+  updateImage(image, metadata) {
+    const nextSketch = this.sketches[this.nextSketchIndex()];
+    nextSketch.updateImage(image, metadata);
+  }
+
+  nextSketchIndex() {
+    return (this.sketchIndex + 1) % this.sketches.length;
   }
 
   animate() {
@@ -167,7 +176,7 @@ class TV extends THREE.Object3D {
       sketch.visible = false;
       sketch.rewind();
       
-      this.sketchIndex = (this.sketchIndex + 1) % this.sketches.length;
+      this.sketchIndex = this.nextSketchIndex();
       
       this.sketches[this.sketchIndex].visible = true;
       this.sketches[this.sketchIndex].rewind();
@@ -188,10 +197,12 @@ class SlideInFromSides extends THREE.Object3D {
     this.timer = new Timer();
 
     const sex1 = Random.pick(["male", "female"]);
-    const textureHead1 = textureCollection.getDefault(sex1);
+    const mal1 = Random.int(1, 4);
+    const textureHead1 = textureCollection.getDefault(sex1, mal1);
 
     const sex2 = Random.pick(["male", "female"]);
-    const textureHead2 = textureCollection.getDefault(sex2);
+    const mal2 = Random.int(1, 4);
+    const textureHead2 = textureCollection.getDefault(sex2, mal2);
 
     const materialHead1 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -208,7 +219,7 @@ class SlideInFromSides extends THREE.Object3D {
     materialHead1.sex = sex1;
     materialHead2.sex = sex2;
 
-    const textureBody1 = Random.pick(textureCollection.bodies.male);
+    const textureBody1 = textureCollection.getBody(sex1, mal1);
 
     const uniforms = {
         map: {type: "t", value: textureBody1},
@@ -221,7 +232,7 @@ class SlideInFromSides extends THREE.Object3D {
         transparent: true,
     });
 
-    const textureBody2 = Random.pick(textureCollection.bodies.male);
+    const textureBody2 = textureCollection.getBody(sex2, mal2);
 
     const materialBody2 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -232,20 +243,20 @@ class SlideInFromSides extends THREE.Object3D {
     const face1 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead1);
     face1.position.y += 0.1;
     face1.position.z += 0.01;
-    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
+    const bodyMesh1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
     const person1 = new THREE.Object3D();
     person1.add(face1);
-    person1.add(body1);
+    person1.add(bodyMesh1);
     person1.position.y -= 0.07;
     person1.position.z -= 0.05;
 
     const face2 = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead2);
     face2.position.y += 0.1;
     face2.position.z += 0.01;
-    const body2 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody2);
+    const bodyMesh2 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody2);
     const person2 = new THREE.Object3D();
     person2.add(face2);
-    person2.add(body2);
+    person2.add(bodyMesh2);
     person2.position.y -= 0.07;
     person2.scale.multiplyScalar(1.1);
 
@@ -272,6 +283,7 @@ class SlideInFromSides extends THREE.Object3D {
     }
 
     this.faceMaterials = [materialHead1, materialHead2];
+    this.bodyMaterials = [materialBody1, materialBody2];
   }
 
   animate() {
@@ -296,12 +308,19 @@ class SlideInFromSides extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image, sex) { // TODO: Sex
-    const material = Random.pick(this.faceMaterials);
+  updateImage(image, metadata) { // TODO: bruk metadata
+    const index = Random.int(0, 1);
+    const material = this.faceMaterials[index];
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);
     //material.map.minFilter = THREE.LinearMipMapLinearFilter;
     material.needsUpdate = true;
+
+    const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
+    person.plane.material.map = body;
+    person.plane.material.map.anisotropy = Math.pow(2, 3);
+    //person.plane.map.minFilter = THREE.LinearMipMapLinearFilter;
+    person.plane.material.needsUpdate = true;
   }
 }
 
@@ -317,7 +336,9 @@ class SlideUpFromBottom extends THREE.Object3D {
     this.faceMaterials = [];
 
     for (let i = 0; i < nofPeople; i++) {
-      const textureHead = textureCollection.getDefault();
+      const sex = Random.pick(["male", "female"]);
+      const mal = Random.int(1, 4);
+      const textureHead = textureCollection.getDefault(sex, mal);
 
       const materialHead = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -325,7 +346,7 @@ class SlideUpFromBottom extends THREE.Object3D {
         side: THREE.DoubleSide,
       });
 
-      const textureBody = Random.pick(textureCollection.bodies.female);
+      const textureBody = textureCollection.getBody(sex, mal);
 
       const materialBody = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -335,10 +356,10 @@ class SlideUpFromBottom extends THREE.Object3D {
       const face = new THREE.Mesh(new THREE.PlaneGeometry(0.15,0.15), materialHead);
       face.position.y += 0.1;
       face.position.z += 0.01;
-      const body = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody);
+      const bodyMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody);
       const person = new THREE.Object3D();
       person.add(face);
-      person.add(body);
+      person.add(bodyMesh);
       person.position.y -= 0.12;
       person.position.z -= 0.04 + i * 0.01;
       person.scale.multiplyScalar(1.25);
@@ -398,7 +419,7 @@ class SlideUpFromBottom extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image) {
+  updateImage(image, metadata) {
     const material = Random.pick(this.faceMaterials);
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);
@@ -413,7 +434,9 @@ class ZoomOut extends THREE.Object3D {
 
     this.timer = new Timer();
 
-    const textureHead = textureCollection.getDefault();
+    const sex = Random.pick(["male", "female"]);
+    const mal = Random.int(1, 4);
+    const textureHead = textureCollection.getDefault(sex, mal);
 
     const materialHead = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -421,7 +444,7 @@ class ZoomOut extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const textureBody1 = Random.pick(textureCollection.bodies.female);
+    const textureBody1 = textureCollection.getBody(sex, mal);
 
     const materialBody1 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -433,15 +456,15 @@ class ZoomOut extends THREE.Object3D {
     face1.position.y += 0.1;
     face1.position.z += 0.01;
     
-    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
+    const body1Mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
 
     // To zoom out from face:
     face1.position.y -= 0.1;
-    body1.position.y -= 0.1;
+    body1Mesh.position.y -= 0.1;
 
     const person1 = new THREE.Object3D();
     person1.add(face1);
-    person1.add(body1);
+    person1.add(body1Mesh);
     person1.position.x = Random.pick([-0.05, 0.05])
 
     const group = new THREE.Object3D();
@@ -478,7 +501,7 @@ class ZoomOut extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image) {
+  updateImage(image, metadata) {
     const material = this.faceMaterial;
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);
@@ -494,7 +517,9 @@ class Skip extends THREE.Object3D {
 
     this.timer = new Timer();
 
-    const textureHead = textureCollection.getDefault();
+    const sex = Random.pick(["male", "female"]);
+    const mal = Random.int(1, 4);
+    const textureHead = textureCollection.getDefault(sex, mal);
 
     const materialHead = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -502,7 +527,7 @@ class Skip extends THREE.Object3D {
       side: THREE.DoubleSide,
     });
 
-    const textureBody1 = Random.pick(textureCollection.bodies.female);
+    const textureBody1 = textureCollection.getBody(sex, mal);
 
     const materialBody1 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -514,15 +539,15 @@ class Skip extends THREE.Object3D {
     face1.position.y += 0.1;
     face1.position.z += 0.01;
     
-    const body1 = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
+    const body1Mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.3), materialBody1);
 
     // To zoom out from face:
     face1.position.y -= 0.1;
-    body1.position.y -= 0.1;
+    body1Mesh.position.y -= 0.1;
 
     const person1 = new THREE.Object3D();
     person1.add(face1);
-    person1.add(body1);
+    person1.add(body1Mesh);
 
     const group = new THREE.Object3D();
     group.add(person1);
@@ -564,7 +589,7 @@ class Skip extends THREE.Object3D {
     this.animate();
   }
 
-  updateImage(image) {
+  updateImage(image, metadata) {
     const material = this.faceMaterial;
     material.map = image;
     material.map.anisotropy = Math.pow(2, 3);

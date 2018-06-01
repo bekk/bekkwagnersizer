@@ -40,6 +40,10 @@ app.get('/admin', (req, res) => {
   res.sendFile(__dirname + '/admin.html');
 });
 
+app.get('/top', (req, res) => {
+  res.sendFile(__dirname + '/top.html');
+});
+
 app.use('/static', express.static(__dirname + '/'));
 app.use(express.static(__dirname + '/uploads'));
 app.use('/trash', express.static(__dirname + '/trash'));
