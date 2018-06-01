@@ -25,6 +25,8 @@ class RealtimeTextureCollection {
       {metadata: this.getMetadata("hode-f-4.png"), texture: loader.load("http://localhost:3000/internal/hode-f-4.png")},*/
     ];
 
+    this.defaultTexturesTelly = [];
+
     for (let i = 1; i <= 14; i++) {
       const texture = loader.load("http://localhost:3000/internal/hode-m-"+i+".png");
       texture.repeat.set(0.6, 0.6);
@@ -46,6 +48,29 @@ class RealtimeTextureCollection {
       };
       this.defaultTextures.push(defaultTexture);
     }
+
+
+        for (let i = 1; i <= 14; i++) {
+          const texture = loader.load("http://localhost:3000/internal/hode-m-"+i+"-telly.png");
+          texture.repeat.set(0.6, 0.6);
+          texture.offset.set(0.2, 0.2)
+          const defaultTexture = {
+            metadata: this.getMetadata("hode-m-"+i+".png"), 
+            texture: texture
+          };
+          this.defaultTexturesTelly.push(defaultTexture);
+        }
+
+        for (let i = 1; i <= 11; i++) {
+          const texture = loader.load("http://localhost:3000/internal/hode-f-"+i+"-telly.png")
+          texture.repeat.set(0.6, 0.6);
+          texture.offset.set(0.2, 0.2)
+          const defaultTexture = {
+            metadata: this.getMetadata("hode-f-"+i+".png"), 
+            texture: texture
+          };
+          this.defaultTexturesTelly.push(defaultTexture);
+        }
 
     for (let sex in this.defaultTextures) {
       this.defaultTextures[sex].magFilter = THREE.LinearFilter;
@@ -137,6 +162,19 @@ class RealtimeTextureCollection {
     if (mal == undefined) mal = 1;
 
     for (let defaultTexture of this.defaultTextures) {
+      if (defaultTexture.metadata.sex == sex
+        && defaultTexture.metadata.mal == mal) {
+        return defaultTexture.texture;
+      }
+    }
+    throw "Fant ikke default texture for " + sex + " " + mal;
+  }
+
+  getDefaultTelly(sex, mal) {
+    if (sex == undefined) sex = "female";
+    if (mal == undefined) mal = 1;
+
+    for (let defaultTexture of this.defaultTexturesTelly) {
       if (defaultTexture.metadata.sex == sex
         && defaultTexture.metadata.mal == mal) {
         return defaultTexture.texture;

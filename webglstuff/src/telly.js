@@ -205,11 +205,11 @@ class SlideInFromSides extends THREE.Object3D {
 
     const sex1 = Random.pick(["male", "female"]);
     const mal1 = Random.int(1, 4);
-    const textureHead1 = textureCollection.getDefault(sex1, mal1);
+    const textureHead1 = textureCollection.getDefaultTelly(sex1, mal1);
 
     const sex2 = Random.pick(["male", "female"]);
     const mal2 = Random.int(1, 4);
-    const textureHead2 = textureCollection.getDefault(sex2, mal2);
+    const textureHead2 = textureCollection.getDefaultTelly(sex2, mal2);
 
     const materialHead1 = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -346,7 +346,7 @@ class SlideUpFromBottom extends THREE.Object3D {
     for (let i = 0; i < nofPeople; i++) {
       const sex = Random.pick(["male", "female"]);
       const mal = Random.int(1, 4);
-      const textureHead = textureCollection.getDefault(sex, mal);
+      const textureHead = textureCollection.getDefaultTelly(sex, mal);
 
       const materialHead = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -444,7 +444,7 @@ class ZoomOut extends THREE.Object3D {
 
     const sex = Random.pick(["male", "female"]);
     const mal = Random.int(1, 4);
-    const textureHead = textureCollection.getDefault(sex, mal);
+    const textureHead = textureCollection.getDefaultTelly(sex, mal);
 
     const materialHead = new THREE.MeshBasicMaterial({
       transparent: true,
@@ -528,7 +528,7 @@ class Skip extends THREE.Object3D {
 
     const sex = Random.pick(["male", "female"]);
     const mal = Random.int(1, 4);
-    const textureHead = textureCollection.getDefault(sex, mal);
+    const textureHead = textureCollection.getDefaultTelly(sex, mal);
 
     const materialHead = new THREE.MeshBasicMaterial({
       transparent: true,
