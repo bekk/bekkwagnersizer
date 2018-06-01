@@ -75,6 +75,23 @@ export default class PlingPlongTransition extends THREE.Object3D {
     group.add(arm)
 
 
+    const buttonTexture = loader.load("http://localhost:3000/internal/PlingPlong_Btn.png");
+    buttonTexture.minFilter = THREE.LinearFilter;
+    const materialButton = new THREE.MeshBasicMaterial({
+      transparent: true,
+      map: buttonTexture,
+      side: THREE.DoubleSide,
+    });
+    const button = new THREE.Mesh(new THREE.PlaneGeometry(1.07, 1.42), materialButton);
+    button.scale.multiplyScalar(0.04);
+    button.position.set(
+      -0.3,
+      -0.22,
+      kontrollPanel.position.z + 0.015
+    );
+    group.add(button)
+
+
     const handTexture = loader.load("http://localhost:3000/internal/PlingPlong_Hand.png");
     handTexture.minFilter = THREE.LinearFilter;
     const materialHand = new THREE.MeshBasicMaterial({
@@ -113,7 +130,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
     const handAndFingerContainer = new THREE.Object3D();
     handAndFingerContainer.position.set(
       -0.24,
-      -0.47,
+      -0.46,
       kontrollPanel.position.z + 0.01,
     );
     handAndFingerContainer.add(handAndFinger);
@@ -148,7 +165,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
   animate() {
     const pressAmount = 0.2;
 
-    this.handAndFingerContainer.rotation.z = Math.sin(this.swingTime * 10) * 0.17;
+    this.handAndFingerContainer.rotation.z = Math.sin(this.swingTime * 10) * 0.13;
 
     this.fingerContainer.scale.y = 1 - this.pressTime * pressAmount;
 
@@ -163,7 +180,7 @@ export default class PlingPlongTransition extends THREE.Object3D {
 
     this.camera.position.copy(new THREE.Vector3(
         0,
-        -0.0,
+        0.021,
         1.8,
       ).lerp(
       new THREE.Vector3(

@@ -50,7 +50,7 @@ export class KingsCross {
 
         function makeScreen(i, xCoord) {
           
-          const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 0.1), screenMaterials[i % screenMaterials.length]);
+          const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.13), screenMaterials[i % screenMaterials.length]);
           //mesh.scale.multiplyScalar(3.5);
           mesh.position.set(xCoord, 0.1, -i * i * 0.03)
           return mesh;
@@ -88,7 +88,8 @@ export class KingsCross {
             color: new THREE.Color(0.5, 0.5, 0.0).multiplyScalar(0.85)
           });
           const redMaterial = new THREE.MeshBasicMaterial({
-            color: new THREE.Color(1.0, 0.3, 0.5).multiplyScalar(0.85)
+            //color: new THREE.Color(1.0, 0.3, 0.5).multiplyScalar(0.85)
+            color: new THREE.Color(0xeb0555),
           });
           const whiteMaterial = new THREE.MeshStandardMaterial({
             color: new THREE.Color(1.0, 1.0, 1.0),
@@ -178,7 +179,7 @@ export class KingsCross {
         makePeopleRow(-1.4, 0.5)
         makePeopleRow(-1.25, 0)
 
-        makeBoxRow(-0.975, 0.3)
+        makeBoxRow(-0.975, 0.3, true)
 
         makePeopleRow(-0.715, 0.2);
         makePeopleRow(-0.59, 0.15);
@@ -193,7 +194,7 @@ export class KingsCross {
         makePeopleRow(0.45, 0) 
         makePeopleRow(0.6, 0.5, true)
 
-        makeBoxRow(0.925, 0.4)
+        makeBoxRow(0.925, 0.4, true)
 
         makePeopleRow(1.25, 0)
         makePeopleRow(1.4, 0.5)

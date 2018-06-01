@@ -13,6 +13,30 @@ import PlingPlongTransition from "./pling-plong-transition.js";
 
 const socket = ioClient("http://localhost:3000");
 
+// FINAL TODO:
+// ============
+// Blinking i People
+
+// Få hoder og kropper FFS av Ben og Audun
+// Kropper i farger på Kings Cross
+
+// Større hoder og på skuldrene i Manhattan
+// Hvit bakgrunn Manhattan
+
+// Jobbe sammen om fargene på Manhattan
+// Få inn bukse og sko uanimert
+
+// Pling Plong:
+	// Sving hånd like mange ganger som ben
+		// Stopp på knappen
+	// Knapp ned
+
+// Kingscross: damene på rekke
+
+// Lavest pri: Mørkeblå på sidene i ruløletrappgropa, lyseblå på gulvet. Hex kommer fra Audun
+
+// Sko animert
+
 let timeStart;
 let camera;
 let renderer;
@@ -94,7 +118,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.telly);
+	changeAnimation(animations.people);
 
 	// TODO: Skift til 12.4 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
@@ -176,10 +200,10 @@ const changeAnimation = function(newAnimation) {
 
 const orchestrate = function() {
 	zoomOut();
-	setTimeout(() => transition.stopSwing(), 4000);
-	setTimeout(() => transition.pressButton(), 6000);
-	setTimeout(() => changeAnimation(animations.people), 6500);
-	setTimeout(zoomIn, 7000);
+	setTimeout(() => transition.stopSwing(), 6000);
+	setTimeout(() => transition.pressButton(), 8000);
+	setTimeout(() => changeAnimation(animations.people), 8500);
+	setTimeout(zoomIn, 9000);
 }
 
 const zoomOut = function() {
