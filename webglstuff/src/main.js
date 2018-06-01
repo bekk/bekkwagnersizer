@@ -18,8 +18,12 @@ const socket = ioClient("http://localhost:3000");
 // Blinking i People
 // Glitch i Manhattan
 
-// Få hoder og kropper FFS av Ben og Audun
-// Kropper i farger på Kings Cross
+// Ta hensyn til hvilken scene hvert bilde fra Joachim hører til
+
+// Få dummyhoder av Audun
+// Få kropper i farger i Telly
+
+// Øk antall kropper og dummyhoder fra 3-4 til alle
 
 // Jobbe sammen om fargene på Manhattan
 

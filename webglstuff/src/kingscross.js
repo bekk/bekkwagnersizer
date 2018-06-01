@@ -185,9 +185,9 @@ export class KingsCross {
 
         makeBoxRow(-0.975, 0.3, true)
 
-        makePeopleRow(-0.715, 0.2, "female");
+        makePeopleRow(-0.715, 0.2, "male");
         makePeopleRow(-0.59, 0.15, "female");
-        makePeopleRow(-0.465, 0.1, "male", true);
+        makePeopleRow(-0.465, 0.1, "female", true);
 
         makeBoxRow(-0.225, 0.25, true)
 
@@ -195,13 +195,13 @@ export class KingsCross {
 
         makeBoxRow(0.225, 0.25, true)
 
-        makePeopleRow(0.45, 0, "male") 
+        makePeopleRow(0.45, 0, "female") 
         makePeopleRow(0.6, 0.5, "female", true)
 
         makeBoxRow(0.925, 0.4, true)
 
         makePeopleRow(1.25, 0, "male")
-        makePeopleRow(1.4, 0.5, "male")
+        makePeopleRow(1.4, 0.5, "female")
 
         var light = new THREE.DirectionalLight(0xffffff, 0.7);
         light.position.set(3, 3, -1).normalize();
@@ -264,7 +264,7 @@ class PeopleRow extends THREE.Object3D {
     this.textureCollection = textureCollection;
 
     for (let i = 0; i < 100; i++) {
-      const body = Random.pick(textureCollection.bodies[sex]);
+      const body = Random.pick(textureCollection.kcBodies[sex]);
 
       const texture = body.texture; 
 
@@ -458,7 +458,7 @@ export class Background extends THREE.Object3D {
     super();
     const loader = new THREE.TextureLoader();
     const texture = loader.load("http://localhost:3000/internal/KingsCross-bg.png");
-    texture.minFilter = THREE.LinearFilter;
+    texture.minFilter = THREE.LinearMipMapLinearFilter;
 
     const material = new THREE.MeshBasicMaterial({
       transparent: true,

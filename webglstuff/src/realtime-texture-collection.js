@@ -50,6 +50,26 @@ class RealtimeTextureCollection {
         texture: loader.load("http://localhost:3000/internal/" + filename)
       });
     }
+
+        this._kcBodies = {male: [], female: []};
+
+        for (let i = 1; i <= 4; i++) {
+          const filename = "kropp-m-"+i+"-kc.png";
+          const metadata = this.getMetadata(filename);
+          this._kcBodies.male.push({
+            metadata: metadata,
+            texture: loader.load("http://localhost:3000/internal/" + filename)
+          });
+        }
+
+        for (let i = 1; i <= 4; i++) {
+          const filename = "kropp-f-"+i+"-kc.png";
+          const metadata = this.getMetadata(filename);
+          this._kcBodies.female.push({
+            metadata: metadata,
+            texture: loader.load("http://localhost:3000/internal/" + filename)
+          });
+        }
   }
 
   get nofTextures() {
@@ -58,6 +78,10 @@ class RealtimeTextureCollection {
 
   get bodies() {
     return this._bodies;
+  }
+
+  get kcBodies() {
+    return this._kcBodies;
   }
 
   getDefault(sex, mal) {
@@ -126,10 +150,21 @@ class RealtimeTextureCollection {
       "kropp-m-3.png": {mal: 3, animation: "*", sex: "male"},
       "kropp-m-4.png": {mal: 4, animation: "*", sex: "male"},
 
+
+      "kropp-f-1-kc.png": {mal: 1, animation: "*", sex: "female"},
+      "kropp-f-2-kc.png": {mal: 2, animation: "*", sex: "female"},
+      "kropp-f-3-kc.png": {mal: 3, animation: "*", sex: "female"},
+      "kropp-f-4-kc.png": {mal: 4, animation: "*", sex: "female"},
+      "kropp-m-1-kc.png": {mal: 1, animation: "*", sex: "male"},
+      "kropp-m-2-kc.png": {mal: 2, animation: "*", sex: "male"},
+      "kropp-m-3-kc.png": {mal: 3, animation: "*", sex: "male"},
+      "kropp-m-4-kc.png": {mal: 4, animation: "*", sex: "male"},
+
     }
 
     if (mappings[filename]) return mappings[filename];
     else throw "IKKE IMPLEMENTERT for " + filename;
+    //else return {mal: 4, animation: "*", sex: "male"}
   }
 }
 
