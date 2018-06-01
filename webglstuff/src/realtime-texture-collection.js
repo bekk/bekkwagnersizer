@@ -26,19 +26,23 @@ class RealtimeTextureCollection {
     ];
 
     for (let i = 1; i <= 14; i++) {
-      const jukseI = i <= 4 ? i : 4;
+      const texture = loader.load("http://localhost:3000/internal/hode-m-"+i+".png");
+      texture.repeat.set(0.6, 0.6);
+      texture.offset.set(0.2, 0.2)
       const defaultTexture = {
         metadata: this.getMetadata("hode-m-"+i+".png"), 
-        texture: loader.load("http://localhost:3000/internal/hode-m-"+jukseI+".png")
+        texture: texture
       };
       this.defaultTextures.push(defaultTexture);
     }
 
     for (let i = 1; i <= 11; i++) {
-      const jukseI = i <= 4 ? i : 4;
+      const texture = loader.load("http://localhost:3000/internal/hode-f-"+i+".png")
+      texture.repeat.set(0.6, 0.6);
+      texture.offset.set(0.2, 0.2)
       const defaultTexture = {
         metadata: this.getMetadata("hode-f-"+i+".png"), 
-        texture: loader.load("http://localhost:3000/internal/hode-f-"+jukseI+".png")
+        texture: texture
       };
       this.defaultTextures.push(defaultTexture);
     }
