@@ -123,10 +123,10 @@ class TV extends THREE.Object3D {
     super();
 
     this.sketches = [
-      //new SlideInFromSides(textureCollection),
-      //new ZoomOut(textureCollection),
+      new SlideInFromSides(textureCollection),
+      new ZoomOut(textureCollection),
       new Skip(textureCollection),
-      //new SlideUpFromBottom(textureCollection),
+      new SlideUpFromBottom(textureCollection),
     ];
 
     this.timeOffset = Random.float(0, 5);
