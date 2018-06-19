@@ -61,10 +61,35 @@ app.post('/image', upload.single('image'), (req, res) => {
 });
 
 app.post('/calibration', (req, res) => {
-  const body = req.body;
-  const filename = sanitize(body.name);
-  console.log("received calibration profile", req.body, filename);
-  res.sendStatus(200);
+  const fileContents = JSON.stringify(req.body);
+  const fileName = sanitize(req.body.name);
+  const filePath = path.join(__dirname, 'calibrationprofiles', fileName);
+  fs.writeFile(filePath, fileContents, (err) => {
+    if(err) {
+      console.log(err);
+      res.sendStatus(503);
+    }
+    console.log("received calibration profile", req.body, fileName);
+    res.sendStatus(200);
+  });
+});
+
+app.get('/calibration', (req, res) => {
+  const location = path.join(__dirname, 'calibrationprofiles');
+  fs.readdir(location, (err, files) => {
+    console.log('returning calibration profile names', files);
+    res.status(200).json(files);
+  });
+});
+
+app.get('/calibration/:fileName', (req, res) => {
+  const fileName = sanitize(req.params.fileName);
+  const location = path.join(__dirname, 'calibrationprofiles', fileName);
+  console.log('loading calibration profile', fileName);
+  fs.readFile(location, (err, contents) => {
+    console.log('returning calibration profile');
+    res.status(200).json(JSON.parse(contents));
+  });
 });
 
 app.delete('/image/:id', function (req, res) {
