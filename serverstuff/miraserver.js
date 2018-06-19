@@ -3,6 +3,8 @@ const path = require('path');
 const fsp = require('fs').promises;
 const fs = require('fs');
 const multer = require('multer');
+const bodyParser = require('body-parser');
+const sanitize = require("sanitize-filename");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -18,6 +20,8 @@ const upload = multer({ storage: storage });
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+
+app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -48,10 +52,18 @@ app.use('/static', express.static(__dirname + '/'));
 app.use(express.static(__dirname + '/uploads'));
 app.use('/internal', express.static(__dirname + '/internal'));
 app.use('/trash', express.static(__dirname + '/trash'));
+app.use('/calibrationprofiles', express.static(__dirname + '/calibrationprofiles'));
 
 app.post('/image', upload.single('image'), (req, res) => {
-  console.log("file:", req.file);
+  console.log("received image file:", req.file);
   io.emit('new image', req.file.originalname);
+  res.sendStatus(200);
+});
+
+app.post('/calibration', (req, res) => {
+  const body = req.body;
+  const filename = sanitize(body.name);
+  console.log("received calibration profile", req.body, filename);
   res.sendStatus(200);
 });
 
@@ -154,6 +166,11 @@ http.listen((port = 3000), function () {
   if(!fs.existsSync(__dirname + '/uploads')) {
     console.log('Uploads-folder not found, recreating.')
     fs.mkdirSync(__dirname + '/uploads');
+  }
+
+  if(!fs.existsSync(__dirname + '/calibrationprofiles')) {
+    console.log('Calibrationprofiles-folder not found, recreating.')
+    fs.mkdirSync(__dirname + '/calibrationprofiles');
   }
   console.log(`Listening on port ${port}`);
 });
