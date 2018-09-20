@@ -245,6 +245,19 @@ class RealtimeTextureCollection {
     throw "Fant ikke body for " + sex + " " + mal;
   }
 
+  getKCBody(sex, mal) {
+    if (sex == undefined) sex = "female";
+    if (mal == undefined) mal = 1;
+
+    for (let body of this._kcBodies.male.concat(this._kcBodies.female)) {
+      if (body.metadata.sex == sex
+        && body.metadata.mal == mal) {
+        return body.texture;
+      }
+    }
+    throw "Fant ikke body for " + sex + " " + mal;
+  }
+
   getBald() {
     return new THREE.TextureLoader().load("http://localhost:3000/internal/bald.png");
   }

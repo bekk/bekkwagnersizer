@@ -409,7 +409,7 @@ class PeopleRow extends THREE.Object3D {
         person.normalizedPosition = 0;
       }
 
-      if (person.position.z < -11) {
+      if (person.position.z < -9.5) {
         person.plane.visible = false;
         person.fakePlane.visible = true;
         person.step.visible = false;
@@ -449,7 +449,7 @@ class PeopleRow extends THREE.Object3D {
     //person.face.material.map.minFilter = THREE.LinearMipMapLinearFilter;
     person.face.material.needsUpdate = true;
 
-    const body = this.textureCollection.getBody(metadata.sex, metadata.mal)
+    const body = this.textureCollection.getKCBody(metadata.sex, metadata.mal)
     person.plane.material.map = body;
     person.plane.material.map.anisotropy = Math.pow(2, 3);
     //person.plane.map.minFilter = THREE.LinearMipMapLinearFilter;

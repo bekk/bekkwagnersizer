@@ -74,6 +74,7 @@ fetch('http://localhost:3000/all')
   .then(function(myJson) {
     knownFiles = myJson.files.filter((filename) => filename.indexOf(".png") != -1);
     console.log("Known files:", knownFiles.length)
+    //console.log(knownFiles)
   });
 let knownFilesIndex = 0;
 
@@ -94,6 +95,20 @@ const addImage = function(fileName) {
 	} else {
 		throw "ERROR: ukjent animation: " + metadata.animation
 	}
+}
+
+function addKnownFile() {
+
+	if (knownFilesIndex > knownFiles.length - 1) {
+		console.log("All files added");
+		return true;
+	};
+
+	const fileName = knownFiles[knownFilesIndex++];
+
+	console.log("Adding", fileName)
+
+	addImage(fileName);
 }
 
 const removeImage = function(fileName) {
@@ -123,9 +138,10 @@ const initAnimation = function(domNodeId, canvasId) {
 	renderer.domElement.setAttribute('id', canvasId);
 	renderer.setSize(window.innerWidth, window.innerHeight, true);
 	renderer.autoClear = false;
+	renderer.setPixelRatio(1);
 
 	// Skur 13: 1240 861
-	// SKur 13 60hz: 1491 1080
+	// Skur 13 60hz: 1491 1080
 	console.log(window.innerWidth, window.innerHeight); // 1680, 1050
 
 	console.log(
@@ -147,7 +163,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.people);
+	changeAnimation(animations.kingsCross);
 
 	// TODO: Skift til 12.4 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
@@ -180,19 +196,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	document.getElementById("zoomIn").onclick = function() { 
 		zoomIn();
 	};
-	document.getElementById("addImage").onclick = function() {
-
-		if (knownFilesIndex > knownFiles.length - 1) {
-			console.log("All files added");
-			return;
-		};
-
-		const fileName = knownFiles[knownFilesIndex++];
-
-		console.log("Adding", fileName)
-	
-		addImage(fileName);
-	};
+	document.getElementById("addImage").onclick = addKnownFile;
 
 	document.getElementById("orchestrate").onclick = function() { 
 		orchestrate();
@@ -203,7 +207,7 @@ const initAnimation = function(domNodeId, canvasId) {
 		removeIndex++;
 	};
 
-	setInterval(orchestrate, intervalMinutes*60*1000);
+	//setInterval(orchestrate, intervalMinutes*60*1000);
 
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         otherCamera.position.set(0, 0, 3);
@@ -223,6 +227,14 @@ const initAnimation = function(domNodeId, canvasId) {
         backgroundScene.add(background);
 		
 		//zoomOut();
+
+
+
+	if (false) 
+		window.setTimeout(function foo() {
+			const result = addKnownFile();
+			if (result !== true) window.setTimeout(foo, 200);
+		}, 2000);
 }
 		
 		window.state = 0;
