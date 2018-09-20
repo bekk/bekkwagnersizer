@@ -51,8 +51,7 @@ export class KingsCross {
           screenMaterials.push(material);
         }
 
-        function makeScreen(i, xCoord, iOffset) {
-          
+      function makeScreen(i, xCoord, iOffset) {
           const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.13), screenMaterials[i % screenMaterials.length]);
           //mesh.scale.multiplyScalar(3.5);
           i += 6 + iOffset;
@@ -208,7 +207,6 @@ export class KingsCross {
         var light = new THREE.DirectionalLight(0xffffff, 0.7);
         light.position.set(3, 3, -1).normalize();
         this._scene.add(light);
-
 
         var light2 = new THREE.DirectionalLight(0xffffff, 0.7);
         light2.position.set(-3, 3, -1).normalize();

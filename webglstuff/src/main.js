@@ -49,9 +49,10 @@ let background;
 window.fpsFactor = 1.0;
 window.lastTime = new Date().getTime();
 
-window.debug = false;
+window.debug = true;
 
-const intervalMinutes = 1;
+//const intervalMinutes = [10, 3, 10, 10];
+const intervalMinutes = [1, 0.5, 1, 1];
 
 const uniforms = {
 	time: {value: 0.0},
@@ -207,7 +208,7 @@ const initAnimation = function(domNodeId, canvasId) {
 		removeIndex++;
 	};
 
-	//setInterval(orchestrate, intervalMinutes*60*1000);
+	initAutoOrchestrate();
 
         otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
         otherCamera.position.set(0, 0, 3);
@@ -257,6 +258,16 @@ const getNextAnimation = function() {
 	animationIndex = (animationIndex + 1) % total;
 
 	return array[animationIndex];
+}
+
+const initAutoOrchestrate = function() {
+	function callback() {
+		orchestrate(); 
+		const nextIndex = (animationIndex + 1) % intervalMinutes.length;
+		setTimeout(callback, intervalMinutes[nextIndex]*60*1000);
+	}
+
+	setTimeout(callback, intervalMinutes[animationIndex]*60*1000);
 }
 
 const orchestrate = function() {
