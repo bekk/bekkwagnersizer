@@ -11,9 +11,9 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "copy-webpack-plugin": "^4.5.1",
-    "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.12",
-    "webpack-dev-server": "^3.1.1",
+    "webpack": "^4.19.1",
+    "webpack-cli": "^3.1.1",
+    "webpack-dev-server": "^3.1.8",
     "webpack-glsl-loader": "^1.0.1"
   },
   "dependencies": {
