@@ -151,5 +151,9 @@ io.on('connection', socket => {
 });
 
 http.listen((port = 3000), function () {
+  if(!fs.existsSync(__dirname + '/uploads')) {
+    console.log('Uploads-folder not found, recreating.')
+    fs.mkdirSync(__dirname + '/uploads');
+  }
   console.log(`Listening on port ${port}`);
 });
