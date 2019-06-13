@@ -66,11 +66,11 @@ function color([r, g, b]) {
 }
 
 function colorPixel(n, [r, g, b]) {
-  strip.pixel(n).color(`rgb(${r * 255}, ${g * 255}, ${b * 255})`);
+  strip.pixel(n).color(`rgb(${r}, ${g}, ${b})`);
 }
 
 function fill(from, to, c, duration) {
-  let step = duration / (to - from);
+  const step = duration / (to - from);
   function inner(i) {
     if (i >= to) {
       return;
