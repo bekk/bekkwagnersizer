@@ -1,5 +1,5 @@
 
-for (let i = 1; i <= 3; i++) {
+for (let i = 1; i <= 6; i++) {
   const imageForm = document.getElementById('imageForm'+i);
 
   imageForm.onsubmit = (e) => {
