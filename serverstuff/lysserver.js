@@ -59,6 +59,7 @@ board.on('ready', function() {
   strip.on('ready', function() {
     strip.off();
   });
+  console.log("Let's turn up the lights!")
 });
 
 function color([r, g, b]) {
