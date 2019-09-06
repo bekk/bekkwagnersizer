@@ -17,9 +17,9 @@
     "webpack-glsl-loader": "^1.0.1"
   },
   "dependencies": {
+    "cannon": "^0.6.2",
     "sharp": "^0.20.1",
-    "three": "^0.91.0",
-    "three-orbit-controls": "^82.1.0",
-    "socket.io": "^2.1.0"
+    "socket.io": "^2.1.0",
+    "three-orbit-controls": "^82.1.0"
   }
 }

@@ -1,0 +1,45 @@
+Forslag fra HC og Ben
+---
+Nye spillere kommer opp fra bunnen og skytes inn i køen, gjerne fra et aparat som ligner scanneren
+De likte fargede booster-match-ideen
+
+De nevnte ikke tykkere streker når de så på skjermen
+
+Teleport-booster
+
+-- Test med Stian --
+
+* Unngå kollapsing med mindre det er ganske crazy
+
+Blå og grønn er for likt etter bloom-filter
+    Be Joachim gjøre blåfargen mørkere
+    Eller, finn perfekte farger selv og fortell dem til Joakim
+    * Eller, reduser bloom
+
+Ja, de kan falle ned fra køen
+
+Stian positiv til ghost-linjeglød på de lilla linjene
+
+* Gjør om mål til portal (ellipse). 
+
+Gjør mål slik at ball forsvinner i røyk/partikler når går igjennom
+
+* Det må alltid være noe bekredtelse på opplasting selv om køen er veldig lang (vise den siste som ble lastet opp)
+
+* Skaler ned til 25 sekunders run
+
+* Må stå DEATH på skjermen om man ikke ruller fremover lenger
+
+* Gjør det lettere å se hvilke farger boosterne har (er veldig hvite nå)
+
+* Man får boost i prosent av hvor mye av den fargem man har. Skaler den grafiske boost-effekten iht til det
+
+Husk data i tilfelle restart
+    Husk bilder i køen (putt nåværende spiller tilbake)
+    * Husk highscore
+
+-- FINAL TODO --
+
+* Ton ned "glitch" i logoen
+* lag ny highscoreliste
+* Lag en prikk som fyker med ease (in eller inout) fra terminalen til køen

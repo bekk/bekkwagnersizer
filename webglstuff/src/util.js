@@ -41,7 +41,7 @@ function updateTexture(texture, pixelCallback) {
   for (var i = 0; i < nofPixels; i++) {
     var x = i%width;
     var y = Math.floor(i/width);
-    
+
     var rgba = pixelCallback(x, y);
 
     if (rgba) {
@@ -51,9 +51,9 @@ function updateTexture(texture, pixelCallback) {
       texture.image.data[i*4+3] = rgba.a*255;
     }
   }
-  
+
   texture.needsUpdate = true;
-  
+
   return texture;
 }
 
@@ -106,8 +106,8 @@ function fetchTextureFromServer(url, callback, errorCallback) {
   );
 }
 
-export const ratio = (renderer) => 
-  renderer.getContext().drawingBufferWidth / 
+export const ratio = (renderer) =>
+  renderer.getContext().drawingBufferWidth /
   renderer.getContext().drawingBufferHeight;
 
 
@@ -133,6 +133,8 @@ export const addResizeListener = function(camera, renderer) {
     renderer.setSize(window.innerWidth, height);
     camera.aspect = window.innerWidth / height;
     camera.updateProjectionMatrix();
+
+    // TODO: Does not handle updating dimensions of Orthographic camera
   });
 }
 
@@ -220,4 +222,99 @@ export {
   normalizedCoordinates,
   fetchTextureFromServer,
   normalize,
+}
+
+export function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+export function getImageData(image) {
+  const canvas = document.createElement('canvas');
+  canvas.width = image.width;
+  canvas.height = image.height;
+
+  const context = canvas.getContext('2d');
+  context.drawImage(image, 0, 0);
+
+  return context.getImageData(0, 0, image.width, image.height);
+}
+
+export function getPixel(imagedata, x, y) {
+  const position = (x + imagedata.width * y) * 4;
+  const data = imagedata.data;
+  return {
+    r: data[position + 0],
+    g: data[position + 1],
+    b: data[position + 2],
+    a: data[position + 3]
+  };
+}
+
+export function setPixel(imagedata, x, y, pixel) {
+  const position = (x + imagedata.width * y) * 4;
+  const data = imagedata.data;
+  data[position + 0] = pixel.r;
+  data[position + 1] = pixel.g;
+  data[position + 2] = pixel.b;
+  data[position + 3] = pixel.a;
+}
+
+export function scaleImageData(imagedata, newWidth, newHeight) {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+
+  const scaled = context.createImageData(newWidth, newHeight);
+
+  for (let x = 0; x < newWidth; x++) {
+    for (let y = 0; y < newHeight; y++) {
+      const sampledX = Math.floor(x * imagedata.width / newWidth);
+      const sampledY = Math.floor(y * imagedata.height / newHeight);
+
+      const sampledPixel = getPixel(imagedata, sampledX, sampledY);
+
+      setPixel(scaled, x, y, sampledPixel);
+    }
+  }
+
+  return scaled;
+}
+
+export function imageDataToString(imagedata) {
+  let str = "";
+
+  for (let y = 0; y < imagedata.height; y++) {
+    for (let x = 0; x < imagedata.width; x++) {
+      const pixel = getPixel(imagedata, x, y);
+
+      let colorCharacter = '_' // Transparent
+
+      if (pixel.a > 255/2) {
+        if (Math.max(pixel.r, pixel.g, pixel.b) < 0.2*255) {
+          colorCharacter = "#"; // Black
+        } else if (Math.min(pixel.r, pixel.g, pixel.b) > 0.8*255) {
+          colorCharacter = " "; // White
+        } else if (pixel.r > pixel.g && pixel.r > pixel.b) {
+          colorCharacter = "R";
+        } else if (pixel.g > pixel.r && pixel.g > pixel.b) {
+          colorCharacter = "G";
+        } else {
+          colorCharacter = "B";
+        }
+      }
+
+      str += colorCharacter;
+    }
+
+    str += '\n';
+  }
+
+  return str;
+}
+
+export function formatTime(timeSeconds) {
+  const seconds = Math.floor(timeSeconds);
+  const millis = Math.round((timeSeconds - seconds) * 1000);
+  return `t = ${seconds}.${pad(millis, 3)}`;
 }

@@ -3,9 +3,17 @@
 	<head>
 		<meta charset="UTF-8"/>
 
-		<!--script src="https://threejs.org/build/three.min.js"></script-->
-		<script src="./three.min.js"></script>
-		
+		<script src="./lib/three.min.js"></script>
+		<script src="./lib/CopyShader.js"></script>
+		<script src="./lib/EffectComposer.js"></script>
+		<script src="./lib/ClearPass.js"></script>
+		<script src="./lib/RenderPass.js"></script>
+		<script src="./lib/ShaderPass.js"></script>
+		<script src="./lib/TexturePass.js"></script>
+
+		<script src="./lib/LuminosityHighPassShader.js"></script>
+		<script src="./lib/UnrealBloomPass.js"></script>
+
 		<style>
 			* {
 				margin: 0px;
@@ -17,13 +25,201 @@
 				background-color: #1a1a1a;
 			}
 
+			body * {
+				font-family: "Andale Mono";
+			}
+
 			.hidden {display: none;}
 
 			#buttons {
-				display: none;
+				opacity: 0.45;
 				position: absolute;
-				top: 1rem;
+				bottom: 0.1rem;
 				left: 1rem;
+				z-index: 1000;
+			}
+
+			@font-face {
+			  font-family: 'Space Mono';
+			  font-style: italic;
+			  font-weight: 700;
+			  font-display: swap;
+			  src: local('Space Mono Bold Italic'), local('SpaceMono-BoldItalic'), url(./lib/SpaceMono-BoldItalic.ttf) format('woff2');
+			  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+			}
+
+			@font-face {
+			  font-family: 'Lazer 84';
+			  font-style: italic;
+			  font-weight: 700;
+			  font-display: swap;
+			  src: local('Lazer 84 Bold Italic'), local('Lazer84-BoldItalic'), url(./lib/Lazer84.ttf) format('woff2');
+			  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+			}
+
+			#timer {
+				position: absolute;
+				color: #fff;
+				bottom: 8%;
+				left: 50%;
+			    transform: translateX(-50%) translateY(-50%);
+				font-size: 32px;
+				text-shadow: 0 0 4px #fff, 0 0 20px #fff;
+			}
+
+			#queueTitle {
+				position: absolute;
+				top: 24%;
+				left: 12%;
+			    transform: translateX(-50%) translateY(-50%);
+
+				color: #fff;
+				font-size: 24px;
+				text-shadow: 0 0 4px #fff, 0 0 20px #fff;
+			}
+
+			#queueOverflow {
+				position: absolute;
+				top: 76%;
+				left: 13%;
+			    transform: translateX(-50%) translateY(-50%);
+
+				color: #fff;
+				font-size: 16px;
+				text-shadow: 0 0 4px #fff, 0 0 20px #fff;
+			}
+
+			#logo {
+				position: absolute;
+				top: 2%;
+				left: 50%;
+			    transform: translateX(-50%);
+			}
+
+			#logo img {
+	    		height: 185px;
+			}
+
+			#entryloaderText {
+				position: absolute;
+				top: 8.5%;
+				left: 80%;
+				width: 24%;
+
+				color: #FFF;
+				font-size: 16px;
+				text-shadow: 0 0 4px #FFF, 0 0 20px #FFF;
+			}
+
+			#highscore {
+				position: absolute;
+				bottom: 0%;
+				left: 0%;
+				color: #FFF;
+				font-size: 24px;
+				background-color: #1a1a1a;
+				width: 100%;
+			    padding: 4%;
+			    padding-bottom: 4%;
+			    padding-top: 2%;
+
+				box-shadow: 0 0 50px #1a1a1a, 0 0 100px #1a1a1a, 0 0 200px #1a1a1a, 0 0 400px #1a1a1a;
+				text-shadow: 0 0 4px #FFF, 0 0 20px #FFF;
+			}
+
+			#highscore h1 {
+				font-size: 20px;
+				display: inline-block;
+			}
+
+			#highscoreline {
+				height: 2px;
+				width: 78%;
+				margin-bottom: 0.35%;
+				background-color: #40b3ff;
+				box-shadow: 0 0 5px #40b3ff, 0 0 10px #40b3ff, 0 0 20px #40b3ff;
+				display: inline-block;
+				margin-left: 2%;
+			}
+
+			#highscoretitle {
+	    		margin-bottom: 0.5%;
+			}
+
+			#highscore h2 {
+				font-size: 42px;
+				font-family: 'Space Mono';
+				display: inline;
+			}
+
+			#highscore li {
+				list-style-type: none;
+				height: 65px;
+			}
+
+			#highscore li span {
+				vertical-align: super;
+			}
+
+			#highscore ol {
+				padding-right: 7.5%;
+			}
+
+			#highscore-lists {
+				display: flex;
+			}
+
+			#highscore img {
+				height: 70px;
+				position: relative;
+				top: 20px;
+				padding-right: 5px;
+			}
+
+			.centerpiece {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+			    transform: translateX(-50%) translateY(-50%);
+			}
+
+			#died {
+				font-size: 100px;
+				color: #81fa73;
+				text-shadow: 0 0 4px #81fa73, 0 0 40px #81fa73;
+				font-family: 'Lazer 84';
+			}
+
+			#glitched {
+				color: #ce5cf1;
+				text-shadow: 0 0 5px #ce5cf1, 0 0 30px #ce5cf1;
+				font-size: 30px;
+			}
+
+			#glitched h1 {
+				font-family: 'Space Mono';
+				font-size: 100px;
+				color: #ce5cf1;
+				text-shadow: 0 0 5px #ce5cf1, 0 0 30px #ce5cf1;
+			}
+
+			#rankNumber, #rankPostfix {
+				color: #81fa73;
+				font-size: 65px;
+				text-shadow: 0 0 4px #81fa73, 0 0 40px #81fa73;
+				font-family: 'Lazer 84';
+				padding-left: 15px;
+			}
+
+			#rankNumber {
+    			letter-spacing: 5px;
+			}
+
+			#rankPostfix {
+				font-size: 25px;
+				bottom: 38px;
+				position: fixed;
+				padding-left: 11px;
 			}
 
 			button {
@@ -35,21 +231,47 @@
 		<div id="container"> </div>
 
 		<div id="buttons">
-			<button id="people">People</button>
-			<button id="manhattan">Manhattan</button>
-			<button id="telly">Telly</button>
-			<button id="kingsCross">Kings Cross</button>
-			<button id="zoomOut">zoom out</button>
-			<button id="stopSwing">stop swing</button>
-			<button id="pressButton">press button</button>
-			<button id="releaseButton">release button</button>
-			<button id="zoomIn">zoom in</button>
-			<button id="addImage">add image</button>
-			<button id="orchestrate">orchestrate</button>
-			<button id="removeImage">remove image</button>
-			<button id="addAllImages">add all images</button>
+			<button id="queuePlayer">queue player</button>
+			<button id="queueDebug">queue debug</button>
+			<button id="launchPlayer">launch image</button>
+			<button id="teleportPlayer">teleport player</button>
+			<button id="brakePlayer">brake player</button>
+			<button id="toggleFreeCamera">toggle free camera</button>
+			<button id="deleteHighscore">delete highscore</button>
 		</div>
-		
+
+		<!-- div id="logo"><img src="http://localhost:3000/internal/glitch-logo.svg"></img></div -->
+
+		<div id="queueTitle">queue of death</div>
+		<div id="queueOverflow">[+ <span id="queueOverflowNumber">XX</span>]</div>
+
+		<div id="timer">0.000</div>
+
+		<div id="entryloaderText">
+			&gt; bekk$ mainframe load blob<br/>
+			/ ...loading<br/>
+			[god]: compiled successfully.<br/>
+			# X in queue of death.
+		</div>
+
+		<div id="highscore">
+			<div id="highscoretitle">
+				<h1>the fastest ecapes</h1>
+				<div id="highscoreline"> </div>
+			</div>
+			<div id="highscore-lists">
+			</div>
+		</div>
+
+		<div id="glitched" class="centerpiece">
+			<h1>FREEDOM!</h1>
+			<span>It’s the <span id="rankNumber">X</span><span id="rankPostfix">th</span> fastest escape!
+		</div>
+
+		<div id="died" class="centerpiece">
+			DEATH!
+		</div>
+
 		<script src="./dist/bundle.js"></script>
 	</body>
 </html>
