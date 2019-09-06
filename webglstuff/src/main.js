@@ -1,353 +1,547 @@
 THREE.OrbitControls = require('three-orbit-controls')(THREE);
 
 import ioClient from 'socket.io-client';
+import CANNON from 'cannon';
 
-import Bird from "./bird.js";
-import { fetchTextureFromServer, Random, ratio, clamp, easeInOutSine } from './util.js';
-import Manhattan from './manhattan.js';
-import People from './people.js';
-import Telly from './telly.js';
-import { KingsCross, Background } from './kingscross.js';
-import RealtimeTextureCollection from "./realtime-texture-collection.js";
-import PlingPlongTransition from "./pling-plong-transition.js";
+import shape2mesh from "./shape2mesh.js";
+import {setUpComposer} from './postprocessing';
+import {createBackdrop, updateBackdrop} from './backdrop';
+import {createBackdrop as createTexturedBackdrop, updateBackdrop as updateTexturedBackdrop} from './backdrop/textured.js';
+import {initPhysics, resetPhysics, updatePhysics, getHeightfieldBody, getCylinderBodies, teleportTo, scaleVelocity} from './physics';
+import {makeHeightField} from './physics/heightfield';
+import {makeBoosters, updateBoosters, makeBoosterMeshes} from './physics/booster.js';
+import {analyzeImage} from './edgedetection';
+import {makeBall, updateCylinder, setMap, initBall, glitchBall} from './ball';
+import {registerGoalTime, getTopGoalTimes, makeHighscoreHtml, saveHighscore, loadHighscore, deleteHighscore} from './backdrop/highscore.js';
+import {makeGridLines} from './gridlines';
+import {makeQueue, queuePush, queuePop, animateQueue, queueLength} from './ball/queue';
+import {makeEntryLoader, animateEntryLoader, restartEntryLoader} from './ball/entryloader';
+import {fetchTextureFromServer, Random, ratio, clamp, easeInOutSine, addResizeListener, pad, getImageData, formatTime} from './util.js';
 
 const socket = ioClient("http://localhost:3000");
 
-// FINAL TODO:
-// ============
-// Blinking i People
-// Glitch i Manhattan
-// Glitch i Kings Cross også
-
-// Få grønne rader i Kings Cross (og hoder på hver sin undertype)
-
-// ======
-
-// Jobbe sammen om fargene på Manhattan
-
-// Lavest pri: Mørkeblå på sidene i rulletrappgropa, lyseblå på gulvet. Hex kommer fra Audun
-
-let timeStart;
 let camera;
 let renderer;
 let scene;
-let animation;
 let orbitControls;
-let textureCollection;
-const animations = {};
-let animationIndex = 0;
-let realtimeTextureCollection;
 
-let otherCamera;
-let otherScene;
-let transition;
+let timeStartMillis;
+let timeRoundStartMillis;
+let lastTimeMillis;
+let heightfield;
+let composer;
+let isFreeCamera;
+let boosters;
+let queue;
+let hasWon = false;
+let hasLost = true;
+let bodiesCenter = new THREE.Vector3(), lastBodiesCenter;
+let timerElement = document.getElementById("timer");
+let frameCounter = 0;
+let speed;
+let speedWarningTime = null;
+let cameraZCoordinate = 330;
+let goal;
+let texture;
+let guiCovers;
+let glitchAnimationTime = 0;
+const timeLimit = 32;
 
-let backgroundCamera;
-let backgroundScene;
-let background;
-
-window.fpsFactor = 1.0;
-window.lastTime = new Date().getTime();
-
-window.debug = false;
-
-const intervalMinutes = [10, 3, 10, 10];
-//const intervalMinutes = [1, 0.5, 1, 1];
+const cameraLookAt = new THREE.Vector3();
 
 const uniforms = {
 	time: {value: 0.0},
 };
 
 socket.on('new image', (fileName)  => {
-	console.log(`Downloading new image: ${fileName}`);
-	addImage(fileName);
+	queueImage(fileName);
 })
 
 socket.on('remove image', (fileName)  => {
-	removeImage(fileName);
+	console.log("remove image IKKE IMPLEMENTERT")
 })
 
-let knownFiles = [];
-fetch('http://localhost:3000/all')
-  .then(function(response) {
-    return response.json();
-  })
-  .then(function(myJson) {
-    knownFiles = myJson.files.filter((filename) => filename.indexOf(".png") != -1);
-    console.log("Known files:", knownFiles.length)
-    //console.log(knownFiles)
-  });
-let knownFilesIndex = 0;
+const queueImage = function(fileName) {
+    console.log(`Downloading new image: ${fileName}`);
 
-const addImage = function(fileName) {
-	const metadata = realtimeTextureCollection.getMetadata(fileName)
+    function onLoadCallback(textureWithImage) {
+        const imagedata = getImageData(textureWithImage.image);
+        const edgedata = analyzeImage(imagedata);
+        texture.offset.set(
+            edgedata.center.x - 0.5,
+            edgedata.center.y - 0.5
+        );
 
-	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`);
+        const scale = Math.max(edgedata.size.x, edgedata.size.y);
+        texture.repeat.set(scale, scale);
 
+        texture.bodysize = edgedata.size
+        texture.colorMix = edgedata.color;
+
+        restartEntryLoader(texture, queueLength());
+
+        setTimeout(() => {
+            queuePush(texture);
+            if ((hasWon || hasLost) && queueLength() == 1) {
+                setTimeout(launchNextInQueue, 0);
+            }
+        }, 7500);        
+    }
+
+	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`, onLoadCallback);
+
+    texture.flipY = false;
+    texture.rotation = Math.PI/2;
+    texture.center.set(0.5, 0.5);
+
+    //const scale = 2;
+    //texture.repeat.set(1/scale, 1/scale);
+
+    texture.needsUpdate = true;
 	texture.fileName = fileName;
-
-	if (metadata.animation == "people") {
-		animations.people.updateImage(texture, metadata);
-	} else if (metadata.animation == "manhattan") {
-		animations.manhattan.updateImage(texture, metadata);
-		animations.telly.updateImage(texture, metadata);
-	} else if (metadata.animation == "kingscross") {
-		animations.kingsCross.updateImage(texture, metadata);
-	} else {
-		throw "ERROR: ukjent animation: " + metadata.animation
-	}
-}
-
-function addKnownFile() {
-
-	if (knownFilesIndex > knownFiles.length - 1) {
-		console.log("All files added");
-		return true;
-	};
-
-	const fileName = knownFiles[knownFilesIndex++];
-
-	console.log("Adding", fileName)
-
-	addImage(fileName);
-}
-
-const removeImage = function(fileName) {
-	console.log(`REMOVING image: ${fileName}`);
-	for (let animation of [animations.people, animations.manhattan, animations.telly, animations.kingsCross]) {
-		animation.scene.traverse(function(child) {
-			if (child.material && child.material.map && child.material.map.fileName && child.material.map.fileName == fileName) {
-				console.log("Found map to remove");
-				child.material.map = realtimeTextureCollection.getBald();
-				child.material.map.anisotropy = Math.pow(2, 3);
-				child.material.map.minFilter = THREE.LinearMipMapLinearFilter;
-				child.material.needsUpdate = true;
-			}
-		})
-	}
-
-	animations.manhattan.removeImage(fileName);
 }
 
 const initAnimation = function(domNodeId, canvasId) {
-	timeStart = new Date().getTime();
+    timeStartMillis = new Date().getTime();
+    lastTimeMillis = timeStartMillis;
 
-	renderer = new THREE.WebGLRenderer({antialias: true});
-	renderer.gammaInput = false;
-	renderer.gammaOutput = false;
-	renderer.setClearColor(0x404040);
-	renderer.domElement.setAttribute('id', canvasId);
-	renderer.setSize(window.innerWidth, window.innerHeight, true);
-	renderer.autoClear = false;
-	renderer.setPixelRatio(2);
+    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.gammaInput = true;
+    renderer.gammaOutput = true;
+    renderer.setClearColor(new THREE.Color(0x1A1A1A));
+    renderer.domElement.setAttribute('id', canvasId);
+    renderer.setSize(window.innerWidth, window.innerHeight, true);
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
 
-	// Skur 13: 1240 861
-	// Skur 13 60hz: 1491 1080
-	console.log(window.innerWidth, window.innerHeight); // 1680, 1050
+    const ratio = renderer.getContext().drawingBufferWidth / renderer.getContext().drawingBufferHeight;
 
-	console.log(
-		renderer.getContext().getParameter(renderer.getContext().MAX_VERTEX_TEXTURE_IMAGE_UNITS),
-		renderer.getContext().getParameter(renderer.getContext().MAX_TEXTURE_SIZE),
-	);
+    camera = new THREE.PerspectiveCamera(10, ratio, 0.01, 1e6);
+    camera.position.set(0, cameraLookAt.y, cameraZCoordinate);
+    camera.lookAt(cameraLookAt);
+    camera.updateProjectionMatrix();
 
-	document.getElementById(domNodeId).appendChild(renderer.domElement);
+    orbitControls = new THREE.OrbitControls( camera, renderer.domElement );
+    orbitControls.target.copy(cameraLookAt);
 
-    // 256 stykker på 1024^2 ser ut til å være en øvre grense for rendringen nå
-    // eller overkant av 1000 stykker på 512^2
-    const nofTextures = 400;
-    const textureWidth = 512;
-    const textureHeight = 512;
-	realtimeTextureCollection = new RealtimeTextureCollection(nofTextures, textureWidth, textureHeight);
+    document.getElementById(domNodeId).appendChild(renderer.domElement);
 
-	animations.people = new People(renderer, realtimeTextureCollection);
-	animations.manhattan = new Manhattan(renderer, realtimeTextureCollection);
-	animations.telly = new Telly(renderer, realtimeTextureCollection);
-	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
+    scene = new THREE.Scene();
 
-	changeAnimation(animations.people);
+    addResizeListener(camera, renderer);
 
-	// TODO: Skift til 12.4 * 7, x * y piksler
-	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
-	// TODO: Hent alle bilder på nytt hvis restart
+	document.getElementById("queuePlayer").onclick = queueMockPlayer;
+    document.getElementById("queueDebug").onclick = queueDebugPlayer;
+    document.getElementById("launchPlayer").onclick = launchNextInQueue;
+    document.getElementById("teleportPlayer").onclick = teleportPlayer;
+    document.getElementById("toggleFreeCamera").onclick = toggleFreeCamera;
+    document.getElementById("deleteHighscore").onclick = deleteHighscoreAndRefresh;
+    document.getElementById("brakePlayer").onclick = brakePlayer;
 
-	document.getElementById("manhattan").onclick = function() { 
-		changeAnimation(animations.manhattan);
-	};
-	document.getElementById("people").onclick = function() { 
-		changeAnimation(animations.people);
-	};
-	document.getElementById("telly").onclick = function() { 
-		changeAnimation(animations.telly);
-	};
-	document.getElementById("kingsCross").onclick = function() { 
-		changeAnimation(animations.kingsCross);
-	};
-	document.getElementById("zoomOut").onclick = function() { 
-		zoomOut();
-	};
-	document.getElementById("stopSwing").onclick = function() { 
-		transition.stopSwing();
-	};
-	document.getElementById("pressButton").onclick = function() { 
-		transition.pressButton();
-	};
-	document.getElementById("releaseButton").onclick = function() { 
-		transition.releaseButton();
-	};
-	document.getElementById("zoomIn").onclick = function() { 
-		zoomIn();
-	};
-	document.getElementById("addImage").onclick = addKnownFile;
+    document.addEventListener("keypress", (event) => {
+        document.getElementById("buttons").classList.toggle("hidden");
+    })
 
-	document.getElementById("orchestrate").onclick = function() { 
-		orchestrate();
-	};
-	document.getElementById("removeImage").onclick = function() {
-		window.removeIndex = window.removeIndex || 0;
-		removeImage(knownFiles[removeIndex]);
-		removeIndex++;
-	};
-	document.getElementById("addAllImages").onclick = function() {
-		addAllImages();
-	};
+    heightfield = makeHeightField();
 
-	if (true) initAutoOrchestrate();
+    boosters = makeBoosters(heightfield);
 
-    otherCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
-    otherCamera.position.set(0, 0, 3);
-    otherCamera.updateProjectionMatrix();
+    initPhysics(heightfield, boosters);
+    makeContents();
 
-    otherScene = new THREE.Scene();
-    transition = new PlingPlongTransition(otherCamera);
-    otherScene.add(transition);
+    composer = setUpComposer(scene, camera, renderer);
 
-    backgroundCamera = new THREE.PerspectiveCamera(45, ratio(renderer), 0.01, 10000);
-    backgroundCamera.position.set(0, 0, 3);
-    backgroundCamera.lookAt(new THREE.Vector3(0, 0, 0))
-    backgroundCamera.updateProjectionMatrix();
+    loadHighscore();
+    refreshHighscore();
+    setInterval(saveHighscore, 1000);
 
-    backgroundScene = new THREE.Scene();
-    background = new Background();
-    backgroundScene.add(background);
-	
-	zoomOut();
-
-
-	if (false) window.setTimeout(addAllImages, 2000);
-}
-		
-		window.state = 0;
-		window.transitionStartTime = 0;
-
-function addAllImages() {
-	(function foo() {
-		const result = addKnownFile();
-		if (result !== true) window.setTimeout(foo, 200); // 1200 files ~ 5 minutes @ 200 ms
-	})();
+    queueMockPlayers();
+    //queueDebugHeads();
 }
 
-const changeAnimation = function(newAnimation) {
-	scene = newAnimation.scene
-	camera = newAnimation.camera;
-	animation = newAnimation;
+function resetBall(texture) {
+    console.log("Reset ball", texture.bodysize, texture.colorMix);
+	resetPhysics(texture);
+    for (const booster of boosters) {
+        delete booster.time;
+    }
+    timeRoundStartMillis = new Date().getTime();
+    hasWon = false;
+    hasLost = false;
+    speedWarningTime = null;
+    glitchAnimationTime = 0;
+
+    document.getElementById("died").classList.toggle("hidden", true);
+    document.getElementById("glitched").classList.toggle("hidden", true);
+    document.getElementById("highscore").classList.toggle("hidden", true);
 }
 
-const getNextAnimation = function() {
-	let total = 0;
-	const array = [];
-	for (let key in animations) {
-		total++;
-		array.push(animations[key]);
-	}
-
-	animationIndex = (animationIndex + 1) % total;
-
-	return array[animationIndex];
+function toggleFreeCamera() {
+    isFreeCamera = !isFreeCamera;
+    if (isFreeCamera) {
+        camera.position.set(250, -100, 700);
+        orbitControls.target.copy(camera.position);
+        orbitControls.target.z = 0;
+    }
 }
 
-const initAutoOrchestrate = function() {
-	function callback() {
-		orchestrate(); 
-		const nextIndex = (animationIndex + 1) % intervalMinutes.length;
-		setTimeout(callback, intervalMinutes[nextIndex]*60*1000);
-	}
-
-	setTimeout(callback, intervalMinutes[animationIndex]*60*1000);
+function teleportPlayer() {
+    const destination = goal.position.clone();
+    destination.add(new THREE.Vector3(-12, 12, 0));
+    teleportTo(destination);
 }
 
-const orchestrate = function() {
-	zoomOut();
-	transition.onButtonTop((times) => {
-		if (times == 3) {
-			transition.stopSwing();
-			transition.onButtonDown(() => changeAnimation(getNextAnimation()));
-			setTimeout(() => transition.pressButton(), 1000);
-			setTimeout(zoomIn, 3000);
-		}
-	});
-
+function brakePlayer() {
+    scaleVelocity(0.5);
 }
 
-const zoomOut = function() {
-	transition.resetAnimation();
-	window.state = 1;
-	window.transitionStartTime = new Date().getTime();
-}
+function makeContents() {
+    const nofCylinderBodies = getCylinderBodies().length;
 
-const zoomIn = function() {
-	window.state = 3;
-	window.transitionStartTime = new Date().getTime();
+    const cylinder = initBall(nofCylinderBodies);
+    scene.add(cylinder);
+
+    // Queue
+
+    queue = makeQueue();
+    queue.scale.multiplyScalar(0.007);
+    scene.add(queue);
+
+    // Line
+
+    const lineThickness = 0.1;
+    const lineMaterial = new THREE.MeshBasicMaterial({color: 0xff22ff});
+    const lineGeometry = new THREE.PlaneBufferGeometry(1, lineThickness);
+    lineGeometry.translate(0.5, 0, 0);
+    const positions = [];
+
+    const line = new THREE.Object3D();
+    for (let i = 0; i < heightfield.length - 1; i++) {
+        const x = i;
+        const y = heightfield[i][0];
+
+        const nextX = i+1;
+        const nextY = heightfield[i+1][0];
+
+        const segment = new THREE.Mesh(lineGeometry, lineMaterial);
+
+        const diff = new THREE.Vector2(nextX, nextY).clone().sub(new THREE.Vector2(x, y));
+
+        segment.rotation.z = diff.angle();
+        segment.scale.multiplyScalar(diff.length());
+
+        segment.position.set(x, y, 0);
+
+        line.add(segment);
+    }
+    scene.add(line);
+
+    // Heightfield
+
+    const hfBody = getHeightfieldBody();
+
+    const hfBodyMesh = new THREE.Object3D();
+    hfBodyMesh.add(line);
+    hfBodyMesh.position.add(hfBody.position);
+    hfBodyMesh.position.z -= 8/2;
+
+    //scene.add(shape2mesh(hfBody)) // For debugging
+
+    scene.add(hfBodyMesh);
+
+    // Gridlines
+
+    const gridLines = makeGridLines(heightfield);
+    gridLines.position.set(0, hfBodyMesh.position.y, 0);
+    scene.add(gridLines);
+
+    // Backdrop
+
+    //const backdrop = createBackdrop();
+    const backdrop = createTexturedBackdrop();
+    backdrop.scale.multiplyScalar(6);
+    backdrop.position.set(50, 0, -100)
+    //scene.add(backdrop);
+
+    // Goal
+
+    goal = new THREE.Object3D();
+    scene.add(goal);
+    goal.position.set(502, -248, 0);
+    const goalLineGeometry = new THREE.CircleGeometry(1, 32);
+    const goalLineMaterial = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(0xce5cf1),
+        wireframe: false,
+    })
+    const goalLine = new THREE.Mesh(goalLineGeometry, goalLineMaterial);
+    goalLine.scale.set(1, 8);
+    goal.add(goalLine)
+
+    // Boosters
+
+    const boosterMeshes = makeBoosterMeshes();
+    scene.add(boosterMeshes);
+
+    // GUI Covers
+
+    guiCovers = new THREE.Object3D();
+    
+    const leftMaterial = new THREE.MeshBasicMaterial({
+        transparent: true, 
+        map: fetchTextureFromServer(`http://localhost:3000/internal/gui-gradient.png`),
+    });
+    const leftRectangle = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 10), leftMaterial);
+    leftRectangle.position.x = -1.65;
+    //guiCovers.add(leftRectangle)
+
+
+    const topMaterial = new THREE.MeshBasicMaterial({
+        transparent: true, 
+        map: fetchTextureFromServer(`http://localhost:3000/internal/glitch-logo.png`),
+    });
+    const topRectangle = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.718, 1.122), topMaterial);
+    topRectangle.scale.multiplyScalar(0.45);
+    topRectangle.position.y = 1;
+    guiCovers.add(topRectangle)
+
+    guiCovers.scale.multiplyScalar(0.1);
+    scene.add(guiCovers);
+
+    // Entry loader
+
+    const entryLoader = makeEntryLoader();
+    entryLoader.position.set(0.8, 1.15, 0.1);
+    guiCovers.add(entryLoader);
 }
 
 const animate = function() {
-	requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 
-	uniforms.time.value = (new Date().getTime() - timeStart) / 1000;
+    const timeMillis = new Date().getTime();
+    const timeSeconds = (timeMillis - timeStartMillis) / 1000;
 
-	window.fpsFactor = (new Date().getTime() - window.lastTime)/(1000/60);
-	window.lastTime = new Date().getTime()
+    const timeRoundSeconds = (timeMillis - timeRoundStartMillis) / 1000;
 
-	animations.people.animate();
-	animations.manhattan.animate();
-	animations.telly.animate();
-	animations.kingsCross.animate();
+    const deltaSeconds = (timeMillis - lastTimeMillis) / 1000;
+    lastTimeMillis = timeMillis;
 
-		transition.animate();
+    if (hasWon) {
+        glitchAnimationTime += deltaSeconds;
+    }
 
-	    let normalizedZoom;
-	    let speed = 0.5;
-	    if (window.state == 1) {
-	    	const timeDiff = (new Date().getTime() - window.transitionStartTime) / 1000;
-	    	const eased = easeInOutSine(clamp(timeDiff * speed, 0, 1));
-	    	normalizedZoom = 1 - eased;
-	    	if (eased == 1) window.state = 2;
-	    } else if (window.state == 3) {
-	    	const timeDiff = (new Date().getTime() - window.transitionStartTime) / 1000;
-	    	const eased = easeInOutSine(clamp(timeDiff * speed, 0, 1));
-	    	normalizedZoom = eased;
-	    	if (eased == 1) window.state = 0;
-	    } else if (window.state == 2) {
-			normalizedZoom = 0;
-	    } else {
-	    	normalizedZoom = 1;
-	    }
+    const glitchAnimationSpeed = 12;
+    const goalScale = clamp(1 - glitchAnimationTime * glitchAnimationSpeed, 0.01, 1);
+    goal.scale.set(goalScale, goalScale, goalScale)
 
-		transition.zoom(normalizedZoom);
+    if (!hasWon && !hasLost) {
+        lastBodiesCenter = bodiesCenter;
+        bodiesCenter = updatePhysics(deltaSeconds);
+        speed = lastBodiesCenter.distanceTo(bodiesCenter);
 
-		animations.people.zoomAmount(normalizedZoom);
-		animations.manhattan.zoomAmount(normalizedZoom);
-		animations.telly.zoomAmount(normalizedZoom);
-		animations.kingsCross.zoomAmount(normalizedZoom);
-	
-	renderer.clear();
-	if (animation == animations.kingsCross) 
-		renderer.render(backgroundScene, backgroundCamera);
+        updateCylinder(bodiesCenter, getCylinderBodies());
+        updateBackdrop(deltaSeconds);
+        updateBoosters(deltaSeconds);
+    }
 
-	renderer.clearDepth();
-	renderer.render(scene, camera);
+    orbitControls.update();
 
-	renderer.clearDepth();
-	renderer.render(otherScene, otherCamera);
+    if (!isFreeCamera) {
+        const zoomOutSpeedSensitivity = 1;
+        const zoomOutSpeedTippingPoint = 0.3;
+        //cameraZCoordinate = clamp(cameraZCoordinate + (speed - zoomOutSpeedTippingPoint) * zoomOutSpeedSensitivity, 80, 160);
+        //console.log(speed, cameraZCoordinate);
+
+        cameraLookAt.set(bodiesCenter.x, bodiesCenter.y + 3, cameraLookAt.z);
+        camera.position.set(cameraLookAt.x, cameraLookAt.y - 12, cameraZCoordinate)
+        camera.lookAt(cameraLookAt)
+
+        queue.position.copy(camera.position);
+        queue.position.z -= 0.5;
+        queue.position.y += 0.037;
+        queue.position.x -= 0.0525;
+
+        guiCovers.position.x = camera.position.x;
+        guiCovers.position.y = camera.position.y;
+        guiCovers.position.z = camera.position.z - 1;
+    }
+
+    animateQueue(timeSeconds);
+    animateEntryLoader(deltaSeconds);
+
+    composer.render(1/60);
+
+    let timeLeftSeconds = timeLimit - timeRoundSeconds;
+
+    if (timeLeftSeconds <= 0 && !hasWon) {
+        timeLeftSeconds = 0;
+        loseRound();
+    };
+
+    if (!hasWon) timerElement.innerText = formatTime(timeLeftSeconds)
+
+    const secondsLeftWarningLimit = 8;
+    const timeLeftFactor = clamp((timeRoundSeconds - timeLimit + secondsLeftWarningLimit)/secondsLeftWarningLimit, 0, 1);
+    const textColor = new THREE.Color("#fff");//.lerp(new THREE.Color("#3FFF5C"), timeLeftFactor);
+    const textFrequency = 10;
+    const sine = (Math.sin(timeRoundSeconds * textFrequency) + 1) / 2;
+    textColor.lerp(new THREE.Color("#FF0000"), sine * timeLeftFactor);
+    const textColorStr = textColor.getHexString();
+    if (!hasWon && !hasLost) {
+        timerElement.style = `
+            color: #${textColorStr}; 
+            text-shadow: 0 0 4px #${textColorStr}, 0 0 20px #${textColorStr};
+            font-size: ${32 + timeLeftFactor * 50}px
+        `;
+    }
+
+    if (bodiesCenter.x >= goal.position.x) {
+        winRound(timeLeftSeconds);
+    }
+
+    const speedWarningLimit = 0.05;
+    const speedWarningTimeLimitSeconds = 3;
+
+    if (speed < speedWarningLimit) {
+        if (speedWarningTime == null) {
+            speedWarningTime = 0;
+        }
+        if (speedWarningTime != null) {
+            speedWarningTime += deltaSeconds;
+        }
+
+        //console.log("SPEED WARNING", speed, speedWarningTime);
+
+        if (speedWarningTime > speedWarningTimeLimitSeconds) {
+            loseRound();
+        }
+    } else {
+        speedWarningTime = null;
+    }
+}
+
+function loseRound() {
+    if (hasLost == false) {
+        console.log("PLAYER LOST");
+        document.getElementById("died").classList.toggle("hidden", false);
+        setTimeout(launchNextInQueue, 3000);
+        document.getElementById("highscore").classList.toggle("hidden", false);
+    }
+    hasLost = true;
+}
+
+function winRound(timeLeftSeconds) {
+    function rankify(rank) {
+        let adjustedRank = rank;
+
+        if (rank > 20) {
+            adjustedRank -= 10 * Math.floor(rank / 10);
+        } 
+
+        if (adjustedRank == 1) {
+            return {number: rank, postfix: "st"}
+        }
+        if (adjustedRank == 2) {
+            return {number: rank, postfix: "nd"}
+        }
+        if (adjustedRank == 3) {
+            return {number: rank, postfix: "rd"}
+        }
+
+        return {number: rank, postfix: "th"}
+    }
+
+    if (!hasWon) {
+        console.log("REACHED GOAL at", timeLeftSeconds);
+        const rank = registerGoalTime(timeLeftSeconds, texture);
+        setTimeout(() => {
+            const rankified = rankify(rank);
+            document.getElementById("rankNumber").innerText = rankified.number;
+            document.getElementById("rankPostfix").innerText = rankified.postfix;
+            document.getElementById("glitched").classList.toggle("hidden", false);
+        }, 100);
+        refreshHighscore();
+        glitchBall();
+        setTimeout(launchNextInQueue, 3000);
+        document.getElementById("highscore").classList.toggle("hidden", false);
+    }
+    hasWon = true;
+}
+
+function queueMockPlayers() {
+    const button = document.getElementById("queuePlayer");
+    for (let i = 0; i < 7; i++) {
+        button.click();
+    }
+    window.setTimeout(() => document.getElementById("launchPlayer").click(), 1000); // For å rekke å laste tekstur
+}
+
+function queueMockPlayer() {
+    window.i = window.i || 1;
+    queueImage("internal/glitch" + window.i + ".png")
+    window.i = (window.i++ % 11) + 1; // 1, 2 ... 7, 8, 1, 2 ...
+}
+
+function queueDebugPlayer() {
+    const debugHeads = [
+        "internal/colorhead-RGB.png",
+        "internal/colorhead-RG-.png",
+        "internal/colorhead-R-B.png",
+        "internal/colorhead--GB.png",
+        "internal/colorhead-R--.png",
+        "internal/colorhead--G-.png",
+        "internal/colorhead---B.png",
+
+        "internal/bluegreen1.png",
+        "internal/crosshead1.png",
+        "internal/lefthead1.png",
+        "internal/bottomhead1.png",
+        "internal/cornerhead1.png",
+        "internal/tophead1.png",
+        "internal/bighead1.png",
+        "internal/smallhead1.png",
+        "internal/diagonalhead1.png",
+        "internal/neonhead1.png",
+        "internal/neonhead2.png",
+        "internal/neonhead3.png",
+        "internal/testhead.png",
+    ]
+
+    window.j = window.j || 0;
+    queueImage(debugHeads[window.j]);
+    window.j = (window.j + 1) % debugHeads.length;
+
+}
+
+function queueDebugHeads() {
+    const button = document.getElementById("queueDebug");
+    for (let i = 0; i < 13+7; i++) {
+        button.click();
+    }
+    window.setTimeout(() => document.getElementById("launchPlayer").click(), 1000); // For å rekke å laste tekstur
+}
+
+/*
+function queueDebugHeads2() {
+    queueImage("internal/scan1.png");
+    queueImage("internal/scan2.png");
+    queueImage("internal/scan3.png");
+    queueImage("internal/scan4.png");
+}
+*/
+
+function launchNextInQueue() {
+    texture = queuePop();
+    if (!texture) return;
+    setMap(texture);
+    resetBall(texture);
+}
+
+function deleteHighscoreAndRefresh() {
+    deleteHighscore();
+    refreshHighscore();
+}
+
+function refreshHighscore() {
+    document.getElementById("highscore-lists").innerHTML = makeHighscoreHtml();
 }
 
 export default function main() {
