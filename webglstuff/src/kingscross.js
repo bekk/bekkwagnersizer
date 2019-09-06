@@ -438,9 +438,15 @@ class PeopleRow extends THREE.Object3D {
   }
 
   updateImage(image, metadata) {
-    const index = this.getIndexInBack()
+    let index = this.getIndexInBack()
 
-    const person = this.people[index];
+    let person = this.people[index];
+    let counter = 0;
+
+    while (person.material.map.fileName && counter++ < 10) { // Finn en person med default ansikt
+      index = this.getIndexInBack()
+      person = this.people[index];
+    }
 
     person.face.material.map = image;
     person.face.material.map.anisotropy = Math.pow(2, 3);

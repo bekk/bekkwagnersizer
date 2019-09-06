@@ -49,7 +49,7 @@ let background;
 window.fpsFactor = 1.0;
 window.lastTime = new Date().getTime();
 
-window.debug = true;
+window.debug = false;
 
 const intervalMinutes = [10, 3, 10, 10];
 //const intervalMinutes = [1, 0.5, 1, 1];
@@ -135,11 +135,11 @@ const initAnimation = function(domNodeId, canvasId) {
 	renderer = new THREE.WebGLRenderer({antialias: true});
 	renderer.gammaInput = false;
 	renderer.gammaOutput = false;
-	renderer.setClearColor(0x000000);
+	renderer.setClearColor(0x404040);
 	renderer.domElement.setAttribute('id', canvasId);
 	renderer.setSize(window.innerWidth, window.innerHeight, true);
 	renderer.autoClear = false;
-	renderer.setPixelRatio(1);
+	renderer.setPixelRatio(2);
 
 	// Skur 13: 1240 861
 	// Skur 13 60hz: 1491 1080
@@ -164,7 +164,7 @@ const initAnimation = function(domNodeId, canvasId) {
 	animations.telly = new Telly(renderer, realtimeTextureCollection);
 	animations.kingsCross = new KingsCross(renderer, realtimeTextureCollection);
 
-	changeAnimation(animations.kingsCross);
+	changeAnimation(animations.people);
 
 	// TODO: Skift til 12.4 * 7, x * y piksler
 	// TODO: Sjekk ytelsen om bildene er 1024^2. Det blir litt stygt når zoomet ut nå
@@ -207,6 +207,9 @@ const initAnimation = function(domNodeId, canvasId) {
 		removeImage(knownFiles[removeIndex]);
 		removeIndex++;
 	};
+	document.getElementById("addAllImages").onclick = function() {
+		addAllImages();
+	};
 
 	if (true) initAutoOrchestrate();
 
@@ -227,18 +230,21 @@ const initAnimation = function(domNodeId, canvasId) {
     background = new Background();
     backgroundScene.add(background);
 	
-	//zoomOut();
+	zoomOut();
 
 
-	if (false) 
-		window.setTimeout(function foo() {
-			const result = addKnownFile();
-			if (result !== true) window.setTimeout(foo, 200);
-		}, 2000);
+	if (false) window.setTimeout(addAllImages, 2000);
 }
 		
 		window.state = 0;
 		window.transitionStartTime = 0;
+
+function addAllImages() {
+	(function foo() {
+		const result = addKnownFile();
+		if (result !== true) window.setTimeout(foo, 200); // 1200 files ~ 5 minutes @ 200 ms
+	})();
+}
 
 const changeAnimation = function(newAnimation) {
 	scene = newAnimation.scene
