@@ -6,4 +6,4 @@ Dette repoet har:
 - Lysserver
 - WebGL-animasjon
 
-For kamerakoden, se https://github.com/tysseng/edawards/tree/feature/glitch-game
+For kamerakoden, se https://github.com/tysseng/bekkwagnersizer-camera/tree/feature/glitch-game
