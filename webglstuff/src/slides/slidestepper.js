@@ -3,11 +3,12 @@ import {makeContents} from './slidecontents.js';
 import {fetchTextureFromServer, Random, ratio, clamp, easeInOutSine, addResizeListener, pad, getImageData, formatTime} from '../util.js';
 import {initPhysics, updatePhysics, makeHeightField, getCylinderBodies, resetPhysics} from './slidephysics.js';
 import {updateCylinder} from './slideball.js';
-
+import {toggleFreeCamera} from '../main.js'; 
 
 let step = 0;
 let stepStartTime = new Date().getTime();
 let scene;
+let isBloomOn, doGlitchPhysics;
 
 let htmlContainer;
 
@@ -46,6 +47,9 @@ export function init(sceneParam) {
 
     makeContents(scene);    
 
+    isBloomOn = false;
+    doGlitchPhysics = false;
+
     scene.getObjectByName("ball").visible = false;
     scene.getObjectByName("guiCovers").visible = false;
     scene.getObjectByName("boosterMeshes").visible = false;
@@ -77,6 +81,14 @@ export function getStep() {
     return step;
 }
 
+export function doBloom() {
+    return isBloomOn;
+}
+
+export function doOrdinaryPhysics() {
+    return doGlitchPhysics;
+}
+
 let timou = null;
 
 function doStep() {
@@ -101,14 +113,21 @@ function doStep() {
         scene.getObjectByName("bouncyBall").visible = true;
     }
     if (step === 3) {
-        scene.getObjectByName("step2").visible = false;
+        scene.getObjectByName("step1").visible = false;
         scene.getObjectByName("ball").visible = true;
         scene.getObjectByName("goal").visible = true;
         scene.getObjectByName("line").visible = true;
         scene.getObjectByName("gridLines").visible = true;
     }
+    if (step === 4) {
+        isBloomOn = true;
+    }
     if (step === 5) {
+        toggleFreeCamera();
         scene.getObjectByName("guiCovers").visible = true;
         scene.getObjectByName("queue").visible = true;
+    }
+    if (step === 6) {
+        doGlitchPhysics = true;
     }
 }

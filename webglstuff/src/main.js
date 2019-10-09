@@ -17,7 +17,7 @@ import {makeGridLines} from './gridlines';
 import {makeQueue, queuePush, queuePop, animateQueue, queueLength} from './ball/queue';
 import {makeEntryLoader, animateEntryLoader, restartEntryLoader} from './ball/entryloader';
 import {fetchTextureFromServer, Random, ratio, clamp, easeInOutSine, addResizeListener, pad, getImageData, formatTime} from './util.js';
-import {init as initSlidestepper, animate as animateSlides, getStep} from './slides/slidestepper.js';
+import {init as initSlidestepper, animate as animateSlides, getStep, doBloom, doOrdinaryPhysics} from './slides/slidestepper.js';
 
 const socket = ioClient("http://localhost:3000");
 
@@ -48,7 +48,7 @@ let guiCovers;
 let glitchAnimationTime = 0;
 const timeLimit = 32;
 
-const cameraLookAt = new THREE.Vector3(-5, 45, 0);
+const cameraLookAt = new THREE.Vector3(-2, 47.5, 0);
 
 const uniforms = {
 	time: {value: 0.0},
@@ -117,12 +117,11 @@ const initAnimation = function(domNodeId, canvasId) {
     const ratio = renderer.getContext().drawingBufferWidth / renderer.getContext().drawingBufferHeight;
 
     camera = new THREE.PerspectiveCamera(10, ratio, 0.01, 1e6);
-    camera.position.set(cameraLookAt.x + 30, cameraLookAt.y + 30, cameraLookAt.z + 120);
-    camera.lookAt(cameraLookAt);
     camera.updateProjectionMatrix();
 
     orbitControls = new THREE.OrbitControls( camera, renderer.domElement );
     orbitControls.target.copy(cameraLookAt);
+    toggleFreeCamera();
 
     document.getElementById(domNodeId).appendChild(renderer.domElement);
 
@@ -146,7 +145,6 @@ const initAnimation = function(domNodeId, canvasId) {
     //queueDebugHeads();
     queueMockPlayer();
 
-    isFreeCamera = true;
     //camera.position.set(250, -100, 700);
     //orbitControls.target.copy(camera.position);
     //orbitControls.target.z = 0;
@@ -177,12 +175,12 @@ function resetBall(texture) {
     document.getElementById("highscore").classList.toggle("hidden", true);
 }
 
-function toggleFreeCamera() {
+export function toggleFreeCamera() {
     isFreeCamera = !isFreeCamera;
     if (isFreeCamera) {
-        camera.position.set(250, -100, 700);
-        orbitControls.target.copy(camera.position);
-        orbitControls.target.z = 0;
+        //camera.position.set(250, -100, 700);
+        //orbitControls.target.copy(camera.position);
+        //orbitControls.target.z = 0;
     }
 }
 
@@ -341,7 +339,7 @@ const animate = function() {
     const goalScale = clamp(1 - glitchAnimationTime * glitchAnimationSpeed, 0.01, 1);
     goal.scale.set(goalScale, goalScale, goalScale)
 
-    if (!hasWon && !hasLost) {
+    if (!hasWon && !hasLost && doOrdinaryPhysics()) {
         lastBodiesCenter = bodiesCenter;
         bodiesCenter = updatePhysics(deltaSeconds);
         speed = lastBodiesCenter.distanceTo(bodiesCenter);
@@ -371,15 +369,17 @@ const animate = function() {
         guiCovers.position.x = camera.position.x;
         guiCovers.position.y = camera.position.y;
         guiCovers.position.z = camera.position.z - 1;
+    } else {
+        camera.position.set(cameraLookAt.x + 30, cameraLookAt.y + 30, cameraLookAt.z + 120);
+        camera.lookAt(cameraLookAt);
     }
 
     animateQueue(timeSeconds);
     animateEntryLoader(deltaSeconds);
 
     animateSlides(timeSeconds);
-
-    const step = getStep();
-    if (step >= 4) {
+    
+    if (doBloom()) {
         composer.render(1/60);
     } else {
         renderer.render(scene, camera);
@@ -561,5 +561,11 @@ function refreshHighscore() {
 
 export default function main() {
 	initAnimation("container", "renderer");
+
+
+    lastBodiesCenter = bodiesCenter;
+    bodiesCenter = updatePhysics(1/60);
+    updateCylinder(bodiesCenter, getCylinderBodies());
+
 	animate();
 }

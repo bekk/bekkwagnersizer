@@ -75,6 +75,7 @@ export function makeBoosterMeshes() {
     })
 
     const container = new THREE.Object3D();
+    container.name = "boosters";
 
     for (const booster of boosters) {
         const group = new THREE.Object3D();
