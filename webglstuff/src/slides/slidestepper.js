@@ -113,19 +113,22 @@ function doStep() {
         scene.getObjectByName("bouncyBall").visible = true;
     }
     if (step === 3) {
+        scene.getObjectByName("ballMesh").visible = true;
+    }
+    if (step === 4) {
         scene.getObjectByName("step1").visible = false;
         scene.getObjectByName("ball").visible = true;
         scene.getObjectByName("goal").visible = true;
         scene.getObjectByName("line").visible = true;
         scene.getObjectByName("gridLines").visible = true;
     }
-    if (step === 4) {
+    if (step === 5) {
         scene.getObjectByName("boosterMeshes").visible = true;
     }
-    if (step === 5) {
+    if (step === 6) {
         isBloomOn = true;
     }
-    if (step === 6) {
+    if (step === 7) {
         toggleFreeCamera();
         scene.getObjectByName("guiCovers").visible = true;
         scene.getObjectByName("queue").visible = true;
@@ -135,7 +138,7 @@ function doStep() {
         document.getElementById("queueOverflow").classList.toggle("hidden", false);
         document.getElementById("entryloaderText").classList.toggle("hidden", false);
     }
-    if (step === 7) {
+    if (step === 8) {
         doGlitchPhysics = true;
     }
 }

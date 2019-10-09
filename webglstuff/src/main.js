@@ -387,12 +387,12 @@ const animate = function() {
 
     let timeLeftSeconds = timeLimit - timeRoundSeconds;
 
-    if (timeLeftSeconds <= 0 && !hasWon) {
+    if (doOrdinaryPhysics() && timeLeftSeconds <= 0 && !hasWon) {
         timeLeftSeconds = 0;
         loseRound();
     };
 
-    if (!hasWon) timerElement.innerText = formatTime(timeLeftSeconds)
+    if (doOrdinaryPhysics() && !hasWon) timerElement.innerText = formatTime(timeLeftSeconds)
 
     const secondsLeftWarningLimit = 8;
     const timeLeftFactor = clamp((timeRoundSeconds - timeLimit + secondsLeftWarningLimit)/secondsLeftWarningLimit, 0, 1);
@@ -401,7 +401,7 @@ const animate = function() {
     const sine = (Math.sin(timeRoundSeconds * textFrequency) + 1) / 2;
     textColor.lerp(new THREE.Color("#FF0000"), sine * timeLeftFactor);
     const textColorStr = textColor.getHexString();
-    if (!hasWon && !hasLost) {
+    if (doOrdinaryPhysics && !hasWon && !hasLost) {
         timerElement.style = `
             color: #${textColorStr}; 
             text-shadow: 0 0 4px #${textColorStr}, 0 0 20px #${textColorStr};

@@ -39,6 +39,8 @@ export function makeBall(nofCylinderBodies) {
     ballMesh.position.z = 3;
     cylinderGeometry.rotateX(Math.PI/2);
     group.cylinderFrontMaterial = cylinderFrontMaterial;
+    ballMesh.name = "ballMesh"
+    ballMesh.visible = false;
 
     group.add(ballMesh);
     group.geometry = ballMesh.geometry;
