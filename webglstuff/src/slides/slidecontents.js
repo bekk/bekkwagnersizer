@@ -2,7 +2,7 @@
 import {fetchTextureFromServer, Random, ratio, clamp, easeInOutSine, addResizeListener, pad, getImageData, formatTime} from '../util.js';
 import {analyzeImage} from '../edgedetection';
 import {initBall, updateCylinder, setMap} from './slideball.js';
-import {initPhysics, updatePhysics, makeHeightField} from './slidephysics.js';
+import {initPhysics, updatePhysics, makeHeightField, resetPhysics, getRigidBody} from './slidephysics.js';
 import shape2mesh from "../shape2mesh.js";
 
 let sheetMaterial;
@@ -17,12 +17,12 @@ export function makeContents(scene) {
         const imagedata = getImageData(textureWithImage.image);
         const edgedata = analyzeImage(imagedata);
         texture.offset.set(
-            edgedata.center.x - 0.5,
-            edgedata.center.y - 0.25
+            edgedata.center.x - 0.35,
+            edgedata.center.y - 0.125
         );
 
         let scale = Math.max(edgedata.size.x, edgedata.size.y);
-        scale *= 1.5;
+        scale *= 1.0;
         texture.repeat.set(scale, scale);
 
         texture.bodysize = edgedata.size
@@ -38,18 +38,11 @@ export function makeContents(scene) {
 
     const group = new THREE.Object3D();
     group.add(step0(scene));
-    group.add(step1(scene));
+    group.add(step1and2(scene));
 
     group.position.set(-5, 45, 0);
 
     scene.add(group);
-
-    const hfBody = initPhysics(makeHeightField());
-    const hfBodyDebugMesh = shape2mesh(hfBody);
-    scene.add(hfBodyDebugMesh);
-
-    const ballMesh = initBall(12);
-    scene.add(ballMesh);
 }
 
 function step0() {
@@ -84,14 +77,32 @@ function step0() {
     return step0;
 }
 
-function step1(scene) {
+function step1and2(scene) {
     const step1 = new THREE.Object3D();
     step1.name = "step1";
     const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), new THREE.MeshLambertMaterial());
     step1.add(ground);
 
-    step1.animate = function(timeSeconds) {
+    const rigidGeometry = new THREE.CylinderGeometry(4, 4, 1.5, 12);
+    //rigidGeometry.rotateX(Math.PI/2);
+    const rigid = new THREE.Mesh(rigidGeometry, new THREE.MeshBasicMaterial({wireframe: true}));
+    rigid.name = "rigidBall";
+    step1.add(rigid);
 
+    const hfBody = initPhysics(makeHeightField());
+    const hfBodyDebugMesh = shape2mesh(hfBody);
+    hfBodyDebugMesh.name = "hfBodyDebugMesh";
+    step1.add(hfBodyDebugMesh);
+
+    const ballMesh = initBall(12);
+    ballMesh.name = "bouncyBall";
+    step1.add(ballMesh);
+    step1.position.sub(new THREE.Vector3(-5, 45, 0));
+
+    step1.animate = function(timeSeconds) {
+        const rigidBody = getRigidBody();
+        rigid.position.copy(rigidBody.position);
+        rigid.setRotationFromQuaternion(rigidBody.quaternion);
     }
 
     return step1;

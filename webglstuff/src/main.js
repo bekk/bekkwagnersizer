@@ -117,7 +117,7 @@ const initAnimation = function(domNodeId, canvasId) {
     const ratio = renderer.getContext().drawingBufferWidth / renderer.getContext().drawingBufferHeight;
 
     camera = new THREE.PerspectiveCamera(10, ratio, 0.01, 1e6);
-    camera.position.set(cameraLookAt.x + 25, cameraLookAt.y + 20, cameraLookAt.z + 50);
+    camera.position.set(cameraLookAt.x + 30, cameraLookAt.y + 30, cameraLookAt.z + 120);
     camera.lookAt(cameraLookAt);
     camera.updateProjectionMatrix();
 
@@ -379,7 +379,7 @@ const animate = function() {
     animateSlides(timeSeconds);
 
     const step = getStep();
-    if (step >= 3) {
+    if (step >= 4) {
         composer.render(1/60);
     } else {
         renderer.render(scene, camera);

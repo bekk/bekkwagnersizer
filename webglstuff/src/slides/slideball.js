@@ -1,6 +1,8 @@
 let cylinderFrontMaterial;
 let ballMesh;
 
+let cylinders = [];
+
 export function makeBall(nofCylinderBodies) {
     const cylinderFrontMaterial = new THREE.MeshBasicMaterial({
         transparent: true,
@@ -21,12 +23,28 @@ export function makeBall(nofCylinderBodies) {
 
     const cylinderGeometry = new THREE.CylinderGeometry(1.5, 1.5, 1.5, nofCylinderBodies);
 
+    const group = new THREE.Object3D();
+
+    for (let i = 0; i < nofCylinderBodies; i++) {
+        const cylinderGeometry = new THREE.CylinderGeometry(0.2, 0.2, 1.2, 7);
+        const mesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+        //mesh.position.z = 3;
+        cylinderGeometry.rotateX(Math.PI/2);
+        mesh.position.set(Math.sin(i/nofCylinderBodies * Math.PI*2), Math.cos(i/nofCylinderBodies * Math.PI*2), 0);
+        group.add(mesh);
+        cylinders.push(mesh);
+    }
+
     const ballMesh = new THREE.Mesh(cylinderGeometry, [cylinderMaterial, cylinderFrontMaterial, cylinderMaterial]);
     ballMesh.position.z = 3;
     cylinderGeometry.rotateX(Math.PI/2);
-    ballMesh.cylinderFrontMaterial = cylinderFrontMaterial;
+    group.cylinderFrontMaterial = cylinderFrontMaterial;
+
+    group.add(ballMesh);
+    group.geometry = ballMesh.geometry;
+    group.material = ballMesh.material;
     
-    return ballMesh;
+    return group;
 }
 
 export function initBall(nofCylinderBodies) {
@@ -59,6 +77,11 @@ export function updateCylinder(bodiesCenter, bodies) {
 
         vertex1.set(body.position.x, body.position.y - cylinderRadius, vertex1.z);
         vertex2.set(body.position.x, body.position.y - cylinderRadius, vertex2.z);
+
+        cylinders[i].position.copy(body.position).sub(bodiesCenter);
+        cylinders[i].position.z += 3;
+        cylinders[i].position.y -= 0.45;
+        //cylinders[i].rotation.copy(body.rotation);
     }
 
     const i1 = nofSpheres*2 + 0;

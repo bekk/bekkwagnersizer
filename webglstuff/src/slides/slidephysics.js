@@ -1,15 +1,16 @@
 
 import CANNON from 'cannon';
 
-const ballStartPosition = new CANNON.Vec3(-3, 53, 0);
+const ballStartPosition = new CANNON.Vec3(-3, 55, 0);
 
 let world, hfBody, bodies, boosters;
+let rigidBody;
 let ballConstraints = [];
 let bodiesCenter;
 let bodysize;
 let colorMix;
 
-const globalBallScale = 3.0;
+const globalBallScale = 2.0;
 
 export function initPhysics(heightfield) {
     // Init world
@@ -21,6 +22,7 @@ export function initPhysics(heightfield) {
 
     const CYLINDERGROUP = 1;
     const HFGROUP = 2;
+    const EXTRAGROUP = 3;
 
     const cylinderMaterial = new CANNON.Material();
     cylinderMaterial.friction = 0;
@@ -61,6 +63,14 @@ export function initPhysics(heightfield) {
         bodies.push(sphereBody);
     }
 
+    const cylinderShape = new CANNON.Cylinder(4, 4, 10, 12);
+    cylinderShape.transformAllPoints(CANNON.Vec3.ZERO, new CANNON.Quaternion().setFromEuler(Math.PI/2, 0, 0))
+    cylinderShape.material = cylinderMaterial;
+    rigidBody = new CANNON.Body({ mass: mass, collisionFilterGroup: EXTRAGROUP, collisionFilterMask: HFGROUP});
+    rigidBody.addShape(cylinderShape);
+    rigidBody.quaternion.setFromEuler(-Math.PI/2, 0, 0);
+    world.addBody(rigidBody);
+
     resetPhysics();
 
     return hfBody;
@@ -73,6 +83,10 @@ export function getHeightfieldBody() {
 
 export function getCylinderBodies() {
     return bodies;
+}
+
+export function getRigidBody() {
+    return rigidBody;
 }
 
 export function resetPhysics(textureParam) {
@@ -121,6 +135,11 @@ export function resetPhysics(textureParam) {
             ballStartPosition,
             sphereBody.position
         );
+
+        rigidBody.velocity.set(0, 0, 0);
+        rigidBody.angularVelocity.set(0, 0, 0)
+        rigidBody.quaternion.copy(rigidBody.initQuaternion);
+        rigidBody.position.copy(ballStartPosition)
     }
 
     resetBallConstraints(nofSpheres, bodysize);
@@ -328,8 +347,8 @@ export function makeHeightField() {
             i = makeValley(i);
         }
 
-        if (i > 10) {
-            //i = 0;
+        if (i > 20) {
+            heights[i] = 300;
         }
 
         /*const goalStart = 0.995;
@@ -337,6 +356,8 @@ export function makeHeightField() {
         if (i > sizeX * goalStart && i < sizeX * goalEnd) {
             heights[i] += 10;
         }*/
+
+        heights[i] += 5;
     }
 
     const heightfieldMatrix = [];

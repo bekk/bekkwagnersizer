@@ -1,7 +1,7 @@
 
 import {makeContents} from './slidecontents.js';
 import {fetchTextureFromServer, Random, ratio, clamp, easeInOutSine, addResizeListener, pad, getImageData, formatTime} from '../util.js';
-import {initPhysics, updatePhysics, makeHeightField, getCylinderBodies} from './slidephysics.js';
+import {initPhysics, updatePhysics, makeHeightField, getCylinderBodies, resetPhysics} from './slidephysics.js';
 import {updateCylinder} from './slideball.js';
 
 
@@ -15,14 +15,19 @@ export function init(sceneParam) {
     scene = sceneParam;
 
     document.addEventListener("keypress", (event) => {
-        const now = new Date().getTime();
-        
-        const stepChangeFreezePeriod = 50;
+        if (event.key == "r") {
+            resetPhysics();
+        } else {
 
-        if (now - stepStartTime > stepChangeFreezePeriod) {
-            step += 1;
-            stepStartTime = now;
-            doStep();
+            const now = new Date().getTime();
+            
+            const stepChangeFreezePeriod = 50;
+
+            if (now - stepStartTime > stepChangeFreezePeriod) {
+                step += 1;
+                stepStartTime = now;
+                doStep();
+            }
         }
     })
 
@@ -72,10 +77,14 @@ export function getStep() {
     return step;
 }
 
+let timou = null;
+
 function doStep() {
     htmlContainer.innerHTML = `
         <span class="stepCounter">step ${step}</span>
     `;
+
+    resetPhysics();
 
     if (step === 0) {
         scene.getObjectByName("step0").visible = true;
@@ -83,15 +92,22 @@ function doStep() {
     if (step === 1) {
         scene.getObjectByName("step0").visible = false;
         scene.getObjectByName("step1").visible = true;
+        scene.getObjectByName("hfBodyDebugMesh").visible = true;
+        scene.getObjectByName("rigidBall").visible = true;
+        scene.getObjectByName("bouncyBall").visible = false;
     }
     if (step === 2) {
-        scene.getObjectByName("step1").visible = false;
+        scene.getObjectByName("rigidBall").visible = false;
+        scene.getObjectByName("bouncyBall").visible = true;
+    }
+    if (step === 3) {
+        scene.getObjectByName("step2").visible = false;
         scene.getObjectByName("ball").visible = true;
         scene.getObjectByName("goal").visible = true;
         scene.getObjectByName("line").visible = true;
         scene.getObjectByName("gridLines").visible = true;
     }
-    if (step === 4) {
+    if (step === 5) {
         scene.getObjectByName("guiCovers").visible = true;
         scene.getObjectByName("queue").visible = true;
     }
