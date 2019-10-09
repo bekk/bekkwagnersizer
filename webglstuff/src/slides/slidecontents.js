@@ -9,7 +9,7 @@ let sheetMaterial;
 
 export function makeContents(scene) {
     const light = new THREE.DirectionalLight(0xffffff, 1.0);
-    light.position.set(1, 3, 2);
+    light.position.set(3, 5, 2);
     scene.add(light);
 
 
@@ -48,15 +48,27 @@ export function makeContents(scene) {
 function step0() {
     const step0 = new THREE.Object3D();
     step0.name = "step0";
+
     const blackMaterial = new THREE.MeshLambertMaterial({
         color: new THREE.Color(0xffffff).multiplyScalar(0.25)
     });
+
     sheetMaterial = new THREE.MeshLambertMaterial({
         map: null,
         transparent: true,
     });
+
     const plate = new THREE.Mesh(new THREE.CylinderGeometry(3.25, 3.25, 0.1, 40), blackMaterial);
     step0.add(plate);
+
+    const stick = new THREE.Mesh(new THREE.BoxGeometry(0.65, 6.4, 0.45), blackMaterial);
+    stick.rotation.z = 0.4;
+    stick.position.set(2, 3, 0);
+    step0.add(stick);
+
+    const smallPate = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.2, 40), blackMaterial);
+    smallPate.position.set(0, 6, 0);
+    step0.add(smallPate);
     
     const sheet = new THREE.Object3D();
     const drawing = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), sheetMaterial);
