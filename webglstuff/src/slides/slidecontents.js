@@ -61,9 +61,9 @@ function step0() {
     const plate = new THREE.Mesh(new THREE.CylinderGeometry(3.25, 3.25, 0.1, 40), blackMaterial);
     step0.add(plate);
 
-    const stick = new THREE.Mesh(new THREE.BoxGeometry(0.65, 6.4, 0.45), blackMaterial);
-    stick.rotation.z = 0.4;
-    stick.position.set(2, 3, 0);
+    const stick = new THREE.Mesh(new THREE.BoxGeometry(0.65, 6.5, 0.45), blackMaterial);
+    stick.rotation.z = 0.37;
+    stick.position.set(1.75, 2.9, 0);
     step0.add(stick);
 
     const smallPate = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.2, 40), blackMaterial);
@@ -79,6 +79,11 @@ function step0() {
     sheet.rotation.x = -Math.PI/2;
     sheet.position.y = 0.15;
     step0.add(sheet);
+
+    const laptop = makeLaptop();
+    laptop.scale.multiplyScalar(5);
+    laptop.position.set(10, 0, 0);
+    step0.add(laptop);
 
     step0.animate = function(timeSeconds) {
         const amp = 3.5;
@@ -120,5 +125,43 @@ function step1and2(scene) {
     return step1;
 }
 
+function makeLaptop() {
+    var frameGeometry = new THREE.BoxGeometry(1, 0.05, 0.6);
+    var frameMaterial = new THREE.MeshLambertMaterial({color: 0xFFFFFF});
+    var frame = new THREE.Mesh(frameGeometry, frameMaterial);
+
+    var lcdGeometry = new THREE.BoxGeometry(1*0.935, 0.05, 0.6*0.935);
+    var lcdMaterial = new THREE.MeshLambertMaterial({color: 0x888888});
+    var lcd = new THREE.Mesh(lcdGeometry, lcdMaterial);
+    lcd.position.set(0, 0.02, 0);
+
+    var screen = new THREE.Object3D();
+    screen.add(frame);
+    screen.add(lcd);
+    screen.position.set(0, 0.3, -0.42);
+    screen.rotation.set(Math.PI/2*0.75, 0, 0);
+
+    var baseGeometry = new THREE.BoxGeometry(1, 0.05, 0.6);
+    var baseMaterial = new THREE.MeshLambertMaterial({color: 0xFFFFFF});
+    var base = new THREE.Mesh(baseGeometry, baseMaterial);
+
+    var keyboard = new THREE.Object3D();
+    var keyGeometry = new THREE.BoxGeometry(0.6/4*0.49, 0.05, 1/10*0.49);
+    var keyMaterial = new THREE.MeshLambertMaterial({color: 0x888888});
+    for (var x = 0; x < 10; x++) {
+        for (var y = 0; y < 4; y++) {
+            var key = new THREE.Mesh(keyGeometry, keyMaterial);
+            key.position.set(x/11 - 0.4, 0.01, y/4*0.3 - 0.2);
+            keyboard.add(key);
+        }
+    }
+
+    var laptop = new THREE.Object3D();
+    laptop.add(screen);
+    laptop.add(base);
+    laptop.add(keyboard);
+
+    return laptop;
+}
 
 
