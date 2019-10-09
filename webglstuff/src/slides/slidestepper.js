@@ -120,14 +120,22 @@ function doStep() {
         scene.getObjectByName("gridLines").visible = true;
     }
     if (step === 4) {
-        isBloomOn = true;
+        scene.getObjectByName("boosterMeshes").visible = true;
     }
     if (step === 5) {
+        isBloomOn = true;
+    }
+    if (step === 6) {
         toggleFreeCamera();
         scene.getObjectByName("guiCovers").visible = true;
         scene.getObjectByName("queue").visible = true;
+
+        document.getElementById("timer").classList.toggle("hidden", false);
+        document.getElementById("queueTitle").classList.toggle("hidden", false);
+        document.getElementById("queueOverflow").classList.toggle("hidden", false);
+        document.getElementById("entryloaderText").classList.toggle("hidden", false);
     }
-    if (step === 6) {
+    if (step === 7) {
         doGlitchPhysics = true;
     }
 }

@@ -437,7 +437,7 @@ const animate = function() {
 function loseRound() {
     if (hasLost == false) {
         console.log("PLAYER LOST");
-        //document.getElementById("died").classList.toggle("hidden", false);
+        document.getElementById("died").classList.toggle("hidden", false);
         //setTimeout(launchNextInQueue, 3000);
         //document.getElementById("highscore").classList.toggle("hidden", false);
     }
@@ -470,9 +470,9 @@ function winRound(timeLeftSeconds) {
         const rank = registerGoalTime(timeLeftSeconds, texture);
         setTimeout(() => {
             const rankified = rankify(rank);
-            //document.getElementById("rankNumber").innerText = rankified.number;
-            //document.getElementById("rankPostfix").innerText = rankified.postfix;
-            //document.getElementById("glitched").classList.toggle("hidden", false);
+            document.getElementById("rankNumber").innerText = rankified.number;
+            document.getElementById("rankPostfix").innerText = rankified.postfix;
+            document.getElementById("glitched").classList.toggle("hidden", false);
         }, 100);
         refreshHighscore();
         glitchBall();
@@ -491,7 +491,7 @@ function queueMockPlayers() {
 
 function queueMockPlayer() {
     window.i = window.i || 1;
-    queueImage("internal/glitch" + window.i + ".png")
+    queueImage("internal/neonhead2.png")
     window.i = (window.i++ % 11) + 1; // 1, 2 ... 7, 8, 1, 2 ...
 }
 
