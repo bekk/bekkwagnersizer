@@ -11,7 +11,7 @@ export function makeBall(nofCylinderBodies) {
 
     const cylinderMaterial = new THREE.MeshBasicMaterial({
         wireframe: true,
-        visible: false,
+        visible: true,
         side: THREE.DoubleSide,
     });
 
@@ -41,7 +41,7 @@ export function setMap(texture) {
     ballMesh.cylinderFrontMaterial.needsUpdate = true;
     
 
-    //ballMesh.visible = true;
+    ballMesh.visible = true;
 }
 
 export function updateCylinder(bodiesCenter, bodies) {

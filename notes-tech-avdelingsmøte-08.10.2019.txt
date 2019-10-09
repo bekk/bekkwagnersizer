@@ -1,0 +1,130 @@
+Det var designet, så da blir spørsmålet: Hvordan lager vi det?
+
+Vi hadde fra Pushwagnesizer-prosjektet Joakim Tyssengs rigg for scanning av tegninger
+    
+(Scene med
+    kamerastolpen
+    et hvitt (med tegning?) ark som animeres inn under
+    ledning til laptop med Chrome-logo og "HTML5 MediaStream"
+    wifi-symbol mellom laptop og ny laptop med Node-logo og databasesymbol og websocket-symbol
+)
+
+Så da har vi input, som er en tegning. Siden spillet skal være veldig fysikkbasert er det smart å starte med en fysikkmotor med en gang. Da landet vi på å bruke cannon.js. 
+
+(Scene med
+    cannon.js-logoen
+    En ball som faller på bakken
+)
+
+Vil jeg nå anbefale folk å bruke cannon.js? NEI, faktisk ikke! Dokumentasjonen er ganske tynn, og jeg er ganske sikker på at det en del bugs. Og det verste: De har valgt Z-aksen som oppover! (bilde av FFFFUUUUU)
+
+Det verste med fysikkmotorer er at det er helt umulig å vite om det er en feil i motoren, eller om det er DU som har satt opp reglene feil.
+
+(EVENTUELT Scene med 
+    eksempel på feil?)
+
+Men, det funker jo. Tegningen som kommer inn er såklart flat, så vi lager en skive som kan ha tegningen som tekstur
+
+(Scene med
+    tynn skive med tekstur som faller ned og velter
+)
+
+Men siden vi faktisk holder på i tre dimensjoner så velter jo den skiva, så vi gjør den til en bred sylinder
+
+(Scene med
+    bred sylinder med tekstur som triller ned linær bane med brå stopp
+)
+
+Men vi vil ha litt squishyness. Blobben må være litt myk og elastisk. Det er flere måter å gjøre det på, men det vi gjør er å definere et sett kontaktpunkter og legge en sylinder på hver av dem
+
+(Scene med
+    sylindere rundt teksturen
+)
+
+Og sylinderne har et låst forhold til hverandre, slik at de aldri presses sammen, men triller som et bånd nedover.
+
+Men, som mange som spilt Glitch har lagt merke til, så er det ingen constraint mellom sylindere som ikke er naboer. Så det er mulig å slå sammen to sider av båndet.
+
+(Scene med
+    stor blob som faller og kollapser
+)
+
+Er det en bug, eller er det en feature? Det viste seg å være ganske morsomt, så vi lot det være!
+
+Så trenger vi en kul bane såklart. 
+
+(Scene hvor
+    det er zoomet ut så man ser hele banen
+    banen er bare lineær strek nedover
+)
+
+Og da trenger vi ikke noe mer en vår kjære venn sinus. Først litt sinus nedover så får vi litt kulekjøring.
+
+(Scene med
+    linær strek nedover + sinus
+    gridlines
+    sinusbølgen alene over
+)
+
+Og så må vi ha et lite hopp. Det er bare en kvart sinusbølge.
+
+(Scene med
+    linær strek nedover + sinus + hopp
+    gridlines
+    sinusbølgen til hopp alene over, men uthevet farge der selve hoppet er
+)
+
+Og så må vi ha noe som skiller klinten fra hveten, den beryktede dumpa! Det er to halve sinuser etter hverandre
+
+(Scene med
+    linær strek nedover + sinus + hopp + dump
+    gridlines
+    ene sinusbølgen til dump over, med uthevet farge der starten er
+    andre sinusbølgen til dump over, med uthevet farge også
+)
+
+Der, en fullverdig bane. Og alle spillere får den samme banen.
+
+(EVENTUELT en del om boosterne. Vi legger på litt mer juice i form av boostere som gir et impuls i fysikkmotoren i en bestemt retning. Og mengden boost man får er avhengig av antall røde, grønne og blå piksler i tegningen. 
+
+Scene med tre forskjellige tegninger og hvordan deres tre boostere ser ut i hvert tilfelle
+    En hvor det er mest blå
+    En hvor det er mest rød og grønn
+    En hvor det er like mye av alle
+
+Og så plasserer vi såklart boosterne akkurat sånn at man ikke klarer å treffe alle. Trollface
+)
+
+Men vi har ikke helt den 80s-looken har vi vel? Så går på internett og finner Unreal Bloom filter
+
+(Scene med 
+    samme som før, men skrudd på Unreal Bloom
+)
+
+Og så legger vi på litt GUI med helt vanlig HTML oppå
+
+(Scene med
+    samme som før, men med GUI oppå (mest tekst-delen)
+    men ikke med text-shadow
+)
+
+Men HTML-en er jo ikke en del av Unreal Bloom filter, så da slenger vi på litt god gammeldags text-shadow.
+
+(Scene med
+    samme som før, men med GUI oppå (mest tekst-delen)
+    MED text-shadow
+)
+
+Voila! Der har vi Glitch or Die. Og takk for oss!
+
+
+
+
+
+
+
+
+
+
+
+

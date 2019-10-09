@@ -17,6 +17,7 @@ import {makeGridLines} from './gridlines';
 import {makeQueue, queuePush, queuePop, animateQueue, queueLength} from './ball/queue';
 import {makeEntryLoader, animateEntryLoader, restartEntryLoader} from './ball/entryloader';
 import {fetchTextureFromServer, Random, ratio, clamp, easeInOutSine, addResizeListener, pad, getImageData, formatTime} from './util.js';
+import {init as initSlidestepper, animate as animateSlides, getStep} from './slides/slidestepper.js';
 
 const socket = ioClient("http://localhost:3000");
 
@@ -47,7 +48,7 @@ let guiCovers;
 let glitchAnimationTime = 0;
 const timeLimit = 32;
 
-const cameraLookAt = new THREE.Vector3();
+const cameraLookAt = new THREE.Vector3(-5, 45, 0);
 
 const uniforms = {
 	time: {value: 0.0},
@@ -85,7 +86,7 @@ const queueImage = function(fileName) {
             if ((hasWon || hasLost) && queueLength() == 1) {
                 setTimeout(launchNextInQueue, 0);
             }
-        }, 7500);        
+        }, 0);        
     }
 
 	const texture = fetchTextureFromServer(`http://localhost:3000/${fileName}`, onLoadCallback);
@@ -116,7 +117,7 @@ const initAnimation = function(domNodeId, canvasId) {
     const ratio = renderer.getContext().drawingBufferWidth / renderer.getContext().drawingBufferHeight;
 
     camera = new THREE.PerspectiveCamera(10, ratio, 0.01, 1e6);
-    camera.position.set(0, cameraLookAt.y, cameraZCoordinate);
+    camera.position.set(cameraLookAt.x + 25, cameraLookAt.y + 20, cameraLookAt.z + 50);
     camera.lookAt(cameraLookAt);
     camera.updateProjectionMatrix();
 
@@ -128,19 +129,6 @@ const initAnimation = function(domNodeId, canvasId) {
     scene = new THREE.Scene();
 
     addResizeListener(camera, renderer);
-
-	document.getElementById("queuePlayer").onclick = queueMockPlayer;
-    document.getElementById("queueDebug").onclick = queueDebugPlayer;
-    document.getElementById("launchPlayer").onclick = launchNextInQueue;
-    document.getElementById("teleportPlayer").onclick = teleportPlayer;
-    document.getElementById("toggleFreeCamera").onclick = toggleFreeCamera;
-    document.getElementById("deleteHighscore").onclick = deleteHighscoreAndRefresh;
-    document.getElementById("brakePlayer").onclick = brakePlayer;
-
-    document.addEventListener("keypress", (event) => {
-        document.getElementById("buttons").classList.toggle("hidden");
-    })
-
     heightfield = makeHeightField();
 
     boosters = makeBoosters(heightfield);
@@ -154,8 +142,22 @@ const initAnimation = function(domNodeId, canvasId) {
     refreshHighscore();
     setInterval(saveHighscore, 1000);
 
-    queueMockPlayers();
+    //queueMockPlayers();
     //queueDebugHeads();
+    queueMockPlayer();
+
+    isFreeCamera = true;
+    //camera.position.set(250, -100, 700);
+    //orbitControls.target.copy(camera.position);
+    //orbitControls.target.z = 0;
+
+    initSlidestepper(scene);
+
+    document.addEventListener("keypress", (event) => {
+        if (event.key == "f") { // "f"
+            //toggleFreeCamera();
+        }
+    })
 }
 
 function resetBall(texture) {
@@ -233,7 +235,6 @@ function makeContents() {
 
         line.add(segment);
     }
-    scene.add(line);
 
     // Heightfield
 
@@ -311,6 +312,14 @@ function makeContents() {
     const entryLoader = makeEntryLoader();
     entryLoader.position.set(0.8, 1.15, 0.1);
     guiCovers.add(entryLoader);
+
+    cylinder.name = "ball";
+    guiCovers.name = "guiCovers";
+    boosterMeshes.name = "boosterMeshes";
+    goal.name = "goal";
+    gridLines.name = "gridLines";
+    hfBodyMesh.name = "line";
+    queue.name = "queue";
 }
 
 const animate = function() {
@@ -367,7 +376,14 @@ const animate = function() {
     animateQueue(timeSeconds);
     animateEntryLoader(deltaSeconds);
 
-    composer.render(1/60);
+    animateSlides(timeSeconds);
+
+    const step = getStep();
+    if (step >= 3) {
+        composer.render(1/60);
+    } else {
+        renderer.render(scene, camera);
+    }
 
     let timeLeftSeconds = timeLimit - timeRoundSeconds;
 
@@ -421,9 +437,9 @@ const animate = function() {
 function loseRound() {
     if (hasLost == false) {
         console.log("PLAYER LOST");
-        document.getElementById("died").classList.toggle("hidden", false);
-        setTimeout(launchNextInQueue, 3000);
-        document.getElementById("highscore").classList.toggle("hidden", false);
+        //document.getElementById("died").classList.toggle("hidden", false);
+        //setTimeout(launchNextInQueue, 3000);
+        //document.getElementById("highscore").classList.toggle("hidden", false);
     }
     hasLost = true;
 }
@@ -454,24 +470,23 @@ function winRound(timeLeftSeconds) {
         const rank = registerGoalTime(timeLeftSeconds, texture);
         setTimeout(() => {
             const rankified = rankify(rank);
-            document.getElementById("rankNumber").innerText = rankified.number;
-            document.getElementById("rankPostfix").innerText = rankified.postfix;
-            document.getElementById("glitched").classList.toggle("hidden", false);
+            //document.getElementById("rankNumber").innerText = rankified.number;
+            //document.getElementById("rankPostfix").innerText = rankified.postfix;
+            //document.getElementById("glitched").classList.toggle("hidden", false);
         }, 100);
         refreshHighscore();
         glitchBall();
-        setTimeout(launchNextInQueue, 3000);
-        document.getElementById("highscore").classList.toggle("hidden", false);
+        //setTimeout(launchNextInQueue, 3000);
+        //document.getElementById("highscore").classList.toggle("hidden", false);
     }
     hasWon = true;
 }
 
 function queueMockPlayers() {
-    const button = document.getElementById("queuePlayer");
     for (let i = 0; i < 7; i++) {
-        button.click();
+        queueMockPlayer();
     }
-    window.setTimeout(() => document.getElementById("launchPlayer").click(), 1000); // For å rekke å laste tekstur
+    window.setTimeout(() => launchNextInQueue(), 1000); // For å rekke å laste tekstur
 }
 
 function queueMockPlayer() {
