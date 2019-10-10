@@ -326,6 +326,10 @@ const animate = function() {
     const timeMillis = new Date().getTime();
     const timeSeconds = (timeMillis - timeStartMillis) / 1000;
 
+    if (!doOrdinaryPhysics()) {
+        timeRoundStartMillis = new Date().getTime();
+    }
+
     const timeRoundSeconds = (timeMillis - timeRoundStartMillis) / 1000;
 
     const deltaSeconds = (timeMillis - lastTimeMillis) / 1000;
@@ -339,10 +343,12 @@ const animate = function() {
     const goalScale = clamp(1 - glitchAnimationTime * glitchAnimationSpeed, 0.01, 1);
     goal.scale.set(goalScale, goalScale, goalScale)
 
-    if (!hasWon && !hasLost && doOrdinaryPhysics()) {
+    if (!hasWon && !hasLost) {
         lastBodiesCenter = bodiesCenter;
-        bodiesCenter = updatePhysics(deltaSeconds);
-        speed = lastBodiesCenter.distanceTo(bodiesCenter);
+        if (doOrdinaryPhysics()) {
+            bodiesCenter = updatePhysics(deltaSeconds);
+            speed = lastBodiesCenter.distanceTo(bodiesCenter);
+        }
 
         updateCylinder(bodiesCenter, getCylinderBodies());
         updateBackdrop(deltaSeconds);

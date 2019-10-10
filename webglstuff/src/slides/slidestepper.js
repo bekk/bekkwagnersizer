@@ -65,6 +65,7 @@ export function init(sceneParam) {
     document.getElementById("queueTitle").classList.toggle("hidden", true);
     document.getElementById("queueOverflow").classList.toggle("hidden", true);
     document.getElementById("entryloaderText").classList.toggle("hidden", true);
+    document.getElementById("cannon").classList.toggle("hidden", true);
 
     doStep();
 }
@@ -102,6 +103,7 @@ function doStep() {
         scene.getObjectByName("step0").visible = true;
     }
     if (step === 1) {
+        document.getElementById("cannon").classList.toggle("hidden", false);
         scene.getObjectByName("step0").visible = false;
         scene.getObjectByName("step1").visible = true;
         scene.getObjectByName("hfBodyDebugMesh").visible = true;
@@ -109,6 +111,7 @@ function doStep() {
         scene.getObjectByName("bouncyBall").visible = false;
     }
     if (step === 2) {
+        document.getElementById("cannon").classList.toggle("hidden", true);
         scene.getObjectByName("rigidBall").visible = false;
         scene.getObjectByName("bouncyBall").visible = true;
     }
@@ -116,6 +119,7 @@ function doStep() {
         scene.getObjectByName("ballMesh").visible = true;
     }
     if (step === 4) {
+        toggleFreeCamera();
         scene.getObjectByName("step1").visible = false;
         scene.getObjectByName("ball").visible = true;
         scene.getObjectByName("goal").visible = true;
@@ -129,7 +133,6 @@ function doStep() {
         isBloomOn = true;
     }
     if (step === 7) {
-        toggleFreeCamera();
         scene.getObjectByName("guiCovers").visible = true;
         scene.getObjectByName("queue").visible = true;
 

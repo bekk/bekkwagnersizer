@@ -36,7 +36,7 @@ export function makeBall(nofCylinderBodies) {
     }
 
     const ballMesh = new THREE.Mesh(cylinderGeometry, [cylinderMaterial, cylinderFrontMaterial, cylinderMaterial]);
-    ballMesh.position.z = 3;
+    ballMesh.position.z = 0;
     cylinderGeometry.rotateX(Math.PI/2);
     group.cylinderFrontMaterial = cylinderFrontMaterial;
     ballMesh.name = "ballMesh"
@@ -81,7 +81,7 @@ export function updateCylinder(bodiesCenter, bodies) {
         vertex2.set(body.position.x, body.position.y - cylinderRadius, vertex2.z);
 
         cylinders[i].position.copy(body.position).sub(bodiesCenter);
-        cylinders[i].position.z += 3;
+        //cylinders[i].position.z += 3;
         cylinders[i].position.y -= 0.45;
         //cylinders[i].rotation.copy(body.rotation);
     }
