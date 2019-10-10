@@ -106,19 +106,22 @@ function doStep() {
 
         document.getElementById("websockets").classList.toggle("hidden", true);
         document.getElementById("mediastream").classList.toggle("hidden", true);
+        document.getElementById("wifi").classList.toggle("hidden", true);
+        document.getElementById("usb").classList.toggle("hidden", true);
         document.getElementById("node").classList.toggle("hidden", true);
     }
     if (step === 1) {
         scene.getObjectByName("mediastream").visible = true;
+        document.getElementById("usb").classList.toggle("hidden", false);
         document.getElementById("mediastream").classList.toggle("hidden", false);
     }
     if (step === 2) {
         scene.getObjectByName("node").visible = true;
+        document.getElementById("wifi").classList.toggle("hidden", false);
         document.getElementById("node").classList.toggle("hidden", false);
         document.getElementById("websockets").classList.toggle("hidden", false);
     }
     if (step === 3) {
-
         document.getElementById("node").classList.toggle("hidden", true);
         document.getElementById("websockets").classList.toggle("hidden", true);
         document.getElementById("mediastream").classList.toggle("hidden", true);
