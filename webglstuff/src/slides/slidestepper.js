@@ -101,8 +101,23 @@ function doStep() {
 
     if (step === 0) {
         scene.getObjectByName("step0").visible = true;
+        scene.getObjectByName("mediastream").visible = false;
+        scene.getObjectByName("node").visible = false;
+
+        document.getElementById("websockets").classList.toggle("hidden", true);
+        document.getElementById("mediastream").classList.toggle("hidden", true);
+        document.getElementById("node").classList.toggle("hidden", true);
     }
     if (step === 1) {
+        scene.getObjectByName("mediastream").visible = true;
+        document.getElementById("mediastream").classList.toggle("hidden", false);
+    }
+    if (step === 2) {
+        scene.getObjectByName("node").visible = true;
+        document.getElementById("node").classList.toggle("hidden", false);
+        document.getElementById("websockets").classList.toggle("hidden", false);
+    }
+    if (step === 3) {
 
         document.getElementById("node").classList.toggle("hidden", true);
         document.getElementById("websockets").classList.toggle("hidden", true);
@@ -115,15 +130,15 @@ function doStep() {
         scene.getObjectByName("rigidBall").visible = true;
         scene.getObjectByName("bouncyBall").visible = false;
     }
-    if (step === 2) {
+    if (step === 4) {
         document.getElementById("cannon").classList.toggle("hidden", true);
         scene.getObjectByName("rigidBall").visible = false;
         scene.getObjectByName("bouncyBall").visible = true;
     }
-    if (step === 3) {
+    if (step === 5) {
         scene.getObjectByName("ballMesh").visible = true;
     }
-    if (step === 4) {
+    if (step === 6) {
         toggleFreeCamera();
         scene.getObjectByName("step1").visible = false;
         scene.getObjectByName("ball").visible = true;
@@ -131,13 +146,13 @@ function doStep() {
         scene.getObjectByName("line").visible = true;
         scene.getObjectByName("gridLines").visible = true;
     }
-    if (step === 5) {
+    if (step === 7) {
         scene.getObjectByName("boosterMeshes").visible = true;
     }
-    if (step === 6) {
+    if (step === 8) {
         isBloomOn = true;
     }
-    if (step === 7) {
+    if (step === 9) {
         scene.getObjectByName("guiCovers").visible = true;
         scene.getObjectByName("queue").visible = true;
 
@@ -146,7 +161,7 @@ function doStep() {
         document.getElementById("queueOverflow").classList.toggle("hidden", false);
         document.getElementById("entryloaderText").classList.toggle("hidden", false);
     }
-    if (step === 8) {
+    if (step === 10) {
         doGlitchPhysics = true;
     }
 }

@@ -98,6 +98,7 @@ function step0() {
     cable.position.set(-0.95, -1.03, 0);
     cable.rotation.z = Math.PI * (0.5 - 0.25/2);
     laptop.add(cable);
+    laptop.name = "mediastream";
     step0.add(laptop);
 
 
@@ -109,6 +110,7 @@ function step0() {
     cable2.position.set(-0.95, -1.03, 0);
     cable2.rotation.z = Math.PI * (0.5 - 0.25/2);
     laptop2.add(cable2);
+    laptop2.name = "node";
     step0.add(laptop2);
 
     for (let i = 0; i < 3; i++) {
