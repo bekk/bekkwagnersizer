@@ -52,23 +52,29 @@ function step0() {
     const blackMaterial = new THREE.MeshLambertMaterial({
         color: new THREE.Color(0xffffff).multiplyScalar(0.25)
     });
+    const greyMaterial = new THREE.MeshLambertMaterial({
+        color: new THREE.Color(0xffffff).multiplyScalar(0.75)
+    });
 
     sheetMaterial = new THREE.MeshLambertMaterial({
         map: null,
         transparent: true,
     });
 
+
+    const scanner = new THREE.Object3D();
+
     const plate = new THREE.Mesh(new THREE.CylinderGeometry(3.25, 3.25, 0.1, 40), blackMaterial);
-    step0.add(plate);
+    scanner.add(plate);
 
     const stick = new THREE.Mesh(new THREE.BoxGeometry(0.65, 6.5, 0.45), blackMaterial);
     stick.rotation.z = 0.37;
     stick.position.set(1.75, 2.9, 0);
-    step0.add(stick);
+    scanner.add(stick);
 
     const smallPate = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.2, 40), blackMaterial);
     smallPate.position.set(0, 6, 0);
-    step0.add(smallPate);
+    scanner.add(smallPate);
     
     const sheet = new THREE.Object3D();
     const drawing = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), sheetMaterial);
@@ -78,12 +84,38 @@ function step0() {
     sheet.add(white);
     sheet.rotation.x = -Math.PI/2;
     sheet.position.y = 0.15;
-    step0.add(sheet);
+    scanner.add(sheet);
+
+    scanner.position.x = -7;
+
+    step0.add(scanner);
 
     const laptop = makeLaptop();
     laptop.scale.multiplyScalar(5);
-    laptop.position.set(10, 0, 0);
+    laptop.position.set(3, 0, 0);
+    const cable = new THREE.Mesh(new THREE.TorusGeometry(2, 0.03, 10, 10, Math.PI*0.25), new THREE.MeshLambertMaterial())
+    cable.scale.multiplyScalar(0.55);
+    cable.position.set(-0.95, -1.03, 0);
+    cable.rotation.z = Math.PI * (0.5 - 0.25/2);
+    laptop.add(cable);
     step0.add(laptop);
+
+
+    const laptop2 = makeLaptop();
+    laptop2.scale.multiplyScalar(5);
+    laptop2.position.set(12, 0, 0);
+    const cable2 = new THREE.Mesh(new THREE.TorusGeometry(2, 0.03, 10, 10, Math.PI*0.25), new THREE.MeshLambertMaterial())
+    cable2.scale.multiplyScalar(0.55);
+    cable2.position.set(-0.95, -1.03, 0);
+    cable2.rotation.z = Math.PI * (0.5 - 0.25/2);
+    laptop2.add(cable2);
+    step0.add(laptop2);
+
+    for (let i = 0; i < 3; i++) {
+        const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.07, 40), greyMaterial);
+        disc.position.set(1, i*0.09, 0);
+        laptop2.add(disc);
+    }
 
     step0.animate = function(timeSeconds) {
         const amp = 3.5;

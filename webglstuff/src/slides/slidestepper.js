@@ -103,6 +103,11 @@ function doStep() {
         scene.getObjectByName("step0").visible = true;
     }
     if (step === 1) {
+
+        document.getElementById("node").classList.toggle("hidden", true);
+        document.getElementById("websockets").classList.toggle("hidden", true);
+        document.getElementById("mediastream").classList.toggle("hidden", true);
+
         document.getElementById("cannon").classList.toggle("hidden", false);
         scene.getObjectByName("step0").visible = false;
         scene.getObjectByName("step1").visible = true;
