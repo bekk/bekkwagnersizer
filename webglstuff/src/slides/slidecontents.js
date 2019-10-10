@@ -105,11 +105,14 @@ function step0() {
     const laptop2 = makeLaptop();
     laptop2.scale.multiplyScalar(5);
     laptop2.position.set(12, 0, 0);
-    const cable2 = new THREE.Mesh(new THREE.TorusGeometry(2, 0.03, 10, 10, Math.PI*0.25), new THREE.MeshLambertMaterial())
-    cable2.scale.multiplyScalar(0.55);
-    cable2.position.set(-0.95, -1.03, 0);
-    cable2.rotation.z = Math.PI * (0.5 - 0.25/2);
-    laptop2.add(cable2);
+    for (let i = 0; i < 4; i++) {
+        const arc = 0.1 + 0.05*i;
+        const cable2 = new THREE.Mesh(new THREE.TorusGeometry(2 - (4-i)*0.1, 0.03, 10, 10, Math.PI*arc), new THREE.MeshLambertMaterial())
+        cable2.scale.multiplyScalar(0.55);
+        cable2.position.set(-1.9 + i*0.05, 0, 0);
+        cable2.rotation.z = Math.PI * (0.5 - arc/2 - 0.5);
+        laptop2.add(cable2);
+    }
     laptop2.name = "node";
     step0.add(laptop2);
 
