@@ -3,6 +3,8 @@ const path = require('path');
 const fsp = require('fs').promises;
 const fs = require('fs');
 const multer = require('multer');
+const bodyParser = require('body-parser');
+const sanitize = require("sanitize-filename");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -18,6 +20,8 @@ const upload = multer({ storage: storage });
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+
+app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -48,11 +52,44 @@ app.use('/static', express.static(__dirname + '/'));
 app.use(express.static(__dirname + '/uploads'));
 app.use('/internal', express.static(__dirname + '/internal'));
 app.use('/trash', express.static(__dirname + '/trash'));
+app.use('/calibrationprofiles', express.static(__dirname + '/calibrationprofiles'));
 
 app.post('/image', upload.single('image'), (req, res) => {
-  console.log("file:", req.file);
+  console.log("received image file:", req.file);
   io.emit('new image', req.file.originalname);
   res.sendStatus(200);
+});
+
+app.post('/calibration', (req, res) => {
+  const fileContents = JSON.stringify(req.body);
+  const fileName = sanitize(req.body.name);
+  const filePath = path.join(__dirname, 'calibrationprofiles', fileName);
+  fs.writeFile(filePath, fileContents, (err) => {
+    if(err) {
+      console.log(err);
+      res.sendStatus(503);
+    }
+    console.log("received calibration profile", req.body, fileName);
+    res.sendStatus(200);
+  });
+});
+
+app.get('/calibration', (req, res) => {
+  const location = path.join(__dirname, 'calibrationprofiles');
+  fs.readdir(location, (err, files) => {
+    console.log('returning calibration profile names', files);
+    res.status(200).json(files);
+  });
+});
+
+app.get('/calibration/:fileName', (req, res) => {
+  const fileName = sanitize(req.params.fileName);
+  const location = path.join(__dirname, 'calibrationprofiles', fileName);
+  console.log('loading calibration profile', fileName);
+  fs.readFile(location, (err, contents) => {
+    console.log('returning calibration profile');
+    res.status(200).json(JSON.parse(contents));
+  });
 });
 
 app.delete('/image/:id', function (req, res) {
@@ -154,6 +191,11 @@ http.listen((port = 3000), function () {
   if(!fs.existsSync(__dirname + '/uploads')) {
     console.log('Uploads-folder not found, recreating.')
     fs.mkdirSync(__dirname + '/uploads');
+  }
+
+  if(!fs.existsSync(__dirname + '/calibrationprofiles')) {
+    console.log('Calibrationprofiles-folder not found, recreating.')
+    fs.mkdirSync(__dirname + '/calibrationprofiles');
   }
   console.log(`Listening on port ${port}`);
 });
